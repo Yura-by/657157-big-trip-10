@@ -15,9 +15,19 @@ const Day = {
   MAX: 10
 };
 
+const Hour = {
+  MIN: 0,
+  MAX: 23
+};
+
+const Minute = {
+  MIN: 0,
+  MAX: 60
+};
+
 const Price = {
   MIN: 1,
-  MAX: 10000
+  MAX: 1000
 };
 
 const OffersLength = {
@@ -95,6 +105,8 @@ const generateRandomDate = () => {
   const diffValue = sign * getRandomIntegerNumber(Day.MIN, Day.MAX);
 
   targetDate.setDate(targetDate.getDate() + diffValue);
+  targetDate.setHours(getRandomIntegerNumber(Hour.MIN, Hour.MAX));
+  targetDate.setMinutes(getRandomIntegerNumber(Minute.MIN, Minute.MAX));
 
   return targetDate;
 };
@@ -109,16 +121,24 @@ const generateRandomOffers = () => {
 };
 
 const generateEvent = () => {
-
   return {
     type: getRandomArrayItem(Types),
     city: getRandomArrayItem(CITIES),
     photo: generateRandomPhotos(),
     description: generateRandomDescription(),
-    date: generateRandomDate(),
+    startDate: generateRandomDate(),
+    endDate: generateRandomDate(),
     price: generateRandomPrice(),
     offers: generateRandomOffers()
   };
 };
 
-console.log(generateEvent());
+const generateEvents = (count) => {
+  return new Array(count)
+    .fill(``)
+    .map(generateEvent);
+};
+
+export {generateEvent, generateEvents};
+
+console.log(generateEvents(4));
