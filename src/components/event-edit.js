@@ -1,11 +1,34 @@
-export const createEventEditTemplate = () => {
+import {Types} from '../const.js';
+import {Index} from './event.js'
+import {castTimeFormat} from '../util.js';
+
+const INDEX_YEAR_FORMAT = 1;
+
+export const createEventEditTemplate = (event) => {
+  const {startDate, endDate, price, type} = event;
+  const nameImage = type === `check` ? `check-in` : type;
+
+  let eventName = Types.slice(Index.START_PRETEX_IN).some((name) => event.type === name) ?
+  `${type} in` : `${type} to`;
+
+  eventName = eventName[Index.UPPERCASE_LETTER].toUpperCase() + eventName.slice(Index.DRAIN_LETTER);
+
+  const createDateInFormat = (date) => {
+    return (
+      `${castTimeFormat(date.getDate())}/${castTimeFormat(date.getMonth())}/${String(date.getYear()).slice(INDEX_YEAR_FORMAT)} ${castTimeFormat(date.getHours())}:${castTimeFormat(date.getMinutes())}
+      `);
+  };
+
+  const startTime = createDateInFormat(startDate);
+  const endTime = createDateInFormat(endDate);
+
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${nameImage}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -72,7 +95,7 @@ export const createEventEditTemplate = () => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            Sightseeing at
+            ${eventName}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="" list="destination-list-1">
           <datalist id="destination-list-1">
@@ -87,12 +110,12 @@ export const createEventEditTemplate = () => {
           <label class="visually-hidden" for="event-start-time-1">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="18/03/19 00:00">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${startTime}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="18/03/19 00:00">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="  ${endTime}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -100,7 +123,7 @@ export const createEventEditTemplate = () => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>

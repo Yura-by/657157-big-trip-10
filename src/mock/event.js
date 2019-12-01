@@ -27,7 +27,7 @@ const Minute = {
 
 const Price = {
   MIN: 1,
-  MAX: 1000
+  MAX: 300
 };
 
 const OffersLength = {
@@ -110,6 +110,7 @@ const generateRandomDate = () => {
 
   return targetDate;
 };
+
 
 const generateRandomPrice = () => {
   return getRandomIntegerNumber(Price.MIN, Price.MAX);
