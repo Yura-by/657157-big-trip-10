@@ -6,6 +6,7 @@ import {createEventTemplate} from './components/event.js';
 import {createSiteFilterTemplate} from './components/site-filter.js';
 import {createSiteMenuTemplate} from './components/site-menu.js';
 import {createSortTemplate} from './components/sort.js';
+import {generateEvent} from './mock/event.js';
 
 const EVENT_COUNT = 3;
 
