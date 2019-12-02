@@ -111,6 +111,18 @@ const generateRandomDate = () => {
   return targetDate;
 };
 
+const Seconds = {
+  MIN: 1e6,
+  MAX: 12e6
+};
+
+const generateEndDate = (startDate) => {
+  let newDateInSeconds = startDate.getTime();
+  newDateInSeconds = newDateInSeconds + getRandomIntegerNumber(Seconds.MIN, Seconds.MAX);
+  const targetData = new Date();
+  targetData.setTime(newDateInSeconds);
+  return targetData;
+};
 
 const generateRandomPrice = () => {
   return getRandomIntegerNumber(Price.MIN, Price.MAX);
@@ -122,13 +134,15 @@ const generateRandomOffers = () => {
 };
 
 const generateEvent = () => {
+  const startDate = generateRandomDate();
+
   return {
     type: getRandomArrayItem(Types),
     destination: getRandomArrayItem(CITIES),
     photo: generateRandomPhotos(),
     description: generateRandomDescription(),
-    startDate: generateRandomDate(),
-    endDate: generateRandomDate(),
+    startDate,
+    endDate: generateEndDate(startDate),
     price: generateRandomPrice(),
     offers: generateRandomOffers()
   };
