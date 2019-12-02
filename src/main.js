@@ -12,6 +12,7 @@ import {generateEvents} from './mock/event.js';
 import {generateMenu} from './mock/menu.js';
 import {generateFilter} from './mock/filter.js';
 import {generateSort} from './mock/sort.js';
+import {castTimeFormat} from './util.js';
 
 const EVENT_COUNT = 4;
 
@@ -41,12 +42,39 @@ const eventDetailsElement = tripEventsElement.querySelector(`.event__details`);
 render(eventDetailsElement, createEventOffersTemplate(events[0]), `beforeend`);
 render(eventDetailsElement, createEventDestionationTemplate(events[0]), `beforeend`);
 
+const evenstsSorted = events.slice(1, events.length)
+  .sort((eventBefore, eventAfter) => eventBefore.startDate.getTime() - eventAfter.startDate.getTime());
+
+const daysEventAll = evenstsSorted.map((event) => {
+  const {startDate} = event;
+  return (
+  `${castTimeFormat(startDate.getDate())}${castTimeFormat(startDate.getMonth())}${castTimeFormat(startDate.getFullYear())}`
+  )
+});
+
+const daysEventInSet = new Set(daysEventAll);
+
+const createArrayEventsByDay = (day, array) => {
+  return array.filter((event) => castTimeFormat(event.startDate.getDate()) === `${day[0]+day[1]}` &&
+    castTimeFormat(event.startDate.getMonth()) === `${day[2]+day[3]}` &&
+    castTimeFormat(event.startDate.getFullYear()) === `${day[4]+day[5]+day[6]+day[7]}`);
+};
+
+const daysEventInArray = Array.from(daysEventInSet);
+
+const daysWithEvents = daysEventInArray.map((day) => createArrayEventsByDay(day, evenstsSorted));
+
 render(tripEventsElement, createDaysTemplate(), `beforeend`);
 
 const tripDaysElement = tripEventsElement.querySelector(`.trip-days`);
 
-render(tripDaysElement, createDayTemplate(), `beforeend`);
+render(tripDaysElement, createDayTemplate(daysWithEvents), `beforeend`);
 
-const eventsListElement = tripDaysElement.querySelector(`.trip-events__list`);
+const eventsListElements = tripDaysElement.querySelectorAll(`.trip-events__list`);
 
-events.slice(1, events.length).forEach((event) => render(eventsListElement, createEventTemplate(event), `beforeend`));
+eventsListElements.forEach((day, indexDay) => {
+  daysWithEvents[indexDay].forEach((event, eventIndex) => {
+    render(day, createEventTemplate(daysWithEvents[indexDay][eventIndex]), `beforeend`)}
+    );
+});
+

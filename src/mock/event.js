@@ -30,6 +30,11 @@ const Price = {
   MAX: 300
 };
 
+const Seconds = {
+  MIN: 1e6,
+  MAX: 12e6
+};
+
 const OffersLength = {
   MIN: 0,
   MAX: 3
@@ -109,11 +114,6 @@ const generateRandomDate = () => {
   targetDate.setMinutes(getRandomIntegerNumber(Minute.MIN, Minute.MAX));
 
   return targetDate;
-};
-
-const Seconds = {
-  MIN: 1e6,
-  MAX: 12e6
 };
 
 const generateEndDate = (startDate) => {
