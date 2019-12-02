@@ -32,28 +32,28 @@ const Price = {
 
 const OffersLength = {
   MIN: 0,
-  MAX: 2
+  MAX: 3
 };
 
 const OFFERS = [
   {
-    desription: `Add luggage`,
-    add: `+10`,
+    description: `Add luggage`,
+    add: `10`,
     currency: `€`
   },
   {
-    desription: `Switch to comfort class`,
-    add: `+150`,
+    description: `Switch to comfort class`,
+    add: `150`,
     currency: `€`
   },
   {
-    desription: `Add meal`,
-    add: `+2`,
+    description: `Add meal`,
+    add: `2`,
     currency: `€`
   },
   {
-    desription: `Choose seats`,
-    add: `+9`,
+    description: `Choose seats`,
+    add: `9`,
     currency: `€`
   }
 ];
@@ -124,7 +124,7 @@ const generateRandomOffers = () => {
 const generateEvent = () => {
   return {
     type: getRandomArrayItem(Types),
-    city: getRandomArrayItem(CITIES),
+    destination: getRandomArrayItem(CITIES),
     photo: generateRandomPhotos(),
     description: generateRandomDescription(),
     startDate: generateRandomDate(),
@@ -141,5 +141,3 @@ const generateEvents = (count) => {
 };
 
 export {generateEvent, generateEvents};
-
-console.log(generateEvents(4));

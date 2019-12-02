@@ -24,8 +24,6 @@ const render = (container, template, place) => {
 
 const events = generateEvents(EVENT_COUNT);
 
-console.log(events);
-
 render(switchTabsTitleElement, createSiteMenuTemplate(), `afterend`);
 render(siteContolsElement, createSiteFilterTemplate(), `beforeend`);
 render(tripEventsElement, createSortTemplate(), `beforeend`);
@@ -37,8 +35,8 @@ render(eventEditElement, createEventDetailsTemplate(), `beforeend`);
 
 const eventDetailsElement = tripEventsElement.querySelector(`.event__details`);
 
-render(eventDetailsElement, createEventOffersTemplate(), `beforeend`);
-render(eventDetailsElement, createEventDestionationTemplate(), `beforeend`);
+render(eventDetailsElement, createEventOffersTemplate(events[0]), `beforeend`);
+render(eventDetailsElement, createEventDestionationTemplate(events[0]), `beforeend`);
 
 render(tripEventsElement, createDaysTemplate(), `beforeend`);
 

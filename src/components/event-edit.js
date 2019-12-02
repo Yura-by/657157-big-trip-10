@@ -5,7 +5,7 @@ import {castTimeFormat} from '../util.js';
 const INDEX_YEAR_FORMAT = 1;
 
 export const createEventEditTemplate = (event) => {
-  const {startDate, endDate, price, type} = event;
+  const {startDate, endDate, price, type, destination} = event;
   const nameImage = type === `check` ? `check-in` : type;
 
   let eventName = Types.slice(Index.START_PRETEX_IN).some((name) => event.type === name) ?
@@ -97,7 +97,7 @@ export const createEventEditTemplate = (event) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${eventName}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
           <datalist id="destination-list-1">
             <option value="Amsterdam"></option>
             <option value="Geneva"></option>
