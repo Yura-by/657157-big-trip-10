@@ -9,6 +9,9 @@ import {createSortTemplate} from './components/sort.js';
 import {createEventOffersTemplate} from './components/event-offers.js';
 import {createEventDestionationTemplate} from './components/event-destination.js';
 import {generateEvents} from './mock/event.js';
+import {generateMenu} from './mock/menu.js';
+import {generateFilter} from './mock/filter.js';
+import {generateSort} from './mock/sort.js';
 
 const EVENT_COUNT = 4;
 
@@ -24,9 +27,9 @@ const render = (container, template, place) => {
 
 const events = generateEvents(EVENT_COUNT);
 
-render(switchTabsTitleElement, createSiteMenuTemplate(), `afterend`);
-render(siteContolsElement, createSiteFilterTemplate(), `beforeend`);
-render(tripEventsElement, createSortTemplate(), `beforeend`);
+render(switchTabsTitleElement, createSiteMenuTemplate(generateMenu()), `afterend`);
+render(siteContolsElement, createSiteFilterTemplate(generateFilter()), `beforeend`);
+render(tripEventsElement, createSortTemplate(generateSort()), `beforeend`);
 render(tripEventsElement, createEventEditTemplate(events[0]), `beforeend`);
 
 const eventEditElement = tripEventsElement.querySelector(`.event--edit`);

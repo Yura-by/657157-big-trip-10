@@ -40,6 +40,6 @@ export const createEventOffersTemplate = (event) => {
         ${offerSelectors}
       </div>
     </section>`
-      )
-  : ``;
+  )
+    : ``;
 };
