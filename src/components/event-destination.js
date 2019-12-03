@@ -3,7 +3,7 @@ const createImagesItems = (photos) => {
   map((soursePhoto) => {
     return (
       `<img class="event__photo" src="${soursePhoto}" alt="Event photo">`
-    )
+    );
   }).join(`\n`);
 };
 
@@ -14,7 +14,7 @@ const createImagesTemplate = (photo) => {
         ${createImagesItems(photo)}
       </div>
     </div>`
-  )
+  );
 };
 
 export const createEventDestionationTemplate = (event) => {
@@ -26,6 +26,6 @@ export const createEventDestionationTemplate = (event) => {
       <p class="event__destination-description">${description}</p>
       ${descriptionImages}
     </section>`
-    )
-      : ``;
+  )
+    : ``;
 };

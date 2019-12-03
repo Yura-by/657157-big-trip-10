@@ -48,16 +48,16 @@ const evenstsSorted = events.slice(1, events.length)
 const daysEventAll = evenstsSorted.map((event) => {
   const {startDate} = event;
   return (
-  `${castTimeFormat(startDate.getDate())}${castTimeFormat(startDate.getMonth())}${castTimeFormat(startDate.getFullYear())}`
-  )
+    `${castTimeFormat(startDate.getDate())}${castTimeFormat(startDate.getMonth())}${castTimeFormat(startDate.getFullYear())}`
+  );
 });
 
 const daysEventInSet = new Set(daysEventAll);
 
 const createArrayEventsByDay = (day, array) => {
-  return array.filter((event) => castTimeFormat(event.startDate.getDate()) === `${day[0]+day[1]}` &&
-    castTimeFormat(event.startDate.getMonth()) === `${day[2]+day[3]}` &&
-    castTimeFormat(event.startDate.getFullYear()) === `${day[4]+day[5]+day[6]+day[7]}`);
+  return array.filter((event) => castTimeFormat(event.startDate.getDate()) === `${day[0] + day[1]}` &&
+    castTimeFormat(event.startDate.getMonth()) === `${day[2] + day[3]}` &&
+    castTimeFormat(event.startDate.getFullYear()) === `${day[4] + day[5] + day[6] + day[7]}`);
 };
 
 const daysEventInArray = Array.from(daysEventInSet);
@@ -74,7 +74,22 @@ const eventsListElements = tripDaysElement.querySelectorAll(`.trip-events__list`
 
 eventsListElements.forEach((day, indexDay) => {
   daysWithEvents[indexDay].forEach((event, eventIndex) => {
-    render(day, createEventTemplate(daysWithEvents[indexDay][eventIndex]), `beforeend`)}
-    );
+    render(day, createEventTemplate(daysWithEvents[indexDay][eventIndex]), `beforeend`);
+  }
+  );
 });
 
+const getTotalPrice = () => {
+  return events.reduce((total, event) => {
+
+    const {price, offers} = event;
+
+    const resultOffres = offers.reduce((amount, offer) => {
+      return amount + offer.add;
+    }, 0);
+
+    return total + price + resultOffres;
+  }, 0);
+};
+
+siteHeaderElement.querySelector(`.trip-info__cost-value`).textContent = getTotalPrice();

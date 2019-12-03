@@ -1,26 +1,63 @@
 import {Types} from '../const.js';
-import {Index} from './event.js'
+import {Index} from './event.js';
 import {castTimeFormat} from '../util.js';
+import {CITIES} from '../mock/event.js';
 
-const INDEX_YEAR_FORMAT = 1;
+const IndexNumber = {
+  YEAR_FORMAT: 1,
+  ITEM_TRANSFER: 0,
+  ITEM_ACTIVITY: 7
+};
+
+const TypeCheck = {
+  IN_DATA: `check`,
+  OUT_DATA: `check-in`
+};
+
+const createEventTypeItems = (indexStart, indexEnd) => {
+  return Types.slice(indexStart, indexEnd).map((type) => {
+    if (type === TypeCheck.IN_DATA) {
+      type = TypeCheck.OUT_DATA;
+    }
+    let typeName = type;
+    typeName = typeName[Index.UPPERCASE_LETTER].toUpperCase() + typeName.slice(Index.DRAIN_LETTER);
+    return (
+      `<div class="event__type-item">
+        <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
+        <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${typeName}</label>
+      </div>`
+    );
+  }).join(`\n`);
+};
+
+const createDestinationOptions = (destinations) => {
+  return destinations.map((destination) => {
+    return (
+      `<option value="${destination}"></option>`
+    );
+  }).join(`\n`);
+};
 
 export const createEventEditTemplate = (event) => {
   const {startDate, endDate, price, type, destination} = event;
   const nameImage = type === `check` ? `check-in` : type;
 
   let eventName = Types.slice(Index.START_PRETEX_IN).some((name) => event.type === name) ?
-  `${type} in` : `${type} to`;
+    `${type} in` : `${type} to`;
 
   eventName = eventName[Index.UPPERCASE_LETTER].toUpperCase() + eventName.slice(Index.DRAIN_LETTER);
 
   const createDateInFormat = (date) => {
     return (
-      `${castTimeFormat(date.getDate())}/${castTimeFormat(date.getMonth())}/${String(date.getYear()).slice(INDEX_YEAR_FORMAT)} ${castTimeFormat(date.getHours())}:${castTimeFormat(date.getMinutes())}
+      `${castTimeFormat(date.getDate())}/${castTimeFormat(date.getMonth())}/${String(date.getYear()).slice(IndexNumber.YEAR_FORMAT)} ${castTimeFormat(date.getHours())}:${castTimeFormat(date.getMinutes())}
       `);
   };
 
   const startTime = createDateInFormat(startDate);
   const endTime = createDateInFormat(endDate);
+  const eventTypeItemTransfer = createEventTypeItems(IndexNumber.ITEM_TRANSFER, IndexNumber.ITEM_ACTIVITY);
+  const eventTypeItemActivity = createEventTypeItems(IndexNumber.ITEM_ACTIVITY, Types.length);
+  const destinationOptions = createDestinationOptions(CITIES);
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -35,60 +72,14 @@ export const createEventEditTemplate = (event) => {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Transfer</legend>
+              ${eventTypeItemTransfer};
 
-              <div class="event__type-item">
-                <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-                <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-              </div>
             </fieldset>
 
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Activity</legend>
+              ${eventTypeItemActivity};
 
-              <div class="event__type-item">
-                <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-                <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-                <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-                <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-              </div>
             </fieldset>
           </div>
         </div>
@@ -99,10 +90,7 @@ export const createEventEditTemplate = (event) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
           <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
-            <option value="Saint Petersburg"></option>
+            ${destinationOptions}
           </datalist>
         </div>
 

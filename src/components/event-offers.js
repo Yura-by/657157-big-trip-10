@@ -8,7 +8,7 @@ const descriptionMap = {
 const createId = (description, count) => {
   return (
     `${descriptionMap[description]}-${count}`
-    );
+  );
 };
 
 const createSelectors = (offers) => {
@@ -25,7 +25,7 @@ const createSelectors = (offers) => {
           ${currency}&nbsp;<span class="event__offer-price">${add}</span>
         </label>
       </div>`
-    )
+    );
   }).join(`\n`);
 };
 

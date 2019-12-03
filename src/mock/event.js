@@ -43,22 +43,22 @@ const OffersLength = {
 const OFFERS = [
   {
     description: `Add luggage`,
-    add: `10`,
+    add: 10,
     currency: `€`
   },
   {
     description: `Switch to comfort class`,
-    add: `150`,
+    add: 150,
     currency: `€`
   },
   {
     description: `Add meal`,
-    add: `2`,
+    add: 2,
     currency: `€`
   },
   {
     description: `Choose seats`,
-    add: `9`,
+    add: 9,
     currency: `€`
   }
 ];
@@ -121,6 +121,7 @@ const generateEndDate = (startDate) => {
   newDateInSeconds = newDateInSeconds + getRandomIntegerNumber(Seconds.MIN, Seconds.MAX);
   const targetData = new Date();
   targetData.setTime(newDateInSeconds);
+
   return targetData;
 };
 
@@ -154,4 +155,4 @@ const generateEvents = (count) => {
     .map(generateEvent);
 };
 
-export {generateEvent, generateEvents};
+export {generateEvent, generateEvents, CITIES};

@@ -5,7 +5,7 @@ const createLinks = (list) => {
     name = linkName[0].toUpperCase() + name.slice(1);
     return (
       `<a class="trip-tabs__btn" href="#">${name}</a>`
-    )
+    );
   }).join(`\n`);
 };
 
