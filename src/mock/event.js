@@ -1,4 +1,4 @@
-import {Types} from '../const.js';
+import {TYPES} from '../const.js';
 
 const Photo = {
   MIN: 1,
@@ -138,7 +138,7 @@ const generateEvent = () => {
   const startDate = generateRandomDate();
 
   return {
-    type: getRandomArrayItem(Types),
+    type: getRandomArrayItem(TYPES),
     destination: getRandomArrayItem(CITIES),
     photo: generateRandomPhotos(),
     description: generateRandomDescription(),

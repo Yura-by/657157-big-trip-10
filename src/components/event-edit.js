@@ -1,6 +1,5 @@
-import {Types} from '../const.js';
-import {Index} from './event.js';
-import {castTimeFormat} from '../util.js';
+import {TYPES, Index} from '../const.js';
+import {castTimeFormat, createElement} from '../util.js';
 import {CITIES} from '../mock/event.js';
 
 const IndexNumber = {
@@ -15,7 +14,7 @@ const TypeCheck = {
 };
 
 const createEventTypeItems = (indexStart, indexEnd) => {
-  return Types.slice(indexStart, indexEnd).map((type) => {
+  return TYPES.slice(indexStart, indexEnd).map((type) => {
     if (type === TypeCheck.IN_DATA) {
       type = TypeCheck.OUT_DATA;
     }
@@ -38,11 +37,11 @@ const createDestinationOptions = (destinations) => {
   }).join(`\n`);
 };
 
-export const createEventEditTemplate = (event) => {
+const createEventEditTemplate = (event) => {
   const {startDate, endDate, price, type, destination} = event;
   const nameImage = type === `check` ? `check-in` : type;
 
-  let eventName = Types.slice(Index.START_PRETEX_IN).some((name) => event.type === name) ?
+  let eventName = TYPES.slice(Index.START_PRETEX_IN).some((name) => event.type === name) ?
     `${type} in` : `${type} to`;
 
   eventName = eventName[Index.UPPERCASE_LETTER].toUpperCase() + eventName.slice(Index.DRAIN_LETTER);
@@ -56,7 +55,7 @@ export const createEventEditTemplate = (event) => {
   const startTime = createDateInFormat(startDate);
   const endTime = createDateInFormat(endDate);
   const eventTypeItemTransfer = createEventTypeItems(IndexNumber.ITEM_TRANSFER, IndexNumber.ITEM_ACTIVITY);
-  const eventTypeItemActivity = createEventTypeItems(IndexNumber.ITEM_ACTIVITY, Types.length);
+  const eventTypeItemActivity = createEventTypeItems(IndexNumber.ITEM_ACTIVITY, TYPES.length);
   const destinationOptions = createDestinationOptions(CITIES);
 
   return (
@@ -120,3 +119,26 @@ export const createEventEditTemplate = (event) => {
     </form>`
   );
 };
+
+export default class EventEdit {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventEditTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

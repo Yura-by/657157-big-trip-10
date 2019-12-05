@@ -1,3 +1,5 @@
+import {createElement} from '../util.js';
+
 const createSorts = (sorts) => {
   return sorts.
   map((sort) => {
@@ -11,8 +13,8 @@ const createSorts = (sorts) => {
   }).join(`\n`);
 };
 
-export const createSortTemplate = (list) => {
-  const sortItems = list.length > 0 ? createSorts(list) : ``;
+const createSortTemplate = (sorts) => {
+  const sortItems = sorts.length > 0 ? createSorts(sorts) : ``;
 
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
@@ -22,3 +24,26 @@ export const createSortTemplate = (list) => {
     </form>`
   );
 };
+
+export default class Sort {
+  constructor(sorts) {
+    this._sorts = sorts;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createSortTemplate(this._sorts);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

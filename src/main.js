@@ -1,49 +1,33 @@
-import {createDayTemplate} from './components/day.js';
-import {createDaysTemplate} from './components/days.js';
-import {createEventDetailsTemplate} from './components/event-details.js';
-import {createEventEditTemplate} from './components/event-edit.js';
-import {createEventTemplate} from './components/event.js';
-import {createSiteFilterTemplate} from './components/site-filter.js';
-import {createSiteMenuTemplate} from './components/site-menu.js';
-import {createSortTemplate} from './components/sort.js';
-import {createEventOffersTemplate} from './components/event-offers.js';
-import {createEventDestionationTemplate} from './components/event-destination.js';
+import DaysComponent from './components/days.js';
+import EventDetailsComponent from './components/event-details.js';
+import EventEditComponent from './components/event-edit.js';
+import EventComponent from './components/event.js';
+import SiteFilterComponent from './components/site-filter.js';
+import SiteMenuComponent from './components/site-menu.js';
+import SortComponent from './components/sort.js';
+import EventOffersComponent from './components/event-offers.js';
+import EventDestinationComponent from './components/event-destination.js';
 import {generateEvents} from './mock/event.js';
 import {generateMenu} from './mock/menu.js';
 import {generateFilter} from './mock/filter.js';
 import {generateSort} from './mock/sort.js';
-import {castTimeFormat} from './util.js';
+import {castTimeFormat, RenderPosition, render} from './util.js';
 
 const EVENT_COUNT = 4;
 
 const siteHeaderElement = document.querySelector(`.page-header`);
 const siteContolsElement = siteHeaderElement.querySelector(`.trip-controls`);
-const switchTabsTitleElement = siteContolsElement.querySelector(`h2`);
+const switchTabsTitleElement = siteContolsElement.querySelector(`h2:last-child`);
 const siteMainElement = document.querySelector(`.page-main`);
 const tripEventsElement = siteMainElement.querySelector(`.trip-events`);
 
-const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
-
 const events = generateEvents(EVENT_COUNT);
 
-render(switchTabsTitleElement, createSiteMenuTemplate(generateMenu()), `afterend`);
-render(siteContolsElement, createSiteFilterTemplate(generateFilter()), `beforeend`);
-render(tripEventsElement, createSortTemplate(generateSort()), `beforeend`);
-render(tripEventsElement, createEventEditTemplate(events[0]), `beforeend`);
+render(siteContolsElement, new SiteMenuComponent(generateMenu()).getElement(), RenderPosition.INSERT_BEFORE, switchTabsTitleElement);
+render(siteContolsElement, new SiteFilterComponent(generateFilter()).getElement(), RenderPosition.BEFOREEND);
+render(tripEventsElement, new SortComponent(generateSort()).getElement(), RenderPosition.BEFOREEND);
 
-const eventEditElement = tripEventsElement.querySelector(`.event--edit`);
-
-render(eventEditElement, createEventDetailsTemplate(), `beforeend`);
-
-const eventDetailsElement = tripEventsElement.querySelector(`.event__details`);
-
-render(eventDetailsElement, createEventOffersTemplate(events[0]), `beforeend`);
-render(eventDetailsElement, createEventDestionationTemplate(events[0]), `beforeend`);
-
-const evenstsSorted = events.slice(1, events.length)
-  .sort((eventBefore, eventAfter) => eventBefore.startDate.getTime() - eventAfter.startDate.getTime());
+const evenstsSorted = events.sort((eventBefore, eventAfter) => eventBefore.startDate.getTime() - eventAfter.startDate.getTime());
 
 const daysEventAll = evenstsSorted.map((event) => {
   const {startDate} = event;
@@ -55,6 +39,7 @@ const daysEventAll = evenstsSorted.map((event) => {
 const daysEventInSet = new Set(daysEventAll);
 
 const createArrayEventsByDay = (day, array) => {
+
   return array.filter((event) => castTimeFormat(event.startDate.getDate()) === `${day[0] + day[1]}` &&
     castTimeFormat(event.startDate.getMonth()) === `${day[2] + day[3]}` &&
     castTimeFormat(event.startDate.getFullYear()) === `${day[4] + day[5] + day[6] + day[7]}`);
@@ -63,28 +48,46 @@ const createArrayEventsByDay = (day, array) => {
 const daysEventInArray = Array.from(daysEventInSet);
 
 const daysWithEvents = daysEventInArray.map((day) => createArrayEventsByDay(day, evenstsSorted));
+render(tripEventsElement, new DaysComponent(daysWithEvents).getElement(), RenderPosition.BEFOREEND);
 
-render(tripEventsElement, createDaysTemplate(), `beforeend`);
+const createEvent = (event, day) => {
+  const eventComponent = new EventComponent(event);
+  const eventEditComponent = new EventEditComponent(event);
 
-const tripDaysElement = tripEventsElement.querySelector(`.trip-days`);
+  const editButton = eventComponent.getElement().querySelector(`.event__rollup-btn`);
+  editButton.addEventListener(`click`, () => {
+    day.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
+  });
 
-render(tripDaysElement, createDayTemplate(daysWithEvents), `beforeend`);
+  const editForm = eventEditComponent.getElement();
+  editForm.addEventListener(`submit`, () => {
+    day.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+  });
 
-const eventsListElements = tripDaysElement.querySelectorAll(`.trip-events__list`);
+  const eventDetailsComponent = new EventDetailsComponent();
+
+  render(eventEditComponent.getElement(), eventDetailsComponent.getElement(), RenderPosition.BEFOREEND);
+  render(eventDetailsComponent.getElement(), new EventOffersComponent(event).getElement(), RenderPosition.BEFOREEND);
+  render(eventDetailsComponent.getElement(), new EventDestinationComponent(event).getElement(), RenderPosition.BEFOREEND);
+
+  return eventComponent.getElement();
+};
+
+const eventsListElements = tripEventsElement.querySelectorAll(`.trip-events__list`);
 
 eventsListElements.forEach((day, indexDay) => {
   daysWithEvents[indexDay].forEach((event, eventIndex) => {
-    render(day, createEventTemplate(daysWithEvents[indexDay][eventIndex]), `beforeend`);
+    render(day, createEvent(daysWithEvents[indexDay][eventIndex], day), RenderPosition.BEFOREEND);
   }
   );
 });
 
 const getTotalPrice = () => {
+
   return events.reduce((total, event) => {
-
     const {price, offers} = event;
-
     const resultOffres = offers.reduce((amount, offer) => {
+
       return amount + offer.add;
     }, 0);
 
