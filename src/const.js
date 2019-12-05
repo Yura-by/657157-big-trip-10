@@ -1,4 +1,4 @@
-const Types = [
+const TYPES = [
   `bus`,
   `drive`,
   `flight`,
@@ -11,7 +11,7 @@ const Types = [
   `check`
 ];
 
-const Months = [
+const MONTHS = [
   `Jan`,
   `Feb`,
   `Mar`,
@@ -26,4 +26,4 @@ const Months = [
   `Dec`
 ];
 
-export {Types, Months};
+export {TYPES, MONTHS};

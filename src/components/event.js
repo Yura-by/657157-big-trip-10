@@ -1,4 +1,4 @@
-import {Types} from '../const.js';
+import {TYPES} from '../const.js';
 import {castTimeFormat} from '../util.js';
 
 const Index = {
@@ -73,7 +73,7 @@ const createEventTemplate = (event) => {
   const offersComponent = offers.length > 0 ? createOffers(offers) : ``;
   const nameImage = type === `check` ? `check-in` : type;
 
-  let eventName = Types.slice(Index.START_PRETEX_IN).some((name) => type === name) ?
+  let eventName = TYPES.slice(Index.START_PRETEX_IN).some((name) => type === name) ?
     `${type} in` : `${type} to`;
 
   eventName = eventName[Index.UPPERCASE_LETTER].toUpperCase() + eventName.slice(Index.DRAIN_LETTER);

@@ -1,4 +1,4 @@
-import {Months} from '../const.js';
+import {MONTHS} from '../const.js';
 
 const DAY_COUNTER_CORRECT = 1;
 
@@ -7,7 +7,7 @@ export const createDayTemplate = (days) => {
   map((events, index) => {
     const [event] = events;
 
-    const date = `${Months[event.startDate.getMonth()]} ${event.startDate.getDate()}`;
+    const date = `${MONTHS[event.startDate.getMonth()]} ${event.startDate.getDate()}`;
     return (
       `<li class="trip-days__item day">
         <div class="day__info">
