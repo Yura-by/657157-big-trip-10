@@ -51,18 +51,32 @@ const daysWithEvents = daysEventInArray.map((day) => createArrayEventsByDay(day,
 render(tripEventsElement, new DaysComponent(daysWithEvents).getElement(), RenderPosition.BEFOREEND);
 
 const createEvent = (event, day) => {
-  const eventComponent = new EventComponent(event);
-  const eventEditComponent = new EventEditComponent(event);
 
+  const escKeydownHandler = (evt) => {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      replaceEventToEdit();
+      document.removeEventListener(`keydown`, escKeydownHandler);
+    }
+  };
+
+  const eventComponent = new EventComponent(event);
   const editButton = eventComponent.getElement().querySelector(`.event__rollup-btn`);
   editButton.addEventListener(`click`, () => {
-    day.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
+    replaceEditToEvent();
+    document.addEventListener(`keydown`, escKeydownHandler);
   });
+  const replaceEditToEvent = () => {
+    day.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
+  };
 
+  const eventEditComponent = new EventEditComponent(event);
   const editForm = eventEditComponent.getElement();
   editForm.addEventListener(`submit`, () => {
-    day.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+    replaceEventToEdit();
   });
+  const replaceEventToEdit = () => {
+    day.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+  };
 
   const eventDetailsComponent = new EventDetailsComponent();
 
