@@ -1,11 +1,5 @@
-import {TYPES} from '../const.js';
-import {castTimeFormat} from '../util.js';
-
-const Index = {
-  START_PRETEX_IN: 8,
-  UPPERCASE_LETTER: 0,
-  DRAIN_LETTER: 1
-};
+import {TYPES, Index} from '../const.js';
+import {castTimeFormat, createElement} from '../util.js';
 
 const TimeInSec = {
   DAY: 864e5,
@@ -112,4 +106,25 @@ const createEventTemplate = (event) => {
   );
 };
 
-export {createEventTemplate, Index};
+export default class Event {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

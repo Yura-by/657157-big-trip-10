@@ -1,3 +1,5 @@
+import {createElement} from '../util.js';
+
 const createFilters = (filters) => {
   return filters.
   map((filter) => {
@@ -10,7 +12,7 @@ const createFilters = (filters) => {
   }).join(`\n`);
 };
 
-export const createSiteFilterTemplate = (filters) => {
+const createSiteFilterTemplate = (filters) => {
   const filterItems = filters.length > 0 ? createFilters(filters) : ``;
   return (
     `<form class="trip-filters" action="#" method="get">
@@ -19,3 +21,26 @@ export const createSiteFilterTemplate = (filters) => {
     </form>`
   );
 };
+
+export default class SiteFilter {
+  constructor(filters) {
+    this._filters = filters;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createSiteFilterTemplate(this._filters);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

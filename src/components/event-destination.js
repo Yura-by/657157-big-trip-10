@@ -1,3 +1,5 @@
+import {createElement} from '../util.js';
+
 const createImagesItems = (photos) => {
   return photos.
   map((soursePhoto) => {
@@ -17,7 +19,7 @@ const createImagesTemplate = (photo) => {
   );
 };
 
-export const createEventDestionationTemplate = (event) => {
+const createEventDestionationTemplate = (event) => {
   const {description, photo} = event;
   const descriptionImages = photo.length > 0 ? createImagesTemplate(photo) : ``;
   return description.length > 0 ? (
@@ -29,3 +31,26 @@ export const createEventDestionationTemplate = (event) => {
   )
     : ``;
 };
+
+export default class EventDestination {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventDestionationTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -26,4 +26,10 @@ const MONTHS = [
   `Dec`
 ];
 
-export {TYPES, MONTHS};
+const Index = {
+  START_PRETEX_IN: 8,
+  UPPERCASE_LETTER: 0,
+  DRAIN_LETTER: 1
+};
+
+export {TYPES, MONTHS, Index};

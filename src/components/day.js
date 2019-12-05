@@ -1,8 +1,9 @@
 import {MONTHS} from '../const.js';
+import {createElement} from '../util.js';
 
 const DAY_COUNTER_CORRECT = 1;
 
-export const createDayTemplate = (days) => {
+const createDayTemplate = (days) => {
   return days.
   map((events, index) => {
     const [event] = events;
@@ -20,3 +21,26 @@ export const createDayTemplate = (days) => {
     );
   }).join(`\n`);
 };
+
+export default class Day {
+  constructor(days) {
+    this._days = days;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createDayTemplate(this._days);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

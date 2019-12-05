@@ -1,6 +1,5 @@
-import {TYPES} from '../const.js';
-import {Index} from './event.js';
-import {castTimeFormat} from '../util.js';
+import {TYPES, Index} from '../const.js';
+import {castTimeFormat, createElement} from '../util.js';
 import {CITIES} from '../mock/event.js';
 
 const IndexNumber = {
@@ -38,7 +37,7 @@ const createDestinationOptions = (destinations) => {
   }).join(`\n`);
 };
 
-export const createEventEditTemplate = (event) => {
+const createEventEditTemplate = (event) => {
   const {startDate, endDate, price, type, destination} = event;
   const nameImage = type === `check` ? `check-in` : type;
 
@@ -120,3 +119,26 @@ export const createEventEditTemplate = (event) => {
     </form>`
   );
 };
+
+export default class EventEdit {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventEditTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

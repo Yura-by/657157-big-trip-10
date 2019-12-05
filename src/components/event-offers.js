@@ -1,3 +1,5 @@
+import {createElement} from '../util.js';
+
 const descriptionMap = {
   'Add luggage': `luggage`,
   'Switch to comfort class': `comfort`,
@@ -29,7 +31,7 @@ const createSelectors = (offers) => {
   }).join(`\n`);
 };
 
-export const createEventOffersTemplate = (event) => {
+const createEventOffersTemplate = (event) => {
   const {offers} = event;
   const offerSelectors = offers.length > 0 ? createSelectors(offers) : ``;
   return offers.length > 0 ? (
@@ -43,3 +45,26 @@ export const createEventOffersTemplate = (event) => {
   )
     : ``;
 };
+
+export default class EventOffers {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventOffersTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
