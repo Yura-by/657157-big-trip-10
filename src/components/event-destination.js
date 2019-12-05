@@ -29,7 +29,7 @@ const createEventDestionationTemplate = (event) => {
       ${descriptionImages}
     </section>`
   )
-    : ``;
+    : ` `;
 };
 
 export default class EventDestination {

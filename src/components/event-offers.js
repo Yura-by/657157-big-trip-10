@@ -43,7 +43,7 @@ const createEventOffersTemplate = (event) => {
       </div>
     </section>`
   )
-    : `<div></div>`;
+    : ` `;
 };
 
 export default class EventOffers {
