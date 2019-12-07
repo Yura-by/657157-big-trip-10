@@ -27,15 +27,54 @@ const events = generateEvents(EVENT_COUNT);
 render(siteContolsElement, new SiteMenuComponent(generateMenu()).getElement(), RenderPosition.INSERT_BEFORE, switchTabsTitleElement);
 render(siteContolsElement, new SiteFilterComponent(generateFilter()).getElement(), RenderPosition.BEFOREEND);
 
-if (!events || events.length === 0) {
-  render(tripEventsElement, new NoEvents().getElement(), RenderPosition.BEFOREEND);
-} else {
+const createEvent = (event, day) => {
 
-  render(tripEventsElement, new SortComponent(generateSort()).getElement(), RenderPosition.BEFOREEND);
+  const escKeydownHandler = (evt) => {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      replaceEventToEdit();
+      document.removeEventListener(`keydown`, escKeydownHandler);
+    }
+  };
 
-  const evenstsSorted = events.sort((eventBefore, eventAfter) => eventBefore.startDate.getTime() - eventAfter.startDate.getTime());
+  const eventComponent = new EventComponent(event);
+  const editButton = eventComponent.getElement().querySelector(`.event__rollup-btn`);
+  editButton.addEventListener(`click`, () => {
+    replaceEditToEvent();
+    document.addEventListener(`keydown`, escKeydownHandler);
+  });
+  const replaceEditToEvent = () => {
+    day.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
+  };
 
-  const daysEventAll = evenstsSorted.map((event) => {
+  const eventEditComponent = new EventEditComponent(event);
+  const editForm = eventEditComponent.getElement();
+  editForm.addEventListener(`submit`, () => {
+    replaceEventToEdit();
+  });
+  const replaceEventToEdit = () => {
+    day.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+  };
+
+  const eventDetailsComponent = new EventDetailsComponent();
+
+  render(eventEditComponent.getElement(), eventDetailsComponent.getElement(), RenderPosition.BEFOREEND);
+  render(eventDetailsComponent.getElement(), new EventOffersComponent(event).getElement(), RenderPosition.BEFOREEND);
+  render(eventDetailsComponent.getElement(), new EventDestinationComponent(event).getElement(), RenderPosition.BEFOREEND);
+
+  return eventComponent.getElement();
+};
+
+const renderTrip = (tripElement, events) => {
+  if (!events || events.length === 0) {
+    render(tripElement, new NoEvents().getElement(), RenderPosition.BEFOREEND);
+    return;
+  }
+
+  render(tripElement, new SortComponent(generateSort()).getElement(), RenderPosition.BEFOREEND);
+
+  const eventsSorted = events.sort((eventBefore, eventAfter) => eventBefore.startDate.getTime() - eventAfter.startDate.getTime());
+
+  const daysEventAll = eventsSorted.map((event) => {
     const {startDate} = event;
     return (
       `${castTimeFormat(startDate.getDate())}${castTimeFormat(startDate.getMonth())}${castTimeFormat(startDate.getFullYear())}`
@@ -53,47 +92,10 @@ if (!events || events.length === 0) {
 
   const daysEventInArray = Array.from(daysEventInSet);
 
-  const daysWithEvents = daysEventInArray.map((day) => createArrayEventsByDay(day, evenstsSorted));
-  render(tripEventsElement, new DaysComponent(daysWithEvents).getElement(), RenderPosition.BEFOREEND);
+  const daysWithEvents = daysEventInArray.map((day) => createArrayEventsByDay(day, eventsSorted));
+  render(tripElement, new DaysComponent(daysWithEvents).getElement(), RenderPosition.BEFOREEND);
 
-  const createEvent = (event, day) => {
-
-    const escKeydownHandler = (evt) => {
-      if (evt.key === `Escape` || evt.key === `Esc`) {
-        replaceEventToEdit();
-        document.removeEventListener(`keydown`, escKeydownHandler);
-      }
-    };
-
-    const eventComponent = new EventComponent(event);
-    const editButton = eventComponent.getElement().querySelector(`.event__rollup-btn`);
-    editButton.addEventListener(`click`, () => {
-      replaceEditToEvent();
-      document.addEventListener(`keydown`, escKeydownHandler);
-    });
-    const replaceEditToEvent = () => {
-      day.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
-    };
-
-    const eventEditComponent = new EventEditComponent(event);
-    const editForm = eventEditComponent.getElement();
-    editForm.addEventListener(`submit`, () => {
-      replaceEventToEdit();
-    });
-    const replaceEventToEdit = () => {
-      day.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
-    };
-
-    const eventDetailsComponent = new EventDetailsComponent();
-
-    render(eventEditComponent.getElement(), eventDetailsComponent.getElement(), RenderPosition.BEFOREEND);
-    render(eventDetailsComponent.getElement(), new EventOffersComponent(event).getElement(), RenderPosition.BEFOREEND);
-    render(eventDetailsComponent.getElement(), new EventDestinationComponent(event).getElement(), RenderPosition.BEFOREEND);
-
-    return eventComponent.getElement();
-  };
-
-  const eventsListElements = tripEventsElement.querySelectorAll(`.trip-events__list`);
+  const eventsListElements = tripElement.querySelectorAll(`.trip-events__list`);
 
   eventsListElements.forEach((day, indexDay) => {
     daysWithEvents[indexDay].forEach((event, eventIndex) => {
@@ -103,11 +105,9 @@ if (!events || events.length === 0) {
   });
 
   const getTotalPrice = () => {
-
     return events.reduce((total, event) => {
       const {price, offers} = event;
       const resultOffres = offers.reduce((amount, offer) => {
-
         return amount + offer.add;
       }, 0);
 
@@ -116,4 +116,6 @@ if (!events || events.length === 0) {
   };
 
   siteHeaderElement.querySelector(`.trip-info__cost-value`).textContent = getTotalPrice();
-}
+};
+
+renderTrip(tripEventsElement, events);
