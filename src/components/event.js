@@ -1,5 +1,5 @@
 import {TYPES, Index} from '../const.js';
-import {castTimeFormat} from '../util.js';
+import {castTimeFormat} from '../utils/common.js';
 import AbstractComponent from './abstract-component.js';
 
 const TimeInSec = {

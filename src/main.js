@@ -12,7 +12,8 @@ import {generateEvents} from './mock/event.js';
 import {generateMenu} from './mock/menu.js';
 import {generateFilter} from './mock/filter.js';
 import {generateSort} from './mock/sort.js';
-import {castTimeFormat, RenderPosition, render} from './util.js';
+import {castTimeFormat} from './utils/common.js';
+import {RenderPosition, render, remove, replace} from './utils/render.js';
 
 const EVENT_COUNT = 4;
 
@@ -24,10 +25,10 @@ const tripEventsElement = siteMainElement.querySelector(`.trip-events`);
 
 const events = generateEvents(EVENT_COUNT);
 
-render(siteContolsElement, new SiteMenuComponent(generateMenu()).getElement(), RenderPosition.INSERT_BEFORE, switchTabsTitleElement);
-render(siteContolsElement, new SiteFilterComponent(generateFilter()).getElement(), RenderPosition.BEFOREEND);
+render(siteContolsElement, new SiteMenuComponent(generateMenu()), RenderPosition.INSERT_BEFORE, switchTabsTitleElement);
+render(siteContolsElement, new SiteFilterComponent(generateFilter()), RenderPosition.BEFOREEND);
 
-const createEvent = (event, day) => {
+const renderEvent = (event, day) => {
 
   const escKeydownHandler = (evt) => {
     if (evt.key === `Escape` || evt.key === `Esc`) {
@@ -57,20 +58,20 @@ const createEvent = (event, day) => {
 
   const eventDetailsComponent = new EventDetailsComponent();
 
-  render(eventEditComponent.getElement(), eventDetailsComponent.getElement(), RenderPosition.BEFOREEND);
-  render(eventDetailsComponent.getElement(), new EventOffersComponent(event).getElement(), RenderPosition.BEFOREEND);
-  render(eventDetailsComponent.getElement(), new EventDestinationComponent(event).getElement(), RenderPosition.BEFOREEND);
+  render(eventEditComponent.getElement(), eventDetailsComponent, RenderPosition.BEFOREEND);
+  render(eventDetailsComponent.getElement(), new EventOffersComponent(event), RenderPosition.BEFOREEND);
+  render(eventDetailsComponent.getElement(), new EventDestinationComponent(event), RenderPosition.BEFOREEND);
 
-  return eventComponent.getElement();
+  render(day, eventComponent, RenderPosition.BEFOREEND);
 };
 
 const renderTrip = (tripElement, events) => {
   if (!events || events.length === 0) {
-    render(tripElement, new NoEvents().getElement(), RenderPosition.BEFOREEND);
+    render(tripElement, new NoEvents(), RenderPosition.BEFOREEND);
     return;
   }
 
-  render(tripElement, new SortComponent(generateSort()).getElement(), RenderPosition.BEFOREEND);
+  render(tripElement, new SortComponent(generateSort()), RenderPosition.BEFOREEND);
 
   const eventsSorted = events.sort((eventBefore, eventAfter) => eventBefore.startDate.getTime() - eventAfter.startDate.getTime());
 
@@ -93,13 +94,13 @@ const renderTrip = (tripElement, events) => {
   const daysEventInArray = Array.from(daysEventInSet);
 
   const daysWithEvents = daysEventInArray.map((day) => createArrayEventsByDay(day, eventsSorted));
-  render(tripElement, new DaysComponent(daysWithEvents).getElement(), RenderPosition.BEFOREEND);
+  render(tripElement, new DaysComponent(daysWithEvents), RenderPosition.BEFOREEND);
 
   const eventsListElements = tripElement.querySelectorAll(`.trip-events__list`);
 
   eventsListElements.forEach((day, indexDay) => {
     daysWithEvents[indexDay].forEach((event, eventIndex) => {
-      render(day, createEvent(daysWithEvents[indexDay][eventIndex], day), RenderPosition.BEFOREEND);
+      renderEvent(daysWithEvents[indexDay][eventIndex], day);
     }
     );
   });
