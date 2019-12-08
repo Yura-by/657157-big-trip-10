@@ -8,7 +8,7 @@ import EventDestinationComponent from '../components/event-destination.js';
 import NoEventsComponent from '../components/no-events.js';
 import {generateSort} from '../mock/sort.js';
 import {castTimeFormat} from '../utils/common.js';
-import {RenderPosition, render, remove, replace} from '../utils/render.js';
+import {RenderPosition, render, replace} from '../utils/render.js';
 
 const renderEvent = (event, day) => {
 
@@ -49,14 +49,7 @@ const renderEvent = (event, day) => {
   render(day, eventComponent, RenderPosition.BEFOREEND);
 };
 
-const renderTrip = (tripElement, events) => {
-  if (!events || events.length === 0) {
-    render(tripElement, new NoEventsComponent(), RenderPosition.BEFOREEND);
-    return;
-  }
-
-  render(tripElement, new SortComponent(generateSort()), RenderPosition.BEFOREEND);
-
+const sortEvents = (events) => {
   const eventsSorted = events.sort((eventBefore, eventAfter) => eventBefore.startDate.getTime() - eventAfter.startDate.getTime());
 
   const daysEventAll = eventsSorted.map((event) => {
@@ -78,16 +71,7 @@ const renderTrip = (tripElement, events) => {
   const daysEventInArray = Array.from(daysEventInSet);
 
   const daysWithEvents = daysEventInArray.map((day) => createArrayEventsByDay(day, eventsSorted));
-  render(tripElement, new DaysComponent(daysWithEvents), RenderPosition.BEFOREEND);
-
-  const eventsListElements = tripElement.querySelectorAll(`.trip-events__list`);
-
-  eventsListElements.forEach((day, indexDay) => {
-    daysWithEvents[indexDay].forEach((event, eventIndex) => {
-      renderEvent(daysWithEvents[indexDay][eventIndex], day);
-    }
-    );
-  });
+  return daysWithEvents;
 };
 
 export default class TripController {
@@ -96,12 +80,29 @@ export default class TripController {
 
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent(generateSort());
+    this._daysComponent = null;
   }
 
   render(events) {
     if (!events || events.length === 0) {
-      render(tripElement, new NoEventsComponent(), RenderPosition.BEFOREEND);
+      render(this._container, this._noEventsComponent, RenderPosition.BEFOREEND);
       return;
     }
+
+    render(this._container, this._sortComponent, RenderPosition.BEFOREEND);
+
+    const daysWithEvents = sortEvents(events);
+
+    this._daysComponent = new DaysComponent(daysWithEvents);
+
+    render(this._container, this._daysComponent, RenderPosition.BEFOREEND);
+
+    const eventsListElements = this._container.querySelectorAll(`.trip-events__list`);
+
+    eventsListElements.forEach((day, indexDay) => {
+      daysWithEvents[indexDay].forEach((event, eventIndex) => {
+        renderEvent(daysWithEvents[indexDay][eventIndex], day);
+      });
+    });
   }
 }
