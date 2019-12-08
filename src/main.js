@@ -103,8 +103,11 @@ const renderTrip = (tripElement, events) => {
     }
     );
   });
+};
 
-  const getTotalPrice = () => {
+renderTrip(tripEventsElement, events);
+
+const getTotalPrice = () => {
     return events.reduce((total, event) => {
       const {price, offers} = event;
       const resultOffres = offers.reduce((amount, offer) => {
@@ -115,7 +118,4 @@ const renderTrip = (tripElement, events) => {
     }, 0);
   };
 
-  siteHeaderElement.querySelector(`.trip-info__cost-value`).textContent = getTotalPrice();
-};
-
-renderTrip(tripEventsElement, events);
+siteHeaderElement.querySelector(`.trip-info__cost-value`).textContent = getTotalPrice();

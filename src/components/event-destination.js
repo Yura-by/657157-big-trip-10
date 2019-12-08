@@ -1,4 +1,4 @@
-import {createElement} from '../util.js';
+import AbstractComponent from './abstract-component.js';
 
 const createImagesItems = (photos) => {
   return photos.
@@ -32,25 +32,13 @@ const createEventDestionationTemplate = (event) => {
     : ` `;
 };
 
-export default class EventDestination {
+export default class EventDestination extends AbstractComponent {
   constructor(event) {
+    super();
     this._event = event;
-    this._element = null;
   }
 
   getTemplate() {
     return createEventDestionationTemplate(this._event);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
