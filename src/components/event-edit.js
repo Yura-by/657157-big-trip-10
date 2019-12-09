@@ -3,6 +3,8 @@ import {castTimeFormat} from '../utils/common.js';
 import {CITIES} from '../mock/event.js';
 import AbstractComponent from './abstract-component.js';
 
+const CORRECT_MONTH = 1;
+
 const IndexNumber = {
   YEAR_FORMAT: 1,
   ITEM_TRANSFER: 0,
@@ -49,7 +51,7 @@ const createEventEditTemplate = (event) => {
 
   const createDateInFormat = (date) => {
     return (
-      `${castTimeFormat(date.getDate())}/${castTimeFormat(date.getMonth())}/${String(date.getYear()).slice(IndexNumber.YEAR_FORMAT)} ${castTimeFormat(date.getHours())}:${castTimeFormat(date.getMinutes())}
+      `${castTimeFormat(date.getDate())}/${castTimeFormat(date.getMonth() + CORRECT_MONTH)}/${String(date.getYear()).slice(IndexNumber.YEAR_FORMAT)} ${castTimeFormat(date.getHours())}:${castTimeFormat(date.getMinutes())}
       `);
   };
 
