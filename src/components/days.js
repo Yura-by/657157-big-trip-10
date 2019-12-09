@@ -1,5 +1,5 @@
 import {MONTHS} from '../const.js';
-import {createElement} from '../util.js';
+import AbstractComponent from './abstract-component.js';
 
 const DAY_COUNTER_CORRECT = 1;
 
@@ -31,25 +31,13 @@ const createDaysTemplate = (days) => {
   );
 };
 
-export default class Days {
+export default class Days extends AbstractComponent {
   constructor(days) {
+    super();
     this._days = days;
-    this._element = null;
   }
 
   getTemplate() {
     return createDaysTemplate(this._days);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

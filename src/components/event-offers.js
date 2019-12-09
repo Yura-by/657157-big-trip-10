@@ -1,4 +1,4 @@
-import {createElement} from '../util.js';
+import AbstractComponent from './abstract-component.js';
 
 const descriptionMap = {
   'Add luggage': `luggage`,
@@ -46,25 +46,13 @@ const createEventOffersTemplate = (event) => {
     : ` `;
 };
 
-export default class EventOffers {
+export default class EventOffers extends AbstractComponent {
   constructor(event) {
+    super();
     this._event = event;
-    this._element = null;
   }
 
   getTemplate() {
     return createEventOffersTemplate(this._event);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
