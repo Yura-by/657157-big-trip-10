@@ -144,12 +144,11 @@ export default class TripController {
           sortedEvents = daysWithEvents.slice();
           break;
       }
+      this._daysComponent.removeElement();
 
       console.log(sortedEvents);
-      renderEventsInDays(sortedEvents);
-      this._container.innerHTML = ``;
-      console.log(sortedEvents)
       renderEventsInDays([sortedEvents]);
+
     });
 
 
