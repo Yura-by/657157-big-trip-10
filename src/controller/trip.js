@@ -7,7 +7,7 @@ import EventOffersComponent from '../components/event-offers.js';
 import EventDestinationComponent from '../components/event-destination.js';
 import NoEventsComponent from '../components/no-events.js';
 import {castTimeFormat} from '../utils/common.js';
-import {RenderPosition, render, replace} from '../utils/render.js';
+import {RenderPosition, render, replace, remove} from '../utils/render.js';
 
 const renderEvent = (event, day) => {
 
@@ -90,7 +90,6 @@ export default class TripController {
 
   render(events) {
 
-
     if (!events || events.length === 0) {
       render(this._container, this._noEventsComponent, RenderPosition.BEFOREEND);
       return;
@@ -102,22 +101,16 @@ export default class TripController {
 
     const renderEventsInDays = (eventsInDays) => {
       this._daysComponent = new DaysComponent(eventsInDays);
+      if (eventsInDays[0].length === 0) {
+        eventsInDays = eventsInDays.slice(1);
+      }
       render(this._container, this._daysComponent, RenderPosition.BEFOREEND);
       const eventsListElements = this._container.querySelectorAll(`.trip-events__list`);
       eventsListElements.forEach((day, indexDay) => {
         renderEvents(day, eventsInDays[indexDay]);
       });
-    }
+    };
     renderEventsInDays(daysWithEvents);
-    /*this._daysComponent = new DaysComponent(daysWithEvents);
-
-    render(this._container, this._daysComponent, RenderPosition.BEFOREEND);
-
-    const eventsListElements = this._container.querySelectorAll(`.trip-events__list`);
-
-    eventsListElements.forEach((day, indexDay) => {
-      renderEvents(day, daysWithEvents[indexDay]);
-    });*/
 
     this._sortComponent.setSortTypeChangeHandler((sortType) => {
       let sortedEvents = [];
@@ -129,26 +122,24 @@ export default class TripController {
             const {endDate, startDate} = event;
             event.differenceInTime = endDate.getTime() - startDate.getTime();
           });
-          sortedEvents.sort((eventRight, eventLeft) => eventLeft.differenceInTime - eventRight.differenceInTime);
+          sortedEvents = Array.of([], sortedEvents.sort((eventRight, eventLeft) => eventLeft.differenceInTime - eventRight.differenceInTime));
           break;
         case SortType.PRICE:
-          sortedEvents = events.slice()
+          sortedEvents = events.slice();
           sortedEvents.forEach((event) => {
             event.totalPrice = event.price + event.offers.reduce((amount, offer) => {
-            return amount + offer.add;
+              return amount + offer.add;
             }, 0);
-          sortedEvents.sort((eventRight, eventLeft) => eventLeft.totalPrice - eventRight.totalPrice)
           });
+          sortedEvents = Array.of([], sortedEvents.sort((eventRight, eventLeft) => eventLeft.totalPrice - eventRight.totalPrice));
           break;
         case SortType.DEFAULT:
           sortedEvents = daysWithEvents.slice();
           break;
       }
-      this._daysComponent.removeElement();
+      remove(this._daysComponent);
 
-      console.log(sortedEvents);
-      renderEventsInDays([sortedEvents]);
-
+      renderEventsInDays(sortedEvents);
     });
 
 
