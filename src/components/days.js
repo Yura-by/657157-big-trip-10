@@ -30,7 +30,7 @@ const createEmptyDayTemplate = () => {
 
       <ul class="trip-events__list"></ul>
     </li>`
-    );
+  );
 };
 
 const createDaysTemplate = (days) => {
