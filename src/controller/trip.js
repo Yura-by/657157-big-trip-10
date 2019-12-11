@@ -101,9 +101,6 @@ export default class TripController {
 
     const renderEventsInDays = (eventsInDays) => {
       this._daysComponent = new DaysComponent(eventsInDays);
-      if (eventsInDays[0].length === 0) {
-        eventsInDays = eventsInDays.slice(1);
-      }
       render(this._container, this._daysComponent, RenderPosition.BEFOREEND);
       const eventsListElements = this._container.querySelectorAll(`.trip-events__list`);
       eventsListElements.forEach((day, indexDay) => {
