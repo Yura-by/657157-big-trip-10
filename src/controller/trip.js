@@ -113,35 +113,30 @@ export default class TripController {
     renderEventsInDays(daysWithEvents);
 
     this._sortComponent.setSortTypeChangeHandler((sortType) => {
-      let sortedEvents = [];
+      let sortedEvents = events.slice();
 
       switch (sortType) {
         case SortType.TIME:
-          sortedEvents = events.slice();
-          sortedEvents.forEach((event) => {
-            const {endDate, startDate} = event;
-            event.differenceInTime = endDate.getTime() - startDate.getTime();
-          });
-          sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => eventLeft.differenceInTime - eventRight.differenceInTime));
+          sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => {
+            const eventLeftDifferenceTime = eventLeft.endDate.getTime() - eventLeft.startDate.getTime();
+            const eventRightDifferenceTime = eventRight.endDate.getTime() - eventRight.startDate.getTime();
+            return eventLeftDifferenceTime - eventRightDifferenceTime;
+          }));
+          remove(this._daysComponent);
+          renderEventsInDays(sortedEvents);
+          this._daysComponent.getElement().querySelector(`.day__info`).innerHTML = ``;
           break;
         case SortType.PRICE:
-          sortedEvents = events.slice();
-          sortedEvents.forEach((event) => {
-            event.totalPrice = event.price + event.offers.reduce((amount, offer) => {
-              return amount + offer.add;
-            }, 0);
-          });
-          sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => eventLeft.totalPrice - eventRight.totalPrice));
+          sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => eventLeft.price - eventRight.price));
+          remove(this._daysComponent);
+          renderEventsInDays(sortedEvents);
+          this._daysComponent.getElement().querySelector(`.day__info`).innerHTML = ``;
           break;
         case SortType.DEFAULT:
-          sortedEvents = daysWithEvents.slice();
+          remove(this._daysComponent);
+          renderEventsInDays(daysWithEvents.slice());
           break;
       }
-      remove(this._daysComponent);
-
-      renderEventsInDays(sortedEvents);
     });
-
-
   }
 }
