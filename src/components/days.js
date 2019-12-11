@@ -4,7 +4,6 @@ import AbstractComponent from './abstract-component.js';
 const DAY_COUNTER_CORRECT = 1;
 
 const createDayTemplate = (days) => {
-
   return days.
   map((events, index) => {
     const [event] = events;
