@@ -122,7 +122,7 @@ export default class TripController {
             const {endDate, startDate} = event;
             event.differenceInTime = endDate.getTime() - startDate.getTime();
           });
-          sortedEvents = Array.of([], sortedEvents.sort((eventRight, eventLeft) => eventLeft.differenceInTime - eventRight.differenceInTime));
+          sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => eventLeft.differenceInTime - eventRight.differenceInTime));
           break;
         case SortType.PRICE:
           sortedEvents = events.slice();
@@ -131,7 +131,7 @@ export default class TripController {
               return amount + offer.add;
             }, 0);
           });
-          sortedEvents = Array.of([], sortedEvents.sort((eventRight, eventLeft) => eventLeft.totalPrice - eventRight.totalPrice));
+          sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => eventLeft.totalPrice - eventRight.totalPrice));
           break;
         case SortType.DEFAULT:
           sortedEvents = daysWithEvents.slice();

@@ -22,19 +22,8 @@ const createDayTemplate = (days) => {
   }).join(`\n`);
 };
 
-const createEmptyDayTemplate = () => {
-  return (
-    `<li class="trip-days__item day">
-      <div class="day__info">
-      </div>
-
-      <ul class="trip-events__list"></ul>
-    </li>`
-  );
-};
-
 const createDaysTemplate = (days) => {
-  const dayItems = days[0].length === 0 ? createEmptyDayTemplate() : createDayTemplate(days);
+  const dayItems = createDayTemplate(days);
 
   return (
     `<ul class="trip-days">${dayItems}</ul>`
