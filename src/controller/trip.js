@@ -1,51 +1,18 @@
 import DaysComponent from '../components/days.js';
-import EventDetailsComponent from '../components/event-details.js';
-import EventEditComponent from '../components/event-edit.js';
-import EventComponent from '../components/event.js';
 import SortComponent, {SortType} from '../components/sort.js';
-import EventOffersComponent from '../components/event-offers.js';
-import EventDestinationComponent from '../components/event-destination.js';
 import NoEventsComponent from '../components/no-events.js';
 import {castTimeFormat} from '../utils/common.js';
 import {RenderPosition, render, replace, remove} from '../utils/render.js';
+import PointController from './point.js';
 
-const renderEvent = (event, day) => {
-
-  const escKeydownHandler = (evt) => {
-    if (evt.key === `Escape` || evt.key === `Esc`) {
-      replaceEventToEdit();
-      document.removeEventListener(`keydown`, escKeydownHandler);
-    }
-  };
-
-  const replaceEditToEvent = () => {
-    replace(eventEditComponent, eventComponent);
-  };
-
-  const replaceEventToEdit = () => {
-    replace(eventComponent, eventEditComponent);
-  };
-
-  const eventComponent = new EventComponent(event);
-
-  eventComponent.setRollupButtonClickHandler(() => {
-    replaceEditToEvent();
-    document.addEventListener(`keydown`, escKeydownHandler);
+const renderEvents = (container, eventsInDay, onDataChange, onViewChange) => {
+  const controllersInDay = [];
+  eventsInDay.forEach((event) => {
+    const pointController = new PointController(container, onDataChange, onViewChange);
+    pointController.render(event);
+    controllersInDay.push(pointController);
   });
-
-  const eventEditComponent = new EventEditComponent(event);
-
-  eventEditComponent.setSubmitHandler(() => {
-    replaceEventToEdit();
-  });
-
-  const eventDetailsComponent = new EventDetailsComponent();
-
-  render(eventEditComponent.getElement(), eventDetailsComponent, RenderPosition.BEFOREEND);
-  render(eventDetailsComponent.getElement(), new EventOffersComponent(event), RenderPosition.BEFOREEND);
-  render(eventDetailsComponent.getElement(), new EventDestinationComponent(event), RenderPosition.BEFOREEND);
-
-  render(day, eventComponent, RenderPosition.BEFOREEND);
+  return controllersInDay;
 };
 
 const sortEvents = (events) => {
@@ -73,67 +40,91 @@ const sortEvents = (events) => {
   return daysWithEvents;
 };
 
-const renderEvents = (container, eventsInDay) => {
-  eventsInDay.forEach((event) => {
-    renderEvent(event, container);
-  });
-};
-
 export default class TripController {
   constructor(container) {
     this._container = container;
 
+    this._events = [];
+    this._daysWithEvents = null;
+    this._pointControllers = null;
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
     this._daysComponent = null;
+
+    this._onDataChange = this._onDataChange.bind(this);
+    this._onSortTypeChange = this._onSortTypeChange.bind(this);
+    this._onViewChange = this._onViewChange.bind(this);
+    this._renderEventsInDays = this._renderEventsInDays.bind(this);
+
+    this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 
   render(events) {
+    this._events = events;
 
-    if (!events || events.length === 0) {
+    if (!this._events || this._events === 0) {
       render(this._container, this._noEventsComponent, RenderPosition.BEFOREEND);
       return;
     }
 
     render(this._container, this._sortComponent, RenderPosition.BEFOREEND);
 
-    const daysWithEvents = sortEvents(events);
+    this._daysWithEvents = sortEvents(events);
 
-    const renderEventsInDays = (eventsInDays) => {
-      this._daysComponent = new DaysComponent(eventsInDays);
-      render(this._container, this._daysComponent, RenderPosition.BEFOREEND);
-      const eventsListElements = this._container.querySelectorAll(`.trip-events__list`);
-      eventsListElements.forEach((day, indexDay) => {
-        renderEvents(day, eventsInDays[indexDay]);
-      });
-    };
-    renderEventsInDays(daysWithEvents);
+    this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
+  }
 
-    this._sortComponent.setSortTypeChangeHandler((sortType) => {
-      let sortedEvents = events.slice();
-
-      switch (sortType) {
-        case SortType.TIME:
-          sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => {
-            const eventLeftDifferenceTime = eventLeft.endDate.getTime() - eventLeft.startDate.getTime();
-            const eventRightDifferenceTime = eventRight.endDate.getTime() - eventRight.startDate.getTime();
-            return eventLeftDifferenceTime - eventRightDifferenceTime;
-          }));
-          remove(this._daysComponent);
-          renderEventsInDays(sortedEvents);
-          this._daysComponent.getElement().querySelector(`.day__info`).innerHTML = ``;
-          break;
-        case SortType.PRICE:
-          sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => eventLeft.price - eventRight.price));
-          remove(this._daysComponent);
-          renderEventsInDays(sortedEvents);
-          this._daysComponent.getElement().querySelector(`.day__info`).innerHTML = ``;
-          break;
-        case SortType.DEFAULT:
-          remove(this._daysComponent);
-          renderEventsInDays(daysWithEvents.slice());
-          break;
-      }
+  _renderEventsInDays(eventsInDays) {
+    this._daysComponent = new DaysComponent(eventsInDays);
+    render(this._container, this._daysComponent, RenderPosition.BEFOREEND);
+    const eventsListElements = this._container.querySelectorAll(`.trip-events__list`);
+    const pointControllers = [];
+    eventsListElements.forEach((day, indexDay) => {
+      pointControllers.concat(renderEvents(day, eventsInDays[indexDay], this._onDataChange, this._onViewChange));
     });
+    return pointControllers;
+  }
+
+  _onDataChange(taskController, oldData, newData) {
+    const index = this._events.findIndex((event) => event === oldData);
+
+    if (index === -1) {
+      return;
+    }
+
+    this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
+    this._daysWithEvents = sortEvents(this._events);
+    taskController.render(this._events[index]);
+  }
+
+  _onViewChange() {
+    this._pointControllers.forEach((point) => point.setDefaultView());
+  }
+
+  _onSortTypeChange(sortType) {
+    let sortedEvents = this._events.slice();
+
+    switch (sortType) {
+      case SortType.TIME:
+        sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => {
+          const eventLeftDifferenceTime = eventLeft.endDate.getTime() - eventLeft.startDate.getTime();
+          const eventRightDifferenceTime = eventRight.endDate.getTime() - eventRight.startDate.getTime();
+          return eventLeftDifferenceTime - eventRightDifferenceTime;
+        }));
+        remove(this._daysComponent);
+        this._renderEventsInDays(sortedEvents);
+        this._daysComponent.getElement().querySelector(`.day__info`).innerHTML = ``;
+        break;
+      case SortType.PRICE:
+        sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => eventLeft.price - eventRight.price));
+        remove(this._daysComponent);
+        this._renderEventsInDays(sortedEvents);
+        this._daysComponent.getElement().querySelector(`.day__info`).innerHTML = ``;
+        break;
+      case SortType.DEFAULT:
+        remove(this._daysComponent);
+        this._renderEventsInDays(this._daysWithEvents.slice());
+        break;
+    }
   }
 }

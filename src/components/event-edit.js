@@ -16,6 +16,52 @@ const TypeCheck = {
   OUT_DATA: `check-in`
 };
 
+const descriptionMap = {
+  'Add luggage': `luggage`,
+  'Switch to comfort class': `comfort`,
+  'Add meal': `meal`,
+  'Choose seats': `seats`
+};
+
+const createId = (description, count) => {
+  return (
+    `${descriptionMap[description]}-${count}`
+  );
+};
+
+const createSelectors = (offers) => {
+  return offers.
+  map((offer, count) => {
+    const {description, currency, add} = offer;
+    const idName = createId(description, count);
+    return (
+      `<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${idName}" type="checkbox" name="event-offer-luggage" checked>
+        <label class="event__offer-label" for="event-offer-${idName}">
+          <span class="event__offer-title">${description}</span>
+          &plus;
+          ${currency}&nbsp;<span class="event__offer-price">${add}</span>
+        </label>
+      </div>`
+    );
+  }).join(`\n`);
+};
+
+const createEventOffersTemplate = (event) => {
+  const {offers} = event;
+  const offerSelectors = offers.length > 0 ? createSelectors(offers) : ``;
+  return offers.length > 0 ? (
+    `<section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+      <div class="event__available-offers">
+        ${offerSelectors}
+      </div>
+    </section>`
+  )
+    : ` `;
+};
+
 const createEventTypeItems = (indexStart, indexEnd) => {
   return TYPES.slice(indexStart, indexEnd).map((type) => {
     if (type === TypeCheck.IN_DATA) {
@@ -40,8 +86,50 @@ const createDestinationOptions = (destinations) => {
   }).join(`\n`);
 };
 
+const createImagesItems = (photos) => {
+  return photos.
+  map((soursePhoto) => {
+    return (
+      `<img class="event__photo" src="${soursePhoto}" alt="Event photo">`
+    );
+  }).join(`\n`);
+};
+
+const createImagesTemplate = (photo) => {
+  return (
+    `<div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${createImagesItems(photo)}
+      </div>
+    </div>`
+  );
+};
+
+const createEventDestionationTemplate = (event) => {
+  const {description, photo} = event;
+  const descriptionImages = photo.length > 0 ? createImagesTemplate(photo) : ``;
+  return description.length > 0 ? (
+    `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${description}</p>
+      ${descriptionImages}
+    </section>`
+  )
+    : ` `;
+};
+
+const createEventDetails = (event) => {
+  const {destination, offers} = event;
+  const offersTemplate = createEventOffersTemplate(event);
+  const destinationTemplate = createEventDestionationTemplate(event);
+  const detailsTemplate = (destination || (offers.length > 0)) ?
+    `<section class="event__details">${offersTemplate} ${destinationTemplate}</section>` : ``;
+  return detailsTemplate;
+};
+
 const createEventEditTemplate = (event) => {
-  const {startDate, endDate, price, type, destination} = event;
+
+  const {startDate, endDate, price, type, destination, isFavorite} = event;
   const nameImage = type === `check` ? `check-in` : type;
 
   let eventName = TYPES.slice(Index.START_PRETEX_IN).some((name) => event.type === name) ?
@@ -60,7 +148,7 @@ const createEventEditTemplate = (event) => {
   const eventTypeItemTransfer = createEventTypeItems(IndexNumber.ITEM_TRANSFER, IndexNumber.ITEM_ACTIVITY);
   const eventTypeItemActivity = createEventTypeItems(IndexNumber.ITEM_ACTIVITY, TYPES.length);
   const destinationOptions = createDestinationOptions(CITIES);
-  let isFavorite = false;
+  const eventDetails = createEventDetails(event);
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -130,6 +218,7 @@ const createEventEditTemplate = (event) => {
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
+      ${eventDetails}
     </form>`
   );
 };
@@ -149,10 +238,10 @@ export default class EventEdit extends AbstractComponent {
   }
 
   setRollupButtonClickHandler(handler) {
-    this.getElement().querySelector('.event__rollup-btn').addEventListener(`click`, handler);
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
   }
 
   setFavoriteInputClickHandler(handler) {
-    this.getElement().querySelector('.event__favorite-checkbox').addEventListener(`click`, handler);
+    this.getElement().querySelector(`.event__favorite-checkbox`).addEventListener(`click`, handler);
   }
 }

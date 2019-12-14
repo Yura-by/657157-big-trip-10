@@ -1,9 +1,5 @@
 import EventComponent from '../components/event.js';
 import EventEditComponent from '../components/event-edit.js';
-import EventDetailsComponent from '../components/event-details.js';
-import EventOffersComponent from '../components/event-offers.js';
-import EventDestinationComponent from '../components/event-destination.js';
-
 import {render, replace, RenderPosition} from '../utils/render.js';
 
 const Mode = {
@@ -21,9 +17,6 @@ export default class PointController {
 
     this._eventComponent = null;
     this._eventEditComponent = null;
-    this._eventDetailsComponent = null;
-    this._eventOffersComponent = null;
-    this._eventDestinationComponent = null;
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
@@ -32,34 +25,28 @@ export default class PointController {
     const oldEventComponent = this._eventComponent;
     const oldEventEditComponent = this._eventEditComponent;
 
-    this._eventComponent = new EventComponent(task);
-    this._eventEditComponent = new EventEditComponent(task);
+    this._eventComponent = new EventComponent(event);
+    this._eventEditComponent = new EventEditComponent(event);
 
     this._eventComponent.setRollupButtonClickHandler(() => {
       this._replaceEditToEvent();
-      document.addEventListener(`keydown`, escKeydownHandler);
+      document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
     this._eventEditComponent.setRollupButtonClickHandler(() => {
-      _replaceEventToEdit();
+      this._replaceEventToEdit();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     });
 
     this._eventEditComponent.setSubmitHandler(() => {
-      _replaceEventToEdit();
+      this._replaceEventToEdit();
     });
 
     this._eventEditComponent.setFavoriteInputClickHandler(() => {
       this._onDataChange(this, event, Object.assign({}, event, {
-        isFavorite: !isFavorite,
+        isFavorite: !event.isFavorite,
       }));
     });
-
-    this._eventDetailsComponent = new EventDetailsComponent();
-
-    render(eventEditComponent.getElement(), eventDetailsComponent, RenderPosition.BEFOREEND);
-    render(eventDetailsComponent.getElement(), new EventOffersComponent(event), RenderPosition.BEFOREEND);
-    render(eventDetailsComponent.getElement(), new EventDestinationComponent(event), RenderPosition.BEFOREEND);
 
     if (oldEventEditComponent && oldEventComponent) {
       replace(this._eventComponent, oldEventComponent);
@@ -75,19 +62,19 @@ export default class PointController {
     }
   }
 
-  _replaceEditToEvent = () => {
-    this._eventEditComponent.reset();
+  _replaceEditToEvent() {
+    //this._eventEditComponent.reset();
 
     replace(this._eventEditComponent, this._eventComponent);
     this._mode = Mode.DEFAULT;
-  };
+  }
 
-  _replaceEventToEdit = () => {
-    this._onViewChange();
+  _replaceEventToEdit() {
+    //this._onViewChange();
 
     replace(this._eventComponent, this._eventEditComponent);
     this._mode = Mode.EDIT;
-  };
+  }
 
   _onEscKeyDown(evt) {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
@@ -98,6 +85,3 @@ export default class PointController {
     }
   }
 }
-
-
-
