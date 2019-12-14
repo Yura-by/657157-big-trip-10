@@ -1,7 +1,7 @@
 import {TYPES, Index} from '../const.js';
 import {castTimeFormat} from '../utils/common.js';
 import {CITIES} from '../mock/event.js';
-import AbstractSmartComponent from './abstract-smart-component.js';
+import AbstractComponent from './abstract-component.js';
 
 const CORRECT_MONTH = 1;
 
@@ -127,10 +127,9 @@ const createEventDetails = (event) => {
   return detailsTemplate;
 };
 
-const createEventEditTemplate = (event, options = {}) => {
+const createEventEditTemplate = (event) => {
 
-  const {startDate, endDate, price, destination, isFavorite} = event;
-  const {type} = options;
+  const {startDate, endDate, price, type, destination, isFavorite} = event;
   const nameImage = type === `check` ? `check-in` : type;
 
   let eventName = TYPES.slice(Index.START_PRETEX_IN).some((name) => event.type === name) ?
@@ -164,13 +163,13 @@ const createEventEditTemplate = (event, options = {}) => {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Transfer</legend>
-              ${eventTypeItemTransfer}
+              ${eventTypeItemTransfer};
 
             </fieldset>
 
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Activity</legend>
-              ${eventTypeItemActivity}
+              ${eventTypeItemActivity};
 
             </fieldset>
           </div>
@@ -224,69 +223,25 @@ const createEventEditTemplate = (event, options = {}) => {
   );
 };
 
-export default class EventEdit extends AbstractSmartComponent {
+export default class EventEdit extends AbstractComponent {
   constructor(event) {
     super();
-
     this._event = event;
-    this._type = event.type;
-
-    this._subscribeOnEvents();
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event, {
-      type: this._type,
-    });
-  }
-
-  recoveryListeners() {
-    this._subscribeOnEvents();
-  }
-
-  rerender() {
-    super.rerender();
-    this.setSubmitHandler(this._submitHandler);
-    this.setRollupButtonClickHandler(this._RollupButtonClickHandler);
-    this.setFavoriteInputClickHandler(this._favoriteInputClickHandler);
-  }
-
-  reset() {
-    this._type = event.type;
-
-    this.rerender();
+    return createEventEditTemplate(this._event);
   }
 
   setSubmitHandler(handler) {
-    this._submitHandler = handler;
-    this.getElement().addEventListener(`submit`, () => {
-      this._submitHandler();
-    });
+    this.getElement().addEventListener(`submit`, handler);
   }
 
   setRollupButtonClickHandler(handler) {
-    this._RollupButtonClickHandler = handler;
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
-      this._RollupButtonClickHandler();
-    });
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
   }
 
   setFavoriteInputClickHandler(handler) {
-    this._favoriteInputClickHandler = handler;
-    this.getElement().querySelector(`.event__favorite-checkbox`).addEventListener(`click`, () => {
-      this._favoriteInputClickHandler();
-    });
-  }
-
-  _subscribeOnEvents() {
-    const element = this.getElement();
-    const typesList = element.querySelectorAll(`.event__type-input`);
-    typesList.forEach((type) => {
-      type.addEventListener(`click`, (evt) => {
-        this._type = evt.target.value;
-
-        this.rerender();
-      });
-    });
+    this.getElement().querySelector(`.event__favorite-checkbox`).addEventListener(`click`, handler);
   }
 }
