@@ -259,11 +259,11 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   reset() {
-    this._type = event.type;
-    this._offers = event.offers;
-    this._destination = event.destination;
-    this._description = event.description;
-    this._photo = event.photo;
+    this._type = this._event.type;
+    this._offers = this._event.offers;
+    this._destination = this._event.destination;
+    this._description = this._event.description;
+    this._photo = this._event.photo;
     this.rerender();
   }
 

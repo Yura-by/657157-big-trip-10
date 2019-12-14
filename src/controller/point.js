@@ -63,14 +63,14 @@ export default class PointController {
   }
 
   _replaceEditToEvent() {
-    //this._eventEditComponent.reset();
+    this._eventEditComponent.reset();
 
     replace(this._eventEditComponent, this._eventComponent);
     this._mode = Mode.DEFAULT;
   }
 
   _replaceEventToEdit() {
-    //this._onViewChange();
+    this._onViewChange();
 
     replace(this._eventComponent, this._eventEditComponent);
     this._mode = Mode.EDIT;

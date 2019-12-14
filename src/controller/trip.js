@@ -78,9 +78,9 @@ export default class TripController {
     this._daysComponent = new DaysComponent(eventsInDays);
     render(this._container, this._daysComponent, RenderPosition.BEFOREEND);
     const eventsListElements = this._container.querySelectorAll(`.trip-events__list`);
-    const pointControllers = [];
+    let pointControllers = [];
     eventsListElements.forEach((day, indexDay) => {
-      pointControllers.concat(renderEvents(day, eventsInDays[indexDay], this._onDataChange, this._onViewChange));
+      pointControllers = pointControllers.concat(renderEvents(day, eventsInDays[indexDay], this._onDataChange, this._onViewChange));
     });
     return pointControllers;
   }
@@ -98,6 +98,7 @@ export default class TripController {
   }
 
   _onViewChange() {
+    console.log(this._pointControllers);
     this._pointControllers.forEach((point) => point.setDefaultView());
   }
 
