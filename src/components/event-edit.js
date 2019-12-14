@@ -2,6 +2,7 @@ import {TYPES, Index} from '../const.js';
 import {castTimeFormat} from '../utils/common.js';
 import {CITIES} from '../mock/event.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
+import {generateRandomOffers, generateRandomDescription, generateRandomPhotos} from '../mock/event.js';
 
 const CORRECT_MONTH = 1;
 
@@ -47,8 +48,7 @@ const createSelectors = (offers) => {
   }).join(`\n`);
 };
 
-const createEventOffersTemplate = (event) => {
-  const {offers} = event;
+const createEventOffersTemplate = (offers) => {
   const offerSelectors = offers.length > 0 ? createSelectors(offers) : ``;
   return offers.length > 0 ? (
     `<section class="event__section  event__section--offers">
@@ -105,8 +105,7 @@ const createImagesTemplate = (photo) => {
   );
 };
 
-const createEventDestionationTemplate = (event) => {
-  const {description, photo} = event;
+const createEventDescriptionTemplate = (description, photo) => {
   const descriptionImages = photo.length > 0 ? createImagesTemplate(photo) : ``;
   return description.length > 0 ? (
     `<section class="event__section  event__section--destination">
@@ -118,19 +117,19 @@ const createEventDestionationTemplate = (event) => {
     : ` `;
 };
 
-const createEventDetails = (event) => {
-  const {destination, offers} = event;
-  const offersTemplate = createEventOffersTemplate(event);
-  const destinationTemplate = createEventDestionationTemplate(event);
-  const detailsTemplate = (destination || (offers.length > 0)) ?
-    `<section class="event__details">${offersTemplate} ${destinationTemplate}</section>` : ``;
+const createEventDetails = (event, offers, description, photo) => {
+  const offersTemplate = createEventOffersTemplate(offers);
+  const descriptionTemplate = createEventDescriptionTemplate(description, photo);
+  const detailsTemplate = (description || (offers.length > 0)) ?
+    `<section class="event__details">${offersTemplate} ${descriptionTemplate}</section>` : ``;
   return detailsTemplate;
 };
 
 const createEventEditTemplate = (event, options = {}) => {
 
-  const {startDate, endDate, price, destination, isFavorite} = event;
-  const {type} = options;
+  const {startDate, endDate, price, isFavorite} = event;
+  const {type, offers, destination, description, photo} = options;
+
   const nameImage = type === `check` ? `check-in` : type;
 
   let eventName = TYPES.slice(Index.START_PRETEX_IN).some((name) => event.type === name) ?
@@ -149,7 +148,7 @@ const createEventEditTemplate = (event, options = {}) => {
   const eventTypeItemTransfer = createEventTypeItems(IndexNumber.ITEM_TRANSFER, IndexNumber.ITEM_ACTIVITY);
   const eventTypeItemActivity = createEventTypeItems(IndexNumber.ITEM_ACTIVITY, TYPES.length);
   const destinationOptions = createDestinationOptions(CITIES);
-  const eventDetails = createEventDetails(event);
+  const eventDetails = createEventDetails(event, offers, description, photo);
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -230,6 +229,10 @@ export default class EventEdit extends AbstractSmartComponent {
 
     this._event = event;
     this._type = event.type;
+    this._offers = event.offers;
+    this._destination = event.destination;
+    this._description = event.description;
+    this._photo = event.photo;
 
     this._subscribeOnEvents();
   }
@@ -237,6 +240,10 @@ export default class EventEdit extends AbstractSmartComponent {
   getTemplate() {
     return createEventEditTemplate(this._event, {
       type: this._type,
+      offers: this._offers,
+      destination: this._destination,
+      description: this._description,
+      photo: this._photo,
     });
   }
 
@@ -253,7 +260,10 @@ export default class EventEdit extends AbstractSmartComponent {
 
   reset() {
     this._type = event.type;
-
+    this._offers = event.offers;
+    this._destination = event.destination;
+    this._description = event.description;
+    this._photo = event.photo;
     this.rerender();
   }
 
@@ -280,13 +290,22 @@ export default class EventEdit extends AbstractSmartComponent {
 
   _subscribeOnEvents() {
     const element = this.getElement();
+
     const typesList = element.querySelectorAll(`.event__type-input`);
     typesList.forEach((type) => {
       type.addEventListener(`click`, (evt) => {
         this._type = evt.target.value;
-
+        this._offers = generateRandomOffers();
         this.rerender();
       });
     });
+
+    element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
+      this._destination = evt.target.value;
+      this._description = generateRandomDescription();
+      this._photo = generateRandomPhotos();
+      this.rerender();
+    });
+
   }
 }
