@@ -2,7 +2,7 @@ import DaysComponent from '../components/days.js';
 import SortComponent, {SortType} from '../components/sort.js';
 import NoEventsComponent from '../components/no-events.js';
 import {castTimeFormat} from '../utils/common.js';
-import {RenderPosition, render, replace, remove} from '../utils/render.js';
+import {RenderPosition, render, remove} from '../utils/render.js';
 import PointController from './point.js';
 
 const renderEvents = (container, eventsInDay, onDataChange, onViewChange) => {
@@ -87,7 +87,6 @@ export default class TripController {
 
   _onDataChange(taskController, oldData, newData) {
     const index = this._events.findIndex((event) => event === oldData);
-
     if (index === -1) {
       return;
     }
@@ -98,7 +97,6 @@ export default class TripController {
   }
 
   _onViewChange() {
-    console.log(this._pointControllers);
     this._pointControllers.forEach((point) => point.setDefaultView());
   }
 
@@ -113,18 +111,18 @@ export default class TripController {
           return eventLeftDifferenceTime - eventRightDifferenceTime;
         }));
         remove(this._daysComponent);
-        this._renderEventsInDays(sortedEvents);
+        this._pointControllers = this._renderEventsInDays(sortedEvents);
         this._daysComponent.getElement().querySelector(`.day__info`).innerHTML = ``;
         break;
       case SortType.PRICE:
         sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => eventLeft.price - eventRight.price));
         remove(this._daysComponent);
-        this._renderEventsInDays(sortedEvents);
+        this._pointControllers = this._renderEventsInDays(sortedEvents);
         this._daysComponent.getElement().querySelector(`.day__info`).innerHTML = ``;
         break;
       case SortType.DEFAULT:
         remove(this._daysComponent);
-        this._renderEventsInDays(this._daysWithEvents.slice());
+        this._pointControllers = this._renderEventsInDays(this._daysWithEvents.slice());
         break;
     }
   }

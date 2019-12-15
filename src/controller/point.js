@@ -29,17 +29,15 @@ export default class PointController {
     this._eventEditComponent = new EventEditComponent(event);
 
     this._eventComponent.setRollupButtonClickHandler(() => {
-      this._replaceEditToEvent();
-      document.addEventListener(`keydown`, this._onEscKeyDown);
+      this._replaceEventToEdit();
     });
 
     this._eventEditComponent.setRollupButtonClickHandler(() => {
-      this._replaceEventToEdit();
-      document.removeEventListener(`keydown`, this._onEscKeyDown);
+      this._replaceEditToEvent();
     });
 
     this._eventEditComponent.setSubmitHandler(() => {
-      this._replaceEventToEdit();
+      this._replaceEditToEvent();
     });
 
     this._eventEditComponent.setFavoriteInputClickHandler(() => {
@@ -59,28 +57,31 @@ export default class PointController {
   setDefaultView() {
     if (this._mode !== Mode.DEFAULT) {
       this._replaceEditToEvent();
+      document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
   }
 
   _replaceEditToEvent() {
     this._eventEditComponent.reset();
 
-    replace(this._eventEditComponent, this._eventComponent);
+    replace(this._eventComponent, this._eventEditComponent);
     this._mode = Mode.DEFAULT;
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   _replaceEventToEdit() {
     this._onViewChange();
 
-    replace(this._eventComponent, this._eventEditComponent);
+    replace(this._eventEditComponent, this._eventComponent);
     this._mode = Mode.EDIT;
+    document.addEventListener(`keydown`, this._onEscKeyDown);
   }
 
   _onEscKeyDown(evt) {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
     if (isEscKey) {
-      this._replaceEventToEdit();
+      this._replaceEditToEvent();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
   }

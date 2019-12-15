@@ -243,7 +243,7 @@ export default class EventEdit extends AbstractSmartComponent {
       offers: this._offers,
       destination: this._destination,
       description: this._description,
-      photo: this._photo,
+      photo: this._photo
     });
   }
 
@@ -269,23 +269,19 @@ export default class EventEdit extends AbstractSmartComponent {
 
   setSubmitHandler(handler) {
     this._submitHandler = handler;
-    this.getElement().addEventListener(`submit`, () => {
-      this._submitHandler();
-    });
+    this.getElement().addEventListener(`submit`, this._submitHandler);
   }
 
   setRollupButtonClickHandler(handler) {
     this._RollupButtonClickHandler = handler;
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
-      this._RollupButtonClickHandler();
-    });
+    this.getElement().querySelector(`.event__rollup-btn`)
+    .addEventListener(`click`, this._RollupButtonClickHandler);
   }
 
   setFavoriteInputClickHandler(handler) {
     this._favoriteInputClickHandler = handler;
-    this.getElement().querySelector(`.event__favorite-checkbox`).addEventListener(`click`, () => {
-      this._favoriteInputClickHandler();
-    });
+    this.getElement().querySelector(`.event__favorite-checkbox`)
+    .addEventListener(`click`, this._favoriteInputClickHandler);
   }
 
   _subscribeOnEvents() {
@@ -300,11 +296,20 @@ export default class EventEdit extends AbstractSmartComponent {
       });
     });
 
-    element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
-      this._destination = evt.target.value;
-      this._description = generateRandomDescription();
-      this._photo = generateRandomPhotos();
-      this.rerender();
+    const eventInput = element.querySelector(`.event__input--destination`);
+    eventInput.addEventListener(`change`, (evt) => {
+      const isValid = CITIES.some((city) => {
+        return city === evt.target.value;
+      });
+      if (!isValid) {
+        eventInput.setCustomValidity(`Please select a city from the list`);
+      } else {
+        this._destination = evt.target.value;
+        this._description = generateRandomDescription();
+        this._photo = generateRandomPhotos();
+        this.rerender();
+        eventInput.setCustomValidity(``);
+      }
     });
 
   }
