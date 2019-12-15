@@ -145,7 +145,8 @@ const generateEvent = () => {
     startDate,
     endDate: generateEndDate(startDate),
     price: generateRandomPrice(),
-    offers: generateRandomOffers()
+    offers: generateRandomOffers(),
+    isFavorite: false
   };
 };
 
@@ -155,4 +156,4 @@ const generateEvents = (count) => {
     .map(generateEvent);
 };
 
-export {generateEvent, generateEvents, CITIES};
+export {generateEvent, generateEvents, CITIES, generateRandomOffers, generateRandomDescription, generateRandomPhotos};
