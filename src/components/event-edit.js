@@ -1,3 +1,6 @@
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import 'flatpickr/dist/themes/light.css';
 import {TYPES, Index} from '../const.js';
 import {castTimeFormat} from '../utils/common.js';
 import {CITIES} from '../mock/event.js';
@@ -233,8 +236,11 @@ export default class EventEdit extends AbstractSmartComponent {
     this._destination = event.destination;
     this._description = event.description;
     this._photo = event.photo;
+    this._flatpickrStart = null;
+    this._flatpickrEnd = null;
 
     this._subscribeOnEvents();
+    this._applyFlatpickr();
   }
 
   getTemplate() {
@@ -256,6 +262,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this.setSubmitHandler(this._submitHandler);
     this.setRollupButtonClickHandler(this._RollupButtonClickHandler);
     this.setFavoriteInputClickHandler(this._favoriteInputClickHandler);
+    this._applyFlatpickr();
   }
 
   reset() {
@@ -310,6 +317,31 @@ export default class EventEdit extends AbstractSmartComponent {
         this.rerender();
         eventInput.setCustomValidity(``);
       }
+    });
+  }
+  _applyFlatpickr() {
+    if (this._flatpickrStart) {
+      this._flatpickrStart.destroy();
+      this._flatpickrStart = null;
+    }
+    if (this._flatpickrEnd) {
+      this._flatpickrEnd.destroy();
+      this._flatpickrEnd = null;
+    }
+    const dateStartElement = this.getElement().querySelector(`input[name="event-start-time"]`);
+    this._flatpickrStart = flatpickr(dateStartElement, {
+      allowInput: true,
+      defaultDate: this._event.startDate || new Date(),
+      enableTime: true,
+      dateFormat: `d/m/y H:i`
+    });
+    const dateEndElement = this.getElement().querySelector(`input[name="event-end-time"]`);
+    this._flatpickrEnd = flatpickr(dateEndElement, {
+      allowInput: true,
+      defaultDate: this._event.endDate || new Date(),
+      enableTime: true,
+      dateFormat: `d/m/y H:i`,
+      minDate: this._event.startDate
     });
 
   }
