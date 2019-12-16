@@ -1,12 +1,7 @@
 import {TYPES, Index} from '../const.js';
-import {castTimeFormat} from '../utils/common.js';
+import {castTimeFormat, formatInTime} from '../utils/common.js';
 import AbstractComponent from './abstract-component.js';
-
-const TimeInSec = {
-  DAY: 864e5,
-  HOUR: 36e5,
-  MINUTE: 6e4
-};
+import moment from 'moment';
 
 const createOffersItems = (offers) => {
   return offers.
@@ -30,31 +25,13 @@ const createOffers = (offers) => {
   );
 };
 
-const createDifferenceTime = (startDate, endDate) => {
-  const differenceInSeconds = endDate.getTime() - startDate.getTime();
-  const day = Math.floor(differenceInSeconds / TimeInSec.DAY);
-
-  let balanceFromDay = differenceInSeconds;
-  if (day > 0) {
-    balanceFromDay = differenceInSeconds % TimeInSec.DAY;
-  }
-
-  const hour = Math.floor(balanceFromDay / TimeInSec.HOUR);
-
-  let balanceFromHour = differenceInSeconds;
-  if (hour > 0 || day > 0) {
-    balanceFromHour = differenceInSeconds % TimeInSec.HOUR;
-  }
-  const minute = Math.floor(balanceFromHour / TimeInSec.MINUTE);
-
-  return {day, hour, minute};
-};
-
 const getDifferenceTimeInFormat = (event) => {
   const {startDate, endDate} = event;
 
-  const difference = createDifferenceTime(startDate, endDate);
-  const {day, hour, minute} = difference;
+  const durationEvent = moment.duration(moment(endDate).diff(moment(startDate)));
+  const day = durationEvent.days();
+  const hour = durationEvent.hours();
+  const minute = durationEvent.minutes();
 
   const resultDay = day > 0 ? `${castTimeFormat(day)}D` : ``;
   const resultHour = hour > 0 ? `${castTimeFormat(hour)}H` : ``;
@@ -73,8 +50,8 @@ const createEventTemplate = (event) => {
 
   eventName = eventName[Index.UPPERCASE_LETTER].toUpperCase() + eventName.slice(Index.DRAIN_LETTER);
 
-  const startTime = `${castTimeFormat(startDate.getHours())}:${castTimeFormat(startDate.getMinutes())}`;
-  const endTime = `${castTimeFormat(endDate.getHours())}:${castTimeFormat(endDate.getMinutes())}`;
+  const startTime = formatInTime(startDate);
+  const endTime = formatInTime(endDate);
 
   const differenceTime = getDifferenceTimeInFormat(event);
 

@@ -1,10 +1,10 @@
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import 'flatpickr/dist/themes/light.css';
 import {TYPES, Index} from '../const.js';
-import {castTimeFormat} from '../utils/common.js';
 import {CITIES} from '../mock/event.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
 import {generateRandomOffers, generateRandomDescription, generateRandomPhotos} from '../mock/event.js';
-
-const CORRECT_MONTH = 1;
 
 const IndexNumber = {
   YEAR_FORMAT: 1,
@@ -127,7 +127,7 @@ const createEventDetails = (event, offers, description, photo) => {
 
 const createEventEditTemplate = (event, options = {}) => {
 
-  const {startDate, endDate, price, isFavorite} = event;
+  const {startDate, price, isFavorite} = event;
   const {type, offers, destination, description, photo} = options;
 
   const nameImage = type === `check` ? `check-in` : type;
@@ -137,14 +137,6 @@ const createEventEditTemplate = (event, options = {}) => {
 
   eventName = eventName[Index.UPPERCASE_LETTER].toUpperCase() + eventName.slice(Index.DRAIN_LETTER);
 
-  const createDateInFormat = (date) => {
-    return (
-      `${castTimeFormat(date.getDate())}/${castTimeFormat(date.getMonth() + CORRECT_MONTH)}/${String(date.getYear()).slice(IndexNumber.YEAR_FORMAT)} ${castTimeFormat(date.getHours())}:${castTimeFormat(date.getMinutes())}
-      `);
-  };
-
-  const startTime = createDateInFormat(startDate);
-  const endTime = createDateInFormat(endDate);
   const eventTypeItemTransfer = createEventTypeItems(IndexNumber.ITEM_TRANSFER, IndexNumber.ITEM_ACTIVITY);
   const eventTypeItemActivity = createEventTypeItems(IndexNumber.ITEM_ACTIVITY, TYPES.length);
   const destinationOptions = createDestinationOptions(CITIES);
@@ -189,12 +181,12 @@ const createEventEditTemplate = (event, options = {}) => {
           <label class="visually-hidden" for="event-start-time-1">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${startTime}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="  ${endTime}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -233,8 +225,11 @@ export default class EventEdit extends AbstractSmartComponent {
     this._destination = event.destination;
     this._description = event.description;
     this._photo = event.photo;
+    this._flatpickrStart = null;
+    this._flatpickrEnd = null;
 
     this._subscribeOnEvents();
+    this._applyFlatpickr();
   }
 
   getTemplate() {
@@ -256,6 +251,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this.setSubmitHandler(this._submitHandler);
     this.setRollupButtonClickHandler(this._RollupButtonClickHandler);
     this.setFavoriteInputClickHandler(this._favoriteInputClickHandler);
+    this._applyFlatpickr();
   }
 
   reset() {
@@ -310,6 +306,31 @@ export default class EventEdit extends AbstractSmartComponent {
         this.rerender();
         eventInput.setCustomValidity(``);
       }
+    });
+  }
+  _applyFlatpickr() {
+    if (this._flatpickrStart) {
+      this._flatpickrStart.destroy();
+      this._flatpickrStart = null;
+    }
+    if (this._flatpickrEnd) {
+      this._flatpickrEnd.destroy();
+      this._flatpickrEnd = null;
+    }
+    const dateStartElement = this.getElement().querySelector(`input[name="event-start-time"]`);
+    this._flatpickrStart = flatpickr(dateStartElement, {
+      allowInput: true,
+      defaultDate: this._event.startDate || new Date(),
+      enableTime: true,
+      dateFormat: `d/m/y H:i`
+    });
+    const dateEndElement = this.getElement().querySelector(`input[name="event-end-time"]`);
+    this._flatpickrEnd = flatpickr(dateEndElement, {
+      allowInput: true,
+      defaultDate: this._event.endDate || new Date(),
+      enableTime: true,
+      dateFormat: `d/m/y H:i`,
+      minDate: this._event.startDate
     });
 
   }

@@ -1,5 +1,5 @@
-import {MONTHS} from '../const.js';
 import AbstractComponent from './abstract-component.js';
+import moment from 'moment';
 
 const DAY_COUNTER_CORRECT = 1;
 
@@ -8,7 +8,7 @@ const createDayTemplate = (days) => {
   map((events, index) => {
     const [event] = events;
 
-    const date = `${MONTHS[event.startDate.getMonth()]} ${event.startDate.getDate()}`;
+    const date = moment(event).format(`MMM D`);
     return (
       `<li class="trip-days__item day">
         <div class="day__info">
