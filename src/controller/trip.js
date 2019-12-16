@@ -1,7 +1,7 @@
 import DaysComponent from '../components/days.js';
 import SortComponent, {SortType} from '../components/sort.js';
 import NoEventsComponent from '../components/no-events.js';
-import {castTimeFormat} from '../utils/common.js';
+import {formatInDay} from '../utils/common.js';
 import {RenderPosition, render, remove} from '../utils/render.js';
 import PointController from './point.js';
 
@@ -20,18 +20,13 @@ const sortEvents = (events) => {
 
   const daysEventAll = eventsSorted.map((event) => {
     const {startDate} = event;
-    return (
-      `${castTimeFormat(startDate.getDate())}${castTimeFormat(startDate.getMonth())}${castTimeFormat(startDate.getFullYear())}`
-    );
+    return formatInDay(startDate);
   });
 
   const daysEventInSet = new Set(daysEventAll);
 
   const createArrayEventsByDay = (day, array) => {
-
-    return array.filter((event) => castTimeFormat(event.startDate.getDate()) === `${day[0] + day[1]}` &&
-      castTimeFormat(event.startDate.getMonth()) === `${day[2] + day[3]}` &&
-      castTimeFormat(event.startDate.getFullYear()) === `${day[4] + day[5] + day[6] + day[7]}`);
+    return array.filter((event) => formatInDay(event.startDate) === day);
   };
 
   const daysEventInArray = Array.from(daysEventInSet);
