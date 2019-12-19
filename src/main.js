@@ -1,4 +1,4 @@
-import SiteFilterComponent from './components/site-filter.js';
+import FilterController from './controller/filter.js';
 import SiteMenuComponent from './components/site-menu.js';
 import EventsModel from './models/events.js';
 import {generateEvents} from './mock/event.js';
@@ -20,7 +20,9 @@ const eventsModel = new EventsModel();
 eventsModel.setEvents(events);
 
 render(siteContolsElement, new SiteMenuComponent(generateMenu()), RenderPosition.INSERT_BEFORE, switchTabsTitleElement);
-render(siteContolsElement, new SiteFilterComponent(generateFilter()), RenderPosition.BEFOREEND);
+
+const filterController = new FilterController(siteContolsElement, eventsModel);
+filterController.render();
 
 const tripController = new TripController(tripEventsElement, eventsModel);
 

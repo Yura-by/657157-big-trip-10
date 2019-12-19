@@ -1,7 +1,7 @@
 import DaysComponent from '../components/days.js';
 import SortComponent, {SortType} from '../components/sort.js';
 import NoEventsComponent from '../components/no-events.js';
-import {formatInDay} from '../utils/common.js';
+import {formatInDay, sortEventsInOrder} from '../utils/common.js';
 import {RenderPosition, render, remove} from '../utils/render.js';
 import PointController from './point.js';
 
@@ -16,7 +16,7 @@ const renderEvents = (container, eventsInDay, onDataChange, onViewChange) => {
 };
 
 const sortEvents = (events) => {
-  const eventsSorted = events.sort((eventBefore, eventAfter) => eventBefore.startDate.getTime() - eventAfter.startDate.getTime());
+  const eventsSorted = sortEventsInOrder(events);
 
   const daysEventAll = eventsSorted.map((event) => {
     const {startDate} = event;
@@ -50,8 +50,10 @@ export default class TripController {
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
     this._renderEventsInDays = this._renderEventsInDays.bind(this);
+    this._onFilterChange = this._onFilterChange.bind(this);
 
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
+    this._eventsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
   render() {
@@ -118,5 +120,16 @@ export default class TripController {
         this._pointControllers = this._renderEventsInDays(this._daysWithEvents.slice());
         break;
     }
+  }
+
+  _removeTasks() {
+    this._container.innerHTML = ``;
+    this._pointControllers = [];
+  }
+
+  _onFilterChange() {
+    this._removeEvents();
+    this._daysWithEvents = sortEvents(this._tasksModel.getTasks());
+    this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
   }
 }
