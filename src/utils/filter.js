@@ -7,7 +7,7 @@ const getFutureEvents = (events, nowDate) => {
     const {startDate} = event;
     return startDate > nowDate && !isOneDay(startDate, nowDate);
   });
-}
+};
 
 const getPastEvents = (events, nowDate) => {
 
@@ -15,7 +15,7 @@ const getPastEvents = (events, nowDate) => {
     const {startDate} = event;
     return startDate < nowDate && !isOneDay(startDate, nowDate);
   });
-}
+};
 
 export const getEventsByFilter = (events, filterType) => {
   const sortEvents = sortEventsInOrder(events);

@@ -122,14 +122,14 @@ export default class TripController {
     }
   }
 
-  _removeTasks() {
-    this._container.innerHTML = ``;
+  _removeEvents() {
+    remove(this._daysComponent);
     this._pointControllers = [];
   }
 
   _onFilterChange() {
     this._removeEvents();
-    this._daysWithEvents = sortEvents(this._tasksModel.getTasks());
+    this._daysWithEvents = sortEvents(this._eventsModel.getEvents());
     this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
   }
 }

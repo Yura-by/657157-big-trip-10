@@ -7,8 +7,7 @@ const createDayTemplate = (days) => {
   return days.
   map((events, index) => {
     const [event] = events;
-
-    const date = moment(event).format(`MMM D`);
+    const date = moment(event.startDate).format(`MMM D`);
     return (
       `<li class="trip-days__item day">
         <div class="day__info">
