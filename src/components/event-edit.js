@@ -227,6 +227,9 @@ export default class EventEdit extends AbstractSmartComponent {
     this._photo = event.photo;
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
+    this._submitHandler = null;
+    this._RollupButtonClickHandler = null;
+    this._favoriteInputClickHandler = null;
 
     this._subscribeOnEvents();
     this._applyFlatpickr();
@@ -244,13 +247,14 @@ export default class EventEdit extends AbstractSmartComponent {
 
   recoveryListeners() {
     this._subscribeOnEvents();
+    this.setSubmitHandler(this._submitHandler);
+    this.setRollupButtonClickHandler(this._RollupButtonClickHandler);
+    this.setFavoriteInputClickHandler(this._favoriteInputClickHandler);
   }
 
   rerender() {
     super.rerender();
-    this.setSubmitHandler(this._submitHandler);
-    this.setRollupButtonClickHandler(this._RollupButtonClickHandler);
-    this.setFavoriteInputClickHandler(this._favoriteInputClickHandler);
+
     this._applyFlatpickr();
   }
 
@@ -264,20 +268,20 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   setSubmitHandler(handler) {
+    this.getElement().addEventListener(`submit`, handler);
     this._submitHandler = handler;
-    this.getElement().addEventListener(`submit`, this._submitHandler);
   }
 
   setRollupButtonClickHandler(handler) {
-    this._RollupButtonClickHandler = handler;
     this.getElement().querySelector(`.event__rollup-btn`)
-    .addEventListener(`click`, this._RollupButtonClickHandler);
+    .addEventListener(`click`, handler);
+    this._RollupButtonClickHandler = handler;
   }
 
   setFavoriteInputClickHandler(handler) {
-    this._favoriteInputClickHandler = handler;
     this.getElement().querySelector(`.event__favorite-checkbox`)
-    .addEventListener(`click`, this._favoriteInputClickHandler);
+    .addEventListener(`click`, handler);
+    this._favoriteInputClickHandler = handler;
   }
 
   _subscribeOnEvents() {
