@@ -36,10 +36,10 @@ const sortEvents = (events) => {
 };
 
 export default class TripController {
-  constructor(container) {
+  constructor(container, eventsModel) {
     this._container = container;
+    this._eventsModel = eventsModel;
 
-    this._events = [];
     this._daysWithEvents = null;
     this._pointControllers = null;
     this._noEventsComponent = new NoEventsComponent();
@@ -54,10 +54,10 @@ export default class TripController {
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 
-  render(events) {
-    this._events = events;
+  render() {
+    const events = this._eventsModel.getEvents();
 
-    if (!this._events || this._events === 0) {
+    if (!events || events === 0) {
       render(this._container, this._noEventsComponent, RenderPosition.BEFOREEND);
       return;
     }
@@ -80,15 +80,13 @@ export default class TripController {
     return pointControllers;
   }
 
-  _onDataChange(taskController, oldData, newData) {
-    const index = this._events.findIndex((event) => event === oldData);
-    if (index === -1) {
-      return;
-    }
+  _onDataChange(pointController, oldData, newData) {
+    const isSuccess = this._eventsModel.updateEvents(oldData.id, newData);
 
-    this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
-    this._daysWithEvents = sortEvents(this._events);
-    taskController.render(this._events[index]);
+    if (isSuccess) {
+      pointController.render(newData);
+    }
+    this._daysWithEvents = sortEvents(this._eventsModel.getEvents());
   }
 
   _onViewChange() {
@@ -96,7 +94,7 @@ export default class TripController {
   }
 
   _onSortTypeChange(sortType) {
-    let sortedEvents = this._events.slice();
+    let sortedEvents = this._eventsModel.getEvents().slice();
 
     switch (sortType) {
       case SortType.TIME:

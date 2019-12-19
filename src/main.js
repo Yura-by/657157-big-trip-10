@@ -1,5 +1,6 @@
 import SiteFilterComponent from './components/site-filter.js';
 import SiteMenuComponent from './components/site-menu.js';
+import EventsModel from './models/events.js';
 import {generateEvents} from './mock/event.js';
 import {generateMenu} from './mock/menu.js';
 import {generateFilter} from './mock/filter.js';
@@ -15,13 +16,15 @@ const siteMainElement = document.querySelector(`.page-main`);
 const tripEventsElement = siteMainElement.querySelector(`.trip-events`);
 
 const events = generateEvents(EVENT_COUNT);
+const eventsModel = new EventsModel();
+eventsModel.setEvents(events);
 
 render(siteContolsElement, new SiteMenuComponent(generateMenu()), RenderPosition.INSERT_BEFORE, switchTabsTitleElement);
 render(siteContolsElement, new SiteFilterComponent(generateFilter()), RenderPosition.BEFOREEND);
 
-const tripController = new TripController(tripEventsElement);
+const tripController = new TripController(tripEventsElement, eventsModel);
 
-tripController.render(events);
+tripController.render();
 
 const getTotalPrice = () => {
   return events.reduce((total, event) => {

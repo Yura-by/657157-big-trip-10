@@ -138,6 +138,7 @@ const generateEvent = () => {
   const startDate = generateRandomDate();
 
   return {
+    id: String(new Date() + Math.random()),
     type: getRandomArrayItem(TYPES),
     destination: getRandomArrayItem(CITIES),
     photo: generateRandomPhotos(),
