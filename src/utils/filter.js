@@ -12,8 +12,8 @@ const getFutureEvents = (events, nowDate) => {
 const getPastEvents = (events, nowDate) => {
 
   return events.filter((event) => {
-    const {startDate} = event;
-    return startDate < nowDate && !isOneDay(startDate, nowDate);
+    const {endDate} = event;
+    return endDate < nowDate && !isOneDay(endDate, nowDate);
   });
 };
 

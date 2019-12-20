@@ -5,6 +5,7 @@ import {TYPES, Index} from '../const.js';
 import {CITIES} from '../mock/event.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
 import {generateRandomOffers, generateRandomDescription, generateRandomPhotos} from '../mock/event.js';
+import {getDateObject} from '../utils/common.js';
 
 const IndexNumber = {
   YEAR_FORMAT: 1,
@@ -71,7 +72,7 @@ const createEventTypeItems = (indexStart, indexEnd) => {
     typeName = typeName[Index.UPPERCASE_LETTER].toUpperCase() + typeName.slice(Index.DRAIN_LETTER);
     return (
       `<div class="event__type-item">
-        <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
+        <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="type" value="${type}">
         <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${typeName}</label>
       </div>`
     );
@@ -171,7 +172,7 @@ const createEventEditTemplate = (event, options = {}) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${eventName}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="destination" value="${destination}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${destinationOptions}
           </datalist>
@@ -194,12 +195,12 @@ const createEventEditTemplate = (event, options = {}) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="price" value="${price}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Cancel</button>
-        <input id="event-favorite-${startDate.getTime()}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
+        <input id="event-favorite-${startDate.getTime()}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="favorite" ${isFavorite ? `checked` : ``}>
         <label class="event__favorite-btn" for="event-favorite-${startDate.getTime()}">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -213,6 +214,26 @@ const createEventEditTemplate = (event, options = {}) => {
       ${eventDetails}
     </form>`
   );
+};
+
+const checkDestinationValid = (destination) => {
+  return CITIES.some((city) => city === destination);
+}
+
+const parseFormData = (formData) => {
+
+  return {
+    id: String(new Date() + Math.random()),
+    type: formData.get(`type`),
+    destination: formData.get(`destination`),
+    photo: [],
+    description: ``,
+    startDate: getDateObject(formData.get(`event-start-time`)),
+    endDate: getDateObject(formData.get(`event-end-time`)),
+    price: formData.get(`price`),
+    offers: [],
+    isFavorite: formData.get(`favorite`)
+  }
 };
 
 export default class EventEdit extends AbstractSmartComponent {
@@ -230,6 +251,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._submitHandler = null;
     this._RollupButtonClickHandler = null;
     this._favoriteInputClickHandler = null;
+    this._cancelButtonClickHandler = null;
 
     this._subscribeOnEvents();
     this._applyFlatpickr();
@@ -245,17 +267,41 @@ export default class EventEdit extends AbstractSmartComponent {
     });
   }
 
+  getData() {
+    const form = this.getElement();
+    const formData = new FormData(form);
+
+    return parseFormData(formData);
+  }
+
+  setCancelButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, handler);
+
+    this._cancelButtonClickHandler = handler;
+  }
+
   recoveryListeners() {
     this._subscribeOnEvents();
     this.setSubmitHandler(this._submitHandler);
     this.setRollupButtonClickHandler(this._RollupButtonClickHandler);
     this.setFavoriteInputClickHandler(this._favoriteInputClickHandler);
+    this.setCancelButtonClickHandler(this._cancelButtonClickHandler);
   }
 
   rerender() {
     super.rerender();
 
     this._applyFlatpickr();
+  }
+
+  removeElement() {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    super.removeElement();
   }
 
   reset() {
@@ -286,6 +332,13 @@ export default class EventEdit extends AbstractSmartComponent {
 
   _subscribeOnEvents() {
     const element = this.getElement();
+
+    element.querySelector(`.event__input--destination`)
+      .addEventListener(`input`, (evt) => {
+        const destination = evt.target.value;
+        const saveButton = element.querySelector(`.event__save-btn`);
+        saveButton.disabled = !checkDestinationValid(destination);
+      });
 
     const typesList = element.querySelectorAll(`.event__type-input`);
     typesList.forEach((type) => {

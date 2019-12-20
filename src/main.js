@@ -28,6 +28,11 @@ const tripController = new TripController(tripEventsElement, eventsModel);
 
 tripController.render();
 
+siteHeaderElement.querySelector(`.trip-main__event-add-btn`)
+  .addEventListener(`click`, () => {
+    tripController.createEvent();
+  });
+
 const getTotalPrice = () => {
   return events.reduce((total, event) => {
     const {price, offers} = event;

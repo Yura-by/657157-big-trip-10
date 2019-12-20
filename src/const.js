@@ -1,14 +1,27 @@
+const TYPE = {
+  BUS: `bus`,
+  DRIVE: `drive`,
+  FLIGHT: `flight`,
+  TRAIN: `train`,
+  TRANSPORT: `transport`,
+  SHIP: `ship`,
+  TAXI: `taxi`,
+  SIGHTSEEING: `sightseeing`,
+  RESTAURANT: `restaurant`,
+  CHECK: `check`
+}
+
 const TYPES = [
-  `bus`,
-  `drive`,
-  `flight`,
-  `train`,
-  `transport`,
-  `ship`,
-  `taxi`,
-  `sightseeing`,
-  `restaurant`,
-  `check`
+  TYPE.BUS,
+  TYPE.DRIVE,
+  TYPE.FLIGHT,
+  TYPE.TRAIN,
+  TYPE.TRANSPORT,
+  TYPE.SHIP,
+  TYPE.TAXI,
+  TYPE.SIGHTSEEING,
+  TYPE.RESTAURANT,
+  TYPE.CHECK
 ];
 
 const Index = {
@@ -23,4 +36,4 @@ const FilterType = {
   PAST: `past`
 };
 
-export {TYPES, Index, FilterType};
+export {TYPES, TYPE, Index, FilterType};

@@ -21,3 +21,7 @@ export const isOneDay = (dateA, dateB) => {
   const momentDateB = moment(dateB);
   return momentDateA.diff(momentDateB, `days`) === 0;
 };
+
+export const getDateObject = (string) => {
+  return moment(string, `DD/MM/YYYY HH:mm`).toDate();
+}
