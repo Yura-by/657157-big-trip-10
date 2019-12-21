@@ -22,10 +22,11 @@ export const EmptyEvent = {
 };
 
 export default class PointController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, onDataChange, onViewChange, onFavoriteChange) {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
+    this._onFavoriteChange = onFavoriteChange;
 
     this._mode = Mode.DEFAULT;
 
@@ -62,8 +63,8 @@ export default class PointController {
     });
 
     this._eventEditComponent.setFavoriteInputClickHandler(() => {
-      this._onDataChange(this, event, Object.assign({}, event, {
-        isFavorite: !event.isFavorite,
+      this._onFavoriteChange(event, Object.assign({}, event, {
+        isFavorite: !event.isFavorite
       }));
     });
 

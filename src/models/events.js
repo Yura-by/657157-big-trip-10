@@ -37,7 +37,7 @@ export default class Events {
     this._events = [].concat(this._events.slice(0, index), this._events.slice(index + 1));
 
 
-    this.__callHandlers(this._dataChangeHandlers);
+    this._callHandlers(this._dataChangeHandlers);
 
     return true;
   }
@@ -51,14 +51,14 @@ export default class Events {
 
     this._events = [].concat(this._events.slice(0, index), event, this._events.slice(index + 1));
 
-    this.__callHandlers(this._dataChangeHandlers);
+    this._callHandlers(this._dataChangeHandlers);
 
     return true;
   }
 
   addEvent(event) {
     this._events = [].concat(event, this._events);
-    this.__callHandlers(this._dataChangeHandlers);
+    this._callHandlers(this._dataChangeHandlers);
   }
 
   setFilterChangeHandler(handler) {

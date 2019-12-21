@@ -221,18 +221,13 @@ const checkDestinationValid = (destination) => {
 }
 
 const parseFormData = (formData) => {
-
   return {
-    id: String(new Date() + Math.random()),
-    type: formData.get(`type`),
     destination: formData.get(`destination`),
-    photo: [],
     description: ``,
     startDate: getDateObject(formData.get(`event-start-time`)),
     endDate: getDateObject(formData.get(`event-end-time`)),
     price: formData.get(`price`),
-    offers: [],
-    isFavorite: formData.get(`favorite`)
+    isFavorite: formData.get(`favorite`) ? true : false
   }
 };
 
@@ -270,8 +265,14 @@ export default class EventEdit extends AbstractSmartComponent {
   getData() {
     const form = this.getElement();
     const formData = new FormData(form);
-
-    return parseFormData(formData);
+    const result = Object.assign(parseFormData(formData), {
+      id: String(new Date() + Math.random()),
+      type: this._type,
+      description: ``,
+      offers: [],
+      photo: []
+      });
+    return result;
   }
 
   setCancelButtonClickHandler(handler) {
@@ -332,11 +333,16 @@ export default class EventEdit extends AbstractSmartComponent {
 
   _subscribeOnEvents() {
     const element = this.getElement();
+    const saveButton = element.querySelector(`.event__save-btn`);
+
+    element.querySelector(`input[name="event-end-time"]`)
+      .addEventListener(`change`, () => {
+        saveButton.disabled = ;
+      });
 
     element.querySelector(`.event__input--destination`)
       .addEventListener(`input`, (evt) => {
         const destination = evt.target.value;
-        const saveButton = element.querySelector(`.event__save-btn`);
         saveButton.disabled = !checkDestinationValid(destination);
       });
 
@@ -351,18 +357,10 @@ export default class EventEdit extends AbstractSmartComponent {
 
     const eventInput = element.querySelector(`.event__input--destination`);
     eventInput.addEventListener(`change`, (evt) => {
-      const isValid = CITIES.some((city) => {
-        return city === evt.target.value;
-      });
-      if (!isValid) {
-        eventInput.setCustomValidity(`Please select a city from the list`);
-      } else {
-        this._destination = evt.target.value;
-        this._description = generateRandomDescription();
-        this._photo = generateRandomPhotos();
-        this.rerender();
-        eventInput.setCustomValidity(``);
-      }
+      this._destination = evt.target.value;
+      this._description = generateRandomDescription();
+      this._photo = generateRandomPhotos();
+      this.rerender();
     });
   }
   _applyFlatpickr() {
