@@ -128,7 +128,6 @@ export default class TripController {
 
   _onDataModulChange() {
     this._daysWithEvents = sortEvents(this._eventsModel.getEvents());
-    console.log(this._daysWithEvents)
   }
 
   _onViewChange() {

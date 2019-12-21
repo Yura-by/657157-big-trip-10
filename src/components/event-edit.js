@@ -5,7 +5,7 @@ import {TYPES, Index} from '../const.js';
 import {CITIES} from '../mock/event.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
 import {generateRandomOffers, generateRandomDescription, generateRandomPhotos, OFFERS} from '../mock/event.js';
-import {getDateObject} from '../utils/common.js';
+import {getDateObject, formatInDayTime} from '../utils/common.js';
 
 const IndexNumber = {
   YEAR_FORMAT: 1,
@@ -128,8 +128,9 @@ const createEventDetails = (event, offers, description, photo) => {
 
 const createEventEditTemplate = (event, options = {}) => {
 
-  const {startDate, price, isFavorite} = event;
-  const {type, offers, destination, description, photo} = options;
+  const {price, isFavorite} = event;
+  const {type, offers, destination, description, photo, startDate, endDate} = options;
+
 
   const nameImage = type === `check` ? `check-in` : type;
 
@@ -142,7 +143,8 @@ const createEventEditTemplate = (event, options = {}) => {
   const eventTypeItemActivity = createEventTypeItems(IndexNumber.ITEM_ACTIVITY, TYPES.length);
   const destinationOptions = createDestinationOptions(CITIES);
   const eventDetails = createEventDetails(event, offers, description, photo);
-  const isDisabled = !checkDestinationValid(destination);
+  const valueStartDate = formatInDayTime(startDate);
+  const valueEndDate = formatInDayTime(endDate);
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -183,12 +185,12 @@ const createEventEditTemplate = (event, options = {}) => {
           <label class="visually-hidden" for="event-start-time-1">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${valueStartDate}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${valueEndDate}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -199,7 +201,7 @@ const createEventEditTemplate = (event, options = {}) => {
           <input class="event__input  event__input--price" id="event-price-1" type="text" name="price" value="${price}">
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? `disabled` : ``}>Save</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Cancel</button>
         <input id="event-favorite-${startDate.getTime()}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="favorite" ${isFavorite ? `checked` : ``}>
         <label class="event__favorite-btn" for="event-favorite-${startDate.getTime()}">
@@ -232,7 +234,6 @@ const parseOffers = (formData) => {
 };
 
 const parseFormData = (formData) => {
-  //const offers = parseOffers(formData);
   return {
     destination: formData.get(`destination`),
     description: ``,
@@ -254,6 +255,8 @@ export default class EventEdit extends AbstractSmartComponent {
     this._destination = event.destination;
     this._description = event.description;
     this._photo = event.photo;
+    this._startDate = event.startDate;
+    this._endDate = event.endDate;
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
     this._submitHandler = null;
@@ -271,7 +274,9 @@ export default class EventEdit extends AbstractSmartComponent {
       offers: this._offers,
       destination: this._destination,
       description: this._description,
-      photo: this._photo
+      photo: this._photo,
+      startDate: this._startDate,
+      endDate: this._endDate
     });
   }
 
@@ -323,6 +328,8 @@ export default class EventEdit extends AbstractSmartComponent {
     this._destination = this._event.destination;
     this._description = this._event.description;
     this._photo = this._event.photo;
+    this._startDate = this._event.startDate;
+    this._endDate = this._event.endDate;
     this.rerender();
   }
 
@@ -348,24 +355,27 @@ export default class EventEdit extends AbstractSmartComponent {
     const saveButton = element.querySelector(`.event__save-btn`);
     const startDateElement = element.querySelector(`input[name="event-start-time"]`);
     const endDateElement = element.querySelector(`input[name="event-end-time"]`);
+    const eventInput = element.querySelector(`.event__input--destination`);
 
-    const setDateChange = () => {
-      saveButton.disabled = getDateObject(startDateElement.value) > getDateObject(endDateElement.value);
+    const setButtonDisabled = () => {
+      const isEventDestinationValid = checkDestinationValid(eventInput.value);
+
+      const isDateValid = getDateObject(startDateElement.value) < getDateObject(endDateElement.value);
+
+      saveButton.disabled = !isEventDestinationValid || !isDateValid;
     }
 
+    setButtonDisabled();
+
     startDateElement.addEventListener(`change`, () => {
-      setDateChange();
+      setButtonDisabled();
+      this._startDate = getDateObject(startDateElement.value);
     });
 
     endDateElement.addEventListener(`change`, () => {
-      setDateChange();
+      setButtonDisabled();
+      this._endDate = getDateObject(endDateElement.value);
     });
-
-    /*element.querySelector(`.event__input--destination`)
-      .addEventListener(`input`, (evt) => {
-        const destination = evt.target.value;
-        saveButton.disabled = !checkDestinationValid(destination);
-      });*/
 
     const typesList = element.querySelectorAll(`.event__type-input`);
     typesList.forEach((type) => {
@@ -376,10 +386,10 @@ export default class EventEdit extends AbstractSmartComponent {
       });
     });
 
-    const eventInput = element.querySelector(`.event__input--destination`);
-    eventInput.addEventListener(`input`, (evt) => {
-        saveButton.disabled = !checkDestinationValid(evt.target.value);
+    eventInput.addEventListener(`input`, () => {
+        setButtonDisabled();
       });
+
     eventInput.addEventListener(`change`, (evt) => {
       this._destination = evt.target.value;
       this._description = generateRandomDescription();
@@ -387,6 +397,7 @@ export default class EventEdit extends AbstractSmartComponent {
       this.rerender();
     });
   }
+
   _applyFlatpickr() {
     if (this._flatpickrStart) {
       this._flatpickrStart.destroy();
@@ -399,14 +410,14 @@ export default class EventEdit extends AbstractSmartComponent {
     const dateStartElement = this.getElement().querySelector(`input[name="event-start-time"]`);
     this._flatpickrStart = flatpickr(dateStartElement, {
       allowInput: true,
-      defaultDate: this._event.startDate || new Date(),
+      defaultDate: this._startDate || new Date(),
       enableTime: true,
       dateFormat: `d/m/y H:i`
     });
     const dateEndElement = this.getElement().querySelector(`input[name="event-end-time"]`);
     this._flatpickrEnd = flatpickr(dateEndElement, {
       allowInput: true,
-      defaultDate: this._event.endDate || new Date(),
+      defaultDate: this._endDate || new Date(),
       enableTime: true,
       dateFormat: `d/m/y H:i`,
     });

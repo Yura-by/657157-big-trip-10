@@ -8,6 +8,10 @@ export const formatInDay = (date) => {
   return moment(date).format(`YYYY-MM-DD`);
 };
 
+export const formatInDayTime = (date) => {
+  return moment(date).format(`DD/MM/YYYY HH:mm`);
+}
+
 export const formatInTime = (date) => {
   return moment(date).format(`HH:mm`);
 };
