@@ -157,4 +157,4 @@ const generateEvents = (count) => {
     .map(generateEvent);
 };
 
-export {generateEvent, generateEvents, CITIES, generateRandomOffers, generateRandomDescription, generateRandomPhotos};
+export {generateEvent, generateEvents, CITIES, generateRandomOffers, generateRandomDescription, generateRandomPhotos, OFFERS};

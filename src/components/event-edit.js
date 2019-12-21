@@ -4,7 +4,7 @@ import 'flatpickr/dist/themes/light.css';
 import {TYPES, Index} from '../const.js';
 import {CITIES} from '../mock/event.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
-import {generateRandomOffers, generateRandomDescription, generateRandomPhotos} from '../mock/event.js';
+import {generateRandomOffers, generateRandomDescription, generateRandomPhotos, OFFERS} from '../mock/event.js';
 import {getDateObject} from '../utils/common.js';
 
 const IndexNumber = {
@@ -38,7 +38,7 @@ const createSelectors = (offers) => {
     const idName = createId(description, count);
     return (
       `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${idName}" type="checkbox" name="event-offer-luggage" checked>
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${idName}" type="checkbox" name="${description}" checked>
         <label class="event__offer-label" for="event-offer-${idName}">
           <span class="event__offer-title">${description}</span>
           &plus;
@@ -220,14 +220,26 @@ const checkDestinationValid = (destination) => {
   return CITIES.some((city) => city === destination);
 }
 
+const parseOffers = (formData) => {
+  const formDataKeys = [];
+  formData.forEach((property, key) => formDataKeys.push(key));
+  return OFFERS.filter((offer) => {
+    return formDataKeys.some((keyForm) => {
+      return keyForm === offer.description;
+    });
+  });
+};
+
 const parseFormData = (formData) => {
+  //const offers = parseOffers(formData);
   return {
     destination: formData.get(`destination`),
     description: ``,
     startDate: getDateObject(formData.get(`event-start-time`)),
     endDate: getDateObject(formData.get(`event-end-time`)),
     price: formData.get(`price`),
-    isFavorite: formData.get(`favorite`) ? true : false
+    isFavorite: formData.get(`favorite`) ? true : false,
+    offers: parseOffers(formData)
   }
 };
 
@@ -269,7 +281,6 @@ export default class EventEdit extends AbstractSmartComponent {
       id: String(new Date() + Math.random()),
       type: this._type,
       description: ``,
-      offers: [],
       photo: []
       });
     return result;
@@ -334,11 +345,20 @@ export default class EventEdit extends AbstractSmartComponent {
   _subscribeOnEvents() {
     const element = this.getElement();
     const saveButton = element.querySelector(`.event__save-btn`);
+    const startDateElement = element.querySelector(`input[name="event-start-time"]`);
+    const endDateElement = element.querySelector(`input[name="event-end-time"]`);
 
-    element.querySelector(`input[name="event-end-time"]`)
-      .addEventListener(`change`, () => {
-        saveButton.disabled = ;
-      });
+    const setDateChange = () => {
+      saveButton.disabled = getDateObject(startDateElement.value) > getDateObject(endDateElement.value);
+    }
+
+    startDateElement.addEventListener(`change`, () => {
+      setDateChange();
+    });
+
+    endDateElement.addEventListener(`change`, () => {
+      setDateChange();
+    });
 
     element.querySelector(`.event__input--destination`)
       .addEventListener(`input`, (evt) => {
@@ -385,7 +405,6 @@ export default class EventEdit extends AbstractSmartComponent {
       defaultDate: this._event.endDate || new Date(),
       enableTime: true,
       dateFormat: `d/m/y H:i`,
-      minDate: this._event.startDate
     });
 
   }
