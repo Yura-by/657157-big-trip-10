@@ -142,6 +142,7 @@ const createEventEditTemplate = (event, options = {}) => {
   const eventTypeItemActivity = createEventTypeItems(IndexNumber.ITEM_ACTIVITY, TYPES.length);
   const destinationOptions = createDestinationOptions(CITIES);
   const eventDetails = createEventDetails(event, offers, description, photo);
+  const isDisabled = !checkDestinationValid(destination);
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -198,7 +199,7 @@ const createEventEditTemplate = (event, options = {}) => {
           <input class="event__input  event__input--price" id="event-price-1" type="text" name="price" value="${price}">
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? `disabled` : ``}>Save</button>
         <button class="event__reset-btn" type="reset">Cancel</button>
         <input id="event-favorite-${startDate.getTime()}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="favorite" ${isFavorite ? `checked` : ``}>
         <label class="event__favorite-btn" for="event-favorite-${startDate.getTime()}">
@@ -360,11 +361,11 @@ export default class EventEdit extends AbstractSmartComponent {
       setDateChange();
     });
 
-    element.querySelector(`.event__input--destination`)
+    /*element.querySelector(`.event__input--destination`)
       .addEventListener(`input`, (evt) => {
         const destination = evt.target.value;
         saveButton.disabled = !checkDestinationValid(destination);
-      });
+      });*/
 
     const typesList = element.querySelectorAll(`.event__type-input`);
     typesList.forEach((type) => {
@@ -376,6 +377,9 @@ export default class EventEdit extends AbstractSmartComponent {
     });
 
     const eventInput = element.querySelector(`.event__input--destination`);
+    eventInput.addEventListener(`input`, (evt) => {
+        saveButton.disabled = !checkDestinationValid(evt.target.value);
+      });
     eventInput.addEventListener(`change`, (evt) => {
       this._destination = evt.target.value;
       this._description = generateRandomDescription();

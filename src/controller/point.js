@@ -14,8 +14,8 @@ export const EmptyEvent = {
   destination: ``,
   photo: [],
   description: ``,
-  startDate: null,
-  endDate: null,
+  startDate: new Date(),
+  endDate: new Date(),
   price: 0,
   offers: [],
   isFavorite: false

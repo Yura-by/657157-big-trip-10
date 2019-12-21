@@ -57,6 +57,7 @@ export default class TripController {
 
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
     this._eventsModel.setFilterChangeHandler(this._onFilterChange);
+    this._eventsModel.setDataChangeHandler(this._onDataModulChange);
   }
 
   render() {
@@ -115,7 +116,8 @@ export default class TripController {
       const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
 
       if (isSuccess) {
-        pointController.render(newData, PointControllerMode.DEFAULT);
+        this._removeEvents();
+        this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
       }
     }
   }
@@ -126,6 +128,7 @@ export default class TripController {
 
   _onDataModulChange() {
     this._daysWithEvents = sortEvents(this._eventsModel.getEvents());
+    console.log(this._daysWithEvents)
   }
 
   _onViewChange() {
