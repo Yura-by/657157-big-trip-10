@@ -10,7 +10,7 @@ export const formatInDay = (date) => {
 
 export const formatInDayTime = (date) => {
   return moment(date).format(`DD/MM/YYYY HH:mm`);
-}
+};
 
 export const formatInTime = (date) => {
   return moment(date).format(`HH:mm`);
@@ -28,4 +28,4 @@ export const isOneDay = (dateA, dateB) => {
 
 export const getDateObject = (string) => {
   return moment(string, `DD/MM/YYYY HH:mm`).toDate();
-}
+};

@@ -20,11 +20,11 @@ const createFilterMarkup = (filter, isChecked) => {
 const createSiteFilterTemplate = (filters) => {
   const filtersMarkup = filters.map((filter) => createFilterMarkup(filter, filter.checked)).join(`\n`);
   return (
-      `<form class="trip-filters" action="#" method="get">
-        ${filtersMarkup}
-        <button class="visually-hidden" type="submit">Accept filter</button>
-      </form>`
-    );
+    `<form class="trip-filters" action="#" method="get">
+      ${filtersMarkup}
+      <button class="visually-hidden" type="submit">Accept filter</button>
+    </form>`
+  );
 };
 
 export default class SiteFilter extends AbstractComponent {

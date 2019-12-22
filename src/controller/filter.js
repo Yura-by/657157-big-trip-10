@@ -1,7 +1,6 @@
 import FilterComponent from '../components/site-filter.js';
 import {FilterType} from '../const.js';
 import {render, replace, RenderPosition} from '../utils/render.js';
-import {getTasksByFilter} from '../utils/filter.js';
 
 export default class FilterController {
   constructor(container, eventsModel) {
@@ -16,7 +15,6 @@ export default class FilterController {
 
   render() {
     const container = this._container;
-    const allEvents = this._eventsModel.getEventsAll();
     const filters = Object.values(FilterType).map((filterType) => {
       return {
         name: filterType,

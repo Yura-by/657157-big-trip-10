@@ -3,7 +3,6 @@ import SiteMenuComponent from './components/site-menu.js';
 import EventsModel from './models/events.js';
 import {generateEvents} from './mock/event.js';
 import {generateMenu} from './mock/menu.js';
-import {generateFilter} from './mock/filter.js';
 import {RenderPosition, render} from './utils/render.js';
 import TripController from './controller/trip.js';
 

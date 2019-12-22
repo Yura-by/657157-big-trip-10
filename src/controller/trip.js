@@ -41,7 +41,7 @@ export default class TripController {
     this._eventsModel = eventsModel;
 
     this._daysWithEvents = null;
-    this._pointControllers = null;
+    this._pointControllers = [];
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
     this._daysComponent = null;
@@ -63,7 +63,7 @@ export default class TripController {
   render() {
     const events = this._eventsModel.getEvents();
 
-    if (!events || events === 0) {
+    if (!events || events === 0 || events.length === 0) {
       render(this._container, this._noEventsComponent, RenderPosition.BEFOREEND);
       return;
     }
@@ -80,10 +80,21 @@ export default class TripController {
       return;
     }
 
-    const eventListElement = this._container.querySelector(`.trip-events__list`);
-    this._creatingEvent = new PointController(eventListElement, this._onDataChange, this._onViewChange, this._onFavoriteChange);
-    this._creatingEvent.render(EmptyEvent, PointControllerMode.ADDING);
+    this._pointControllers.forEach((point) => point.setDefaultView());
 
+    if (this._noEventsComponent) {
+      remove(this._noEventsComponent);
+    }
+
+    const adjacentElement = this._container.querySelector(`.trip-days`);
+    this._creatingEvent = new PointController(this._container, this._onDataChange, this._onViewChange, null);
+    this._pointControllers.unshift(this._creatingEvent);
+
+    if (adjacentElement) {
+      this._creatingEvent.render(EmptyEvent, PointControllerMode.ADDING, adjacentElement);
+    } else {
+      this._creatingEvent.render(EmptyEvent, PointControllerMode.ADDING);
+    }
   }
 
   _renderEventsInDays(eventsInDays) {
@@ -102,11 +113,17 @@ export default class TripController {
       this._creatingEvent = null;
       if (newData === null) {
         pointController.destroy();
+        this._pointControllers.shift();
+        if (this._pointControllers.length === 0) {
+          render(this._container, this._noEventsComponent, RenderPosition.BEFOREEND);
+        }
       } else {
         this._eventsModel.addEvent(newData);
-        pointController.render(newData, PointControllerMode.DEFAULT);
-
-        this._pointControllers = [].concat(pointController, this._pointControllers);
+        pointController.destroy();
+        this._removeEvents();
+        render(this._container, this._sortComponent, RenderPosition.BEFOREEND);
+        this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
+        this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
       }
     } else if (newData === null) {
       this._eventsModel.removeEvent(oldData.id);
@@ -128,9 +145,19 @@ export default class TripController {
 
   _onDataModulChange() {
     this._daysWithEvents = sortEvents(this._eventsModel.getEvents());
+    if (this._eventsModel.getEventsAll().length === 0) {
+      remove(this._sortComponent);
+      render(this._container, this._noEventsComponent, RenderPosition.BEFOREEND);
+    }
   }
 
   _onViewChange() {
+    const addingConroller = this._pointControllers[0];
+    if (addingConroller && addingConroller.getMode() === PointControllerMode.ADDING) {
+      addingConroller.destroy();
+      this._pointControllers.shift();
+      this._creatingEvent = null;
+    }
     this._pointControllers.forEach((point) => point.setDefaultView());
   }
 
@@ -162,9 +189,13 @@ export default class TripController {
   }
 
   _removeEvents() {
-    this._pointControllers.forEach((pointController) => pointController.destroy());
-    this._pointControllers = [];
-    remove(this._daysComponent);
+    if (this._pointControllers) {
+      this._pointControllers.forEach((pointController) => pointController.destroy());
+      this._pointControllers = [];
+      if (this._daysComponent) {
+        remove(this._daysComponent);
+      }
+    }
   }
 
   _onFilterChange() {
@@ -172,6 +203,4 @@ export default class TripController {
     this._daysWithEvents = sortEvents(this._eventsModel.getEvents());
     this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
   }
-
-
 }

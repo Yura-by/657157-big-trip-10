@@ -9,7 +9,7 @@ const TYPE = {
   SIGHTSEEING: `sightseeing`,
   RESTAURANT: `restaurant`,
   CHECK: `check`
-}
+};
 
 const TYPES = [
   TYPE.BUS,

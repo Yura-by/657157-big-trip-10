@@ -4,7 +4,7 @@ import {render, replace, RenderPosition, remove} from '../utils/render.js';
 import {TYPE} from '../const.js';
 
 export const Mode = {
-  ADDIING: `adding`,
+  ADDING: `adding`,
   DEFAULT: `default`,
   EDIT: `edit`,
 };
@@ -36,13 +36,13 @@ export default class PointController {
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
-  render(event, mode) {
+  render(event, mode, adjacentElement) {
     const oldEventComponent = this._eventComponent;
     const oldEventEditComponent = this._eventEditComponent;
     this._mode = mode;
 
     this._eventComponent = new EventComponent(event);
-    this._eventEditComponent = new EventEditComponent(event);
+    this._eventEditComponent = new EventEditComponent(event, this._onFavoriteChange);
 
     this._eventComponent.setRollupButtonClickHandler(() => {
       this._replaceEventToEdit();
@@ -67,7 +67,6 @@ export default class PointController {
         isFavorite: !event.isFavorite
       }));
     });
-
     switch (mode) {
       case Mode.DEFAULT:
         if (oldEventEditComponent && oldEventComponent) {
@@ -84,9 +83,17 @@ export default class PointController {
           remove(oldEventComponent);
         }
         document.addEventListener(`keydown`, this._onEscKeyDown);
-        render(this._container, this._eventEditComponent, RenderPosition.AFTERBEGIN);
+        if (adjacentElement) {
+          render(this._container, this._eventEditComponent, RenderPosition.INSERT_BEFORE, adjacentElement);
+        } else {
+          render(this._container, this._eventEditComponent, RenderPosition.BEFOREEND);
+        }
         break;
     }
+  }
+
+  getMode() {
+    return this._mode;
   }
 
   destroy() {
@@ -96,6 +103,9 @@ export default class PointController {
   }
 
   setDefaultView() {
+    if (this._mode === Mode.ADDING) {
+      return;
+    }
     if (this._mode !== Mode.DEFAULT) {
       this._replaceEditToEvent();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
