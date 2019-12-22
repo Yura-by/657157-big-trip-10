@@ -72,4 +72,8 @@ export default class Events {
   _callHandlers(handlers) {
     handlers.forEach((handler) => handler());
   }
+
+  getFilterName() {
+    return this._activeFilterType;
+  }
 }
