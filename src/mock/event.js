@@ -89,7 +89,7 @@ const getRandomArrayItem = (array) => {
 };
 
 const getRandomIntegerNumber = (min, max) => {
-  return min + Math.floor(max * Math.random());
+  return min + Math.floor((max - min) * Math.random());
 };
 
 const generateRandomPhotos = () => {
@@ -138,6 +138,7 @@ const generateEvent = () => {
   const startDate = generateRandomDate();
 
   return {
+    id: String(new Date() + Math.random()),
     type: getRandomArrayItem(TYPES),
     destination: getRandomArrayItem(CITIES),
     photo: generateRandomPhotos(),
@@ -156,4 +157,4 @@ const generateEvents = (count) => {
     .map(generateEvent);
 };
 
-export {generateEvent, generateEvents, CITIES, generateRandomOffers, generateRandomDescription, generateRandomPhotos};
+export {generateEvent, generateEvents, CITIES, generateRandomOffers, generateRandomDescription, generateRandomPhotos, OFFERS};

@@ -1,17 +1,32 @@
 import EventComponent from '../components/event.js';
 import EventEditComponent from '../components/event-edit.js';
-import {render, replace, RenderPosition} from '../utils/render.js';
+import {render, replace, RenderPosition, remove} from '../utils/render.js';
+import {TYPE} from '../const.js';
 
-const Mode = {
+export const Mode = {
+  ADDING: `adding`,
   DEFAULT: `default`,
   EDIT: `edit`,
 };
 
+export const EmptyEvent = {
+  type: TYPE.FLIGHT,
+  destination: ``,
+  photo: [],
+  description: ``,
+  startDate: new Date(),
+  endDate: new Date(),
+  price: 0,
+  offers: [],
+  isFavorite: false
+};
+
 export default class PointController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, onDataChange, onViewChange, onFavoriteChange) {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
+    this._onFavoriteChange = onFavoriteChange;
 
     this._mode = Mode.DEFAULT;
 
@@ -21,12 +36,13 @@ export default class PointController {
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
-  render(event) {
+  render(event, mode, adjacentElement) {
     const oldEventComponent = this._eventComponent;
     const oldEventEditComponent = this._eventEditComponent;
+    this._mode = mode;
 
     this._eventComponent = new EventComponent(event);
-    this._eventEditComponent = new EventEditComponent(event);
+    this._eventEditComponent = new EventEditComponent(event, this._onFavoriteChange);
 
     this._eventComponent.setRollupButtonClickHandler(() => {
       this._replaceEventToEdit();
@@ -36,25 +52,60 @@ export default class PointController {
       this._replaceEditToEvent();
     });
 
-    this._eventEditComponent.setSubmitHandler(() => {
-      this._replaceEditToEvent();
+    this._eventEditComponent.setSubmitHandler((evt) => {
+      evt.preventDefault();
+      const data = this._eventEditComponent.getData();
+      this._onDataChange(this, event, data);
+    });
+
+    this._eventEditComponent.setCancelButtonClickHandler(() => {
+      this._onDataChange(this, event, null);
     });
 
     this._eventEditComponent.setFavoriteInputClickHandler(() => {
-      this._onDataChange(this, event, Object.assign({}, event, {
-        isFavorite: !event.isFavorite,
+      this._onFavoriteChange(event, Object.assign({}, event, {
+        isFavorite: !event.isFavorite
       }));
     });
-
-    if (oldEventEditComponent && oldEventComponent) {
-      replace(this._eventComponent, oldEventComponent);
-      replace(this._eventEditComponent, oldEventEditComponent);
-    } else {
-      render(this._container, this._eventComponent, RenderPosition.BEFOREEND);
+    switch (mode) {
+      case Mode.DEFAULT:
+        if (oldEventEditComponent && oldEventComponent) {
+          replace(this._eventComponent, oldEventComponent);
+          replace(this._eventEditComponent, oldEventEditComponent);
+          this._replaceEditToEvent();
+        } else {
+          render(this._container, this._eventComponent, RenderPosition.BEFOREEND);
+        }
+        break;
+      case Mode.ADDING:
+        if (oldEventEditComponent && oldEventComponent) {
+          remove(oldEventEditComponent);
+          remove(oldEventComponent);
+        }
+        document.addEventListener(`keydown`, this._onEscKeyDown);
+        if (adjacentElement) {
+          render(this._container, this._eventEditComponent, RenderPosition.INSERT_BEFORE, adjacentElement);
+        } else {
+          render(this._container, this._eventEditComponent, RenderPosition.BEFOREEND);
+        }
+        break;
     }
   }
 
+  getMode() {
+    return this._mode;
+  }
+
+  destroy() {
+    remove(this._eventEditComponent);
+    remove(this._eventComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
+  }
+
   setDefaultView() {
+    if (this._mode === Mode.ADDING) {
+      return;
+    }
     if (this._mode !== Mode.DEFAULT) {
       this._replaceEditToEvent();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
@@ -81,6 +132,9 @@ export default class PointController {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
     if (isEscKey) {
+      if (this._mode === Mode.ADDING) {
+        this._onDataChange(this, EmptyEvent, null);
+      }
       this._replaceEditToEvent();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     }

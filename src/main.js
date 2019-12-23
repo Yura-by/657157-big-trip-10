@@ -1,8 +1,8 @@
-import SiteFilterComponent from './components/site-filter.js';
+import FilterController from './controller/filter.js';
 import SiteMenuComponent from './components/site-menu.js';
+import EventsModel from './models/events.js';
 import {generateEvents} from './mock/event.js';
 import {generateMenu} from './mock/menu.js';
-import {generateFilter} from './mock/filter.js';
 import {RenderPosition, render} from './utils/render.js';
 import TripController from './controller/trip.js';
 
@@ -15,13 +15,22 @@ const siteMainElement = document.querySelector(`.page-main`);
 const tripEventsElement = siteMainElement.querySelector(`.trip-events`);
 
 const events = generateEvents(EVENT_COUNT);
+const eventsModel = new EventsModel();
+eventsModel.setEvents(events);
 
 render(siteContolsElement, new SiteMenuComponent(generateMenu()), RenderPosition.INSERT_BEFORE, switchTabsTitleElement);
-render(siteContolsElement, new SiteFilterComponent(generateFilter()), RenderPosition.BEFOREEND);
 
-const tripController = new TripController(tripEventsElement);
+const filterController = new FilterController(siteContolsElement, eventsModel);
+filterController.render();
 
-tripController.render(events);
+const tripController = new TripController(tripEventsElement, eventsModel);
+
+tripController.render();
+
+siteHeaderElement.querySelector(`.trip-main__event-add-btn`)
+  .addEventListener(`click`, () => {
+    tripController.createEvent();
+  });
 
 const getTotalPrice = () => {
   return events.reduce((total, event) => {
