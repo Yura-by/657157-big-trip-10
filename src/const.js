@@ -36,4 +36,6 @@ const FilterType = {
   PAST: `past`
 };
 
-export {TYPES, TYPE, Index, FilterType};
+const HIDDEN_CLASS = `visually-hidden`;
+
+export {TYPES, TYPE, Index, FilterType, HIDDEN_CLASS};

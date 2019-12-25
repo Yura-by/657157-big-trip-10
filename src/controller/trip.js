@@ -4,7 +4,7 @@ import NoEventsComponent from '../components/no-events.js';
 import {formatInDay, sortEventsInOrder} from '../utils/common.js';
 import {RenderPosition, render, remove} from '../utils/render.js';
 import PointController, {Mode as PointControllerMode, EmptyEvent} from './point.js';
-import {FilterType} from '../const.js';
+import {FilterType, HIDDEN_CLASS} from '../const.js';
 
 const renderEvents = (container, eventsInDay, onDataChange, onViewChange, onFavoriteChange) => {
   const controllersInDay = [];
@@ -59,6 +59,14 @@ export default class TripController {
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
     this._eventsModel.setFilterChangeHandler(this._onFilterChange);
     this._eventsModel.setDataChangeHandler(this._onDataModulChange);
+  }
+
+  hide() {
+    this._container.classList.add(HIDDEN_CLASS);
+  }
+
+  show() {
+    this._container.classList.remove(HIDDEN_CLASS);
   }
 
   render() {
