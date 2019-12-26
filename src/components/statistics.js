@@ -38,17 +38,13 @@ const getUniqItems = (item, index, array) => {
 
 const setChartHeight = (ctx, elements, container) => {
   ctx.height = elements.length < 2 ? ChartBarHeight.MIN : ChartBarHeight.MIDDLE * elements.length;
-  //ctx.parentNode.height = ctx.height;
   const ID_PREFIX = `statistics__chart--`;
   const typeName = ctx.className.substring(ID_PREFIX.length);
   const wrapperClass = `.statistics__item--${typeName}`;
-  console.dir(container.querySelector(wrapperClass))
   container.querySelector(wrapperClass).height = ctx.height;
   console.log(ctx.height)
   console.log(container.querySelector(wrapperClass).height)
-  /*console.log(typeName);
-  console.log(ctx.height)
-  console.log(ctx.parentNode.parentNode)*/
+
 };
 
 const getPrice = (events, type) => {
@@ -93,7 +89,7 @@ const renderMoneyChart = (moneyCtx, events, container) => {
     options: {
       layout: {
         padding: {
-          left: 150,
+          left: 100,
           right: 0,
           top: 0,
           bottom: 0
@@ -134,7 +130,7 @@ const renderMoneyChart = (moneyCtx, events, container) => {
       title: {
         display: true,
         text: `MONEY`,
-        position: `leftTupe`,
+        position: `left`,
         fontSize: 18,
         fontColor: `#000000`
       },
