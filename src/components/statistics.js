@@ -2,54 +2,125 @@ import AbstractSmartComponent from './abstract-smart-component.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
+const ChartBarHeight = {
+  MIN: 80,
+  MIDDLE: 60
+}
+
+const ELEMENTS_MIN_LENGTH = 2;
+
 const createStatisticsTemplate = () => {
   return (
     `<section class="statistics">
       <h2 class="visually-hidden">Trip statistics</h2>
 
       <div class="statistics__item statistics__item--money">
-        <canvas class="statistics__chart statistics__chart--money" width="400" height="400"></canvas>
+        <canvas class="statistics__chart--money" width="900" height="300"></canvas>
       </div>
 
       <div class="statistics__item statistics__item--transport">
-        <canvas class="statistics__chart  statistics__chart--transport" width="900"></canvas>
+        <canvas class="statistics__chart--transport" width="900"></canvas>
       </div>
 
-      <div class="statistics__item statistics__item--time-spend">
-        <canvas class="statistics__chart  statistics__chart--time" width="900"></canvas>
+      <div class="statistics__item statistics__item--time">
+        <canvas class="statistics__chart--time" width="900"></canvas>
       </div>
     </section>`
   );
 }
 
-//Chart.defaults.global.defaultFontSize = 18;
+Chart.defaults.global.defaultFontSize = 18;
+Chart.defaults.global.defaultFontColor = '#000000';
 
 const getUniqItems = (item, index, array) => {
   return array.indexOf(item) === index;
 };
 
-const renderMoneyChart = (moneyCtx, events) => {
+const setChartHeight = (ctx, elements, container) => {
+  ctx.height = elements.length < 2 ? ChartBarHeight.MIN : ChartBarHeight.MIDDLE * elements.length;
+  //ctx.parentNode.height = ctx.height;
+  const ID_PREFIX = `statistics__chart--`;
+  const typeName = ctx.className.substring(ID_PREFIX.length);
+  const wrapperClass = `.statistics__item--${typeName}`;
+  console.dir(container.querySelector(wrapperClass))
+  container.querySelector(wrapperClass).height = ctx.height;
+  console.log(ctx.height)
+  console.log(container.querySelector(wrapperClass).height)
+  /*console.log(typeName);
+  console.log(ctx.height)
+  console.log(ctx.parentNode.parentNode)*/
+};
+
+const getPrice = (events, type) => {
+  return events.filter((event) => event.type === type).
+    reduce((accumulator, item) => accumulator += item.price
+  , 0)
+};
+
+const renderMoneyChart = (moneyCtx, events, container) => {
   const types = events
     .map((event) => event.type)
     .filter(getUniqItems);
 
+  const arrayEvents = () => {
+    const eventsWithPrice = types.map((name) => {
+      return {
+        type: name,
+        price: getPrice(events, name)
+      }
+    });
+    return eventsWithPrice.sort((leftType, rightType) => rightType.price - leftType.price)
+  };
+
+  const labelNames = arrayEvents().map((item) => item.type);
+  const priceValues = arrayEvents().map((item) => item.price);
+
+  setChartHeight(moneyCtx, types, container);
 
   return new Chart(moneyCtx, {
-    //plugins: [ChartDataLabels],
+    plugins: [ChartDataLabels],
     type: `horizontalBar`,
+
     data: {
-      labels: types,
+      labels: labelNames,
       datasets: [{
-        data: [5, 12, 16],//colors.map((color) => calcUniqCountColor(tasks, color)),
-        //backgroundColor: `#ffffff`
+        data: priceValues,
+        backgroundColor: `#ffffff`,
+        hoverBackgroundColor: `#ffffff`,
+        barPercentage: 0.9
       }]
     },
     options: {
-      /*scales: {
+      layout: {
+        padding: {
+          left: 150,
+          right: 0,
+          top: 0,
+          bottom: 0
+        }
+      },
+      plugins: {
+        datalabels: {
+          labels: {
+            value: null,
+            title: {
+              color: `#000000`,
+              anchor: `end`,
+              align: `leftTupe`
+            }
+          },
+          font: {
+            size: 12
+          },
+          color: `#000000`
+        }
+      },
+      scales: {
+        offset: false,
         yAxes: [{
           gridLines: {
             display: false,
-          }
+          },
         }],
         xAxes: [{
           gridLines: {
@@ -59,16 +130,23 @@ const renderMoneyChart = (moneyCtx, events) => {
             display: false
           }
         }]
-      },*/
+      },
       title: {
         display: true,
         text: `MONEY`,
-        //position: `left`,
-        //fontSize: 20,
+        position: `leftTupe`,
+        fontSize: 18,
         fontColor: `#000000`
       },
       legend: {
         display: false,
+      },
+      tooltips: {
+        mode: false,
+        callbacks: {
+          title: function() {},
+          label: function() {}
+        }
       }
     }
   });
@@ -100,7 +178,10 @@ export default class Statistics extends AbstractSmartComponent {
 
     this._resetCharts();
 
-    this._moneyChart = renderMoneyChart(moneyCtx, this._events.getEvents());
+    this._moneyChart = renderMoneyChart(moneyCtx, this._events.getEvents(), this._element);
+    //this._moneyChart.canvas.parentNode.style.height = '128px';
+    //this._moneyChart.canvas.parentNode.style.width = '300px';
+    //this._moneyChart.canvas.height = `100`
 
     //this._transportChart = renderColorsChart(transportCtx, this._events.getEvents());
     //this._transportChart = renderTransportChart(transportCtx, this._events.getEvents());
@@ -138,56 +219,3 @@ export default class Statistics extends AbstractSmartComponent {
     }
   }
 }
-
-/*const renderColorsChart = (colorsCtx) => {
-  return new Chart(colorsCtx, {
-    plugins: [ChartDataLabels],
-    type: `pie`,
-    data: {
-      labels: [`red`, `blue`],
-      datasets: [{
-        data: [10, 15],
-        backgroundColor: [`#ff0000`, `#0000ff`]
-      }]
-    },
-    options: {
-      plugins: {
-        datalabels: {
-          display: false
-        }
-      },
-      tooltips: {
-        callbacks: {
-          label: (tooltipItem, data) => {
-
-            return `${blue} TASKS — ${red}%`;
-          }
-        },
-        displayColors: false,
-        backgroundColor: `#ffffff`,
-        bodyFontColor: `#000000`,
-        borderColor: `#000000`,
-        borderWidth: 1,
-        cornerRadius: 0,
-        xPadding: 15,
-        yPadding: 15
-      },
-      title: {
-        display: true,
-        text: `DONE BY: COLORS`,
-        fontSize: 16,
-        fontColor: `#000000`
-      },
-      legend: {
-        position: `left`,
-        labels: {
-          boxWidth: 15,
-          padding: 25,
-          fontStyle: 500,
-          fontColor: `#000000`,
-          fontSize: 13
-        }
-      }
-    }
-  });
-};*/
