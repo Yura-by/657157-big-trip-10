@@ -2,15 +2,25 @@ import AbstractComponent from './abstract-component.js';
 import moment from 'moment';
 
 const DAY_COUNTER_CORRECT = 1;
-const INDEX_DAY = 0;
+
+const Index = {
+  DAY: 0,
+  PREVIOUS_DAY: 1
+}
 
 const createDayTemplate = (days) => {
   return days.
   map((events, index, array) => {
     const [event] = events;
     let dayNumber = DAY_COUNTER_CORRECT;
-    if (index !== 0) {
-      dayNumber += moment(event.startDate).diff(moment(array[INDEX_DAY][INDEX_DAY].startDate), `days`);
+    event.serialNumber = dayNumber;
+    if (index !== Index.DAY) {
+      dayNumber += moment(event.startDate).diff(moment(array[Index.DAY][Index.DAY].startDate), `days`);
+      if (moment(event.startDate).diff(array[index - Index.PREVIOUS_DAY][Index.DAY].startDate, `days`) === 0) {
+        dayNumber = array[index - Index.PREVIOUS_DAY][Index.DAY].serialNumber + DAY_COUNTER_CORRECT;
+        console.log(`hi`)
+      }
+      event.serialNumber = dayNumber;
     }
     const date = moment(event.startDate).format(`MMM D`);
     return (

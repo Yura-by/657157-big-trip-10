@@ -42,9 +42,6 @@ const setChartHeight = (ctx, elements, container) => {
   const typeName = ctx.className.substring(ID_PREFIX.length);
   const wrapperClass = `.statistics__item--${typeName}`;
   container.querySelector(wrapperClass).height = ctx.height;
-  console.log(ctx.height)
-  console.log(container.querySelector(wrapperClass).height)
-
 };
 
 const getPrice = (events, type) => {
@@ -68,7 +65,7 @@ const renderMoneyChart = (moneyCtx, events, container) => {
     return eventsWithPrice.sort((leftType, rightType) => rightType.price - leftType.price)
   };
 
-  const labelNames = arrayEvents().map((item) => item.type);
+  const labelNames = arrayEvents().map((item) => item.type.toUpperCase());
   const priceValues = arrayEvents().map((item) => item.price);
 
   setChartHeight(moneyCtx, types, container);
@@ -83,7 +80,9 @@ const renderMoneyChart = (moneyCtx, events, container) => {
         data: priceValues,
         backgroundColor: `#ffffff`,
         hoverBackgroundColor: `#ffffff`,
-        barPercentage: 0.9
+        barPercentage: 0.9,
+        maxBarThickness: ChartBarHeight.MIDDLE,
+        minBarLength: 40
       }]
     },
     options: {
@@ -102,11 +101,14 @@ const renderMoneyChart = (moneyCtx, events, container) => {
             title: {
               color: `#000000`,
               anchor: `end`,
-              align: `leftTupe`
+              align: `start`
             }
           },
           font: {
             size: 12
+          },
+          formatter: function(value, context) {
+            return `€ ${value}`
           },
           color: `#000000`
         }
