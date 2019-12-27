@@ -6,7 +6,7 @@ import {generateEvents} from './mock/event.js';
 import {RenderPosition, render} from './utils/render.js';
 import TripController from './controller/trip.js';
 
-const EVENT_COUNT = 20;
+const EVENT_COUNT = 22;
 
 const siteHeaderElement = document.querySelector(`.page-header`);
 const siteContolsElement = siteHeaderElement.querySelector(`.trip-controls`);
