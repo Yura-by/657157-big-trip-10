@@ -2,10 +2,32 @@ import AbstractSmartComponent from './abstract-smart-component.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-const ChartBarHeight = {
-  MIN: 80,
-  MIDDLE: 60
-}
+/*const ChartSettings = {
+  MIN: 100,
+  MIDDLE: 60,
+  MAX_THICKNESS: 50,
+  MIN_LENGTH: 40,
+  PADDING: 0,
+  PADDING_LEFT: 100,
+  PERCENTAGE: 0.9
+};*/
+
+const ChartSettings = {
+  BAR_MIN: 100,
+  BAR_MIDDLE: 60,
+  BAR_MAX_THICKNESS: 50,
+  BAR_MIN_LENGTH: 50,
+  PADDING: 0,
+  PADDING_LEFT: 100,
+  BAR_PERCENTAGE: 0.9,
+  FONT_SIZE: 14,
+  FONT_SIZE_TITLE: 20,
+  FONT_SIZE_LABELS: 12,
+  FONT_COLOR: `#000000`,
+  BACKGROUND_COLOR: `#ffffff`
+};
+
+const START_PRICE = 0;
 
 const ELEMENTS_MIN_LENGTH = 2;
 
@@ -29,15 +51,15 @@ const createStatisticsTemplate = () => {
   );
 }
 
-Chart.defaults.global.defaultFontSize = 18;
-Chart.defaults.global.defaultFontColor = '#000000';
+Chart.defaults.global.defaultFontSize = ChartSettings.FONT_SIZE;
+Chart.defaults.global.defaultFontColor = ChartSettings.FONT_COLOR;
 
 const getUniqItems = (item, index, array) => {
   return array.indexOf(item) === index;
 };
 
 const setChartHeight = (ctx, elements, container) => {
-  ctx.height = elements.length < 2 ? ChartBarHeight.MIN : ChartBarHeight.MIDDLE * elements.length;
+  ctx.height = elements.length < ELEMENTS_MIN_LENGTH ? ChartSettings.BAR_MIN : ChartSettings.BAR_MIDDLE * elements.length;
   const ID_PREFIX = `statistics__chart--`;
   const typeName = ctx.className.substring(ID_PREFIX.length);
   const wrapperClass = `.statistics__item--${typeName}`;
@@ -47,7 +69,7 @@ const setChartHeight = (ctx, elements, container) => {
 const getPrice = (events, type) => {
   return events.filter((event) => event.type === type).
     reduce((accumulator, item) => accumulator += item.price
-  , 0)
+  , START_PRICE)
 };
 
 const renderMoneyChart = (moneyCtx, events, container) => {
@@ -78,20 +100,20 @@ const renderMoneyChart = (moneyCtx, events, container) => {
       labels: labelNames,
       datasets: [{
         data: priceValues,
-        backgroundColor: `#ffffff`,
-        hoverBackgroundColor: `#ffffff`,
-        barPercentage: 0.9,
-        maxBarThickness: ChartBarHeight.MIDDLE,
-        minBarLength: 40
+        backgroundColor: ChartSettings.BACKGROUND_COLOR,
+        hoverBackgroundColor: ChartSettings.BACKGROUND_COLOR,
+        barPercentage: ChartSettings.BAR_PERCENTAGE,
+        maxBarThickness: ChartSettings.BAR_MAX_THICKNESS,
+        minBarLength: ChartSettings.BAR_MIN_LENGTH
       }]
     },
     options: {
       layout: {
         padding: {
-          left: 100,
-          right: 0,
-          top: 0,
-          bottom: 0
+          left: ChartSettings.PADDING_LEFT,
+          right: ChartSettings.PADDING,
+          top: ChartSettings.PADDING,
+          bottom: ChartSettings.PADDING
         }
       },
       plugins: {
@@ -99,18 +121,18 @@ const renderMoneyChart = (moneyCtx, events, container) => {
           labels: {
             value: null,
             title: {
-              color: `#000000`,
+              color: ChartSettings.FONT_COLOR,
               anchor: `end`,
               align: `start`
             }
           },
           font: {
-            size: 12
+            size: ChartSettings.FONT_SIZE_LABELS
           },
           formatter: function(value, context) {
             return `€ ${value}`
           },
-          color: `#000000`
+          color: ChartSettings.FONT_COLOR
         }
       },
       scales: {
@@ -133,8 +155,8 @@ const renderMoneyChart = (moneyCtx, events, container) => {
         display: true,
         text: `MONEY`,
         position: `left`,
-        fontSize: 18,
-        fontColor: `#000000`
+        fontSize: ChartSettings.FONT_SIZE_TITLE,
+        fontColor: ChartSettings.FONT_COLOR
       },
       legend: {
         display: false,
