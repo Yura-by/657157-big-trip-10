@@ -53,6 +53,18 @@ const createStatisticsTemplate = () => {
 
 Chart.defaults.global.defaultFontSize = ChartSettings.FONT_SIZE;
 Chart.defaults.global.defaultFontColor = ChartSettings.FONT_COLOR;
+Chart.defaults.global.datasets.horizontalBar.barPercentage = ChartSettings.BAR_PERCENTAGE;
+Chart.defaults.global.layout.padding = {
+  left: ChartSettings.PADDING_LEFT,
+  right: ChartSettings.PADDING,
+  top: ChartSettings.PADDING,
+  bottom: ChartSettings.PADDING
+};
+Chart.defaults.global.legend.display = false;
+Chart.defaults.global.title.display = true;
+Chart.defaults.global.title.position = `left`;
+Chart.defaults.horizontalBar.tooltips.mode = false
+console.dir(Chart)
 
 const getUniqItems = (item, index, array) => {
   return array.indexOf(item) === index;
@@ -102,24 +114,14 @@ const renderMoneyChart = (moneyCtx, events, container) => {
         data: priceValues,
         backgroundColor: ChartSettings.BACKGROUND_COLOR,
         hoverBackgroundColor: ChartSettings.BACKGROUND_COLOR,
-        barPercentage: ChartSettings.BAR_PERCENTAGE,
         maxBarThickness: ChartSettings.BAR_MAX_THICKNESS,
         minBarLength: ChartSettings.BAR_MIN_LENGTH
       }]
     },
     options: {
-      layout: {
-        padding: {
-          left: ChartSettings.PADDING_LEFT,
-          right: ChartSettings.PADDING,
-          top: ChartSettings.PADDING,
-          bottom: ChartSettings.PADDING
-        }
-      },
       plugins: {
         datalabels: {
           labels: {
-            value: null,
             title: {
               color: ChartSettings.FONT_COLOR,
               anchor: `end`,
@@ -152,17 +154,11 @@ const renderMoneyChart = (moneyCtx, events, container) => {
         }]
       },
       title: {
-        display: true,
         text: `MONEY`,
-        position: `left`,
         fontSize: ChartSettings.FONT_SIZE_TITLE,
         fontColor: ChartSettings.FONT_COLOR
       },
-      legend: {
-        display: false,
-      },
       tooltips: {
-        mode: false,
         callbacks: {
           title: function() {},
           label: function() {}
