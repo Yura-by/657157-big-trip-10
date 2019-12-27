@@ -1,4 +1,4 @@
-const TYPE = {
+const Type = {
   BUS: `bus`,
   DRIVE: `drive`,
   FLIGHT: `flight`,
@@ -11,17 +11,20 @@ const TYPE = {
   CHECK: `check`
 };
 
-const TYPES = [
-  TYPE.BUS,
-  TYPE.DRIVE,
-  TYPE.FLIGHT,
-  TYPE.TRAIN,
-  TYPE.TRANSPORT,
-  TYPE.SHIP,
-  TYPE.TAXI,
-  TYPE.SIGHTSEEING,
-  TYPE.RESTAURANT,
-  TYPE.CHECK
+const TYPES_TRANSPORT = [
+  Type.BUS,
+  Type.DRIVE,
+  Type.FLIGHT,
+  Type.TRAIN,
+  Type.TRANSPORT,
+  Type.SHIP,
+  Type.TAXI
+];
+
+const TYPES_PLACE = [
+  Type.SIGHTSEEING,
+  Type.RESTAURANT,
+  Type.CHECK
 ];
 
 const Index = {
@@ -38,4 +41,4 @@ const FilterType = {
 
 const HIDDEN_CLASS = `visually-hidden`;
 
-export {TYPES, TYPE, Index, FilterType, HIDDEN_CLASS};
+export {TYPES_TRANSPORT, TYPES_PLACE, Type, Index, FilterType, HIDDEN_CLASS};

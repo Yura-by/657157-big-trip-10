@@ -1,17 +1,11 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
-import {TYPES, Index} from '../const.js';
+import {TYPES_TRANSPORT, TYPES_PLACE, Index} from '../const.js';
 import {CITIES} from '../mock/event.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
 import {generateRandomOffers, generateRandomDescription, generateRandomPhotos, OFFERS} from '../mock/event.js';
-import {getDateObject, formatInDayTime} from '../utils/common.js';
-
-const IndexNumber = {
-  YEAR_FORMAT: 1,
-  ITEM_TRANSFER: 0,
-  ITEM_ACTIVITY: 7
-};
+import {getDateObject, formatInDayTime, getDestinationTitle} from '../utils/common.js';
 
 const TypeCheck = {
   IN_DATA: `check`,
@@ -63,8 +57,8 @@ const createEventOffersTemplate = (offers) => {
     : ` `;
 };
 
-const createEventTypeItems = (indexStart, indexEnd) => {
-  return TYPES.slice(indexStart, indexEnd).map((type) => {
+const createEventTypeItems = (types) => {
+  return types.map((type) => {
     if (type === TypeCheck.IN_DATA) {
       type = TypeCheck.OUT_DATA;
     }
@@ -133,13 +127,10 @@ const createEventEditTemplate = (options = {}, isNewEvent) => {
 
   const nameImage = type === `check` ? `check-in` : type;
 
-  let eventName = TYPES.slice(Index.START_PRETEX_IN).some((name) => type === name) ?
-    `${type} in` : `${type} to`;
+  const eventName = getDestinationTitle(type);
 
-  eventName = eventName[Index.UPPERCASE_LETTER].toUpperCase() + eventName.slice(Index.DRAIN_LETTER);
-
-  const eventTypeItemTransfer = createEventTypeItems(IndexNumber.ITEM_TRANSFER, IndexNumber.ITEM_ACTIVITY);
-  const eventTypeItemActivity = createEventTypeItems(IndexNumber.ITEM_ACTIVITY, TYPES.length);
+  const eventTypeItemTransfer = createEventTypeItems(TYPES_TRANSPORT);
+  const eventTypeItemActivity = createEventTypeItems(TYPES_PLACE);
   const destinationOptions = createDestinationOptions(CITIES);
   const eventDetails = createEventDetails(event, offers, description, photo);
   const valueStartDate = formatInDayTime(startDate);

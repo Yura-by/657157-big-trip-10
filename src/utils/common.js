@@ -1,4 +1,12 @@
 import moment from 'moment';
+import {TYPES_PLACE, Index} from '../const.js';
+
+export const getDestinationTitle = (type) => {
+  const eventName = TYPES_PLACE.some((name) => type === name) ?
+    `${type} in` : `${type} to`;
+
+  return eventName[Index.UPPERCASE_LETTER].toUpperCase() + eventName.slice(Index.DRAIN_LETTER);
+};
 
 export const castTimeFormat = (value) => {
   return value < 10 ? `0${value}` : String(value);

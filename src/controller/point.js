@@ -1,7 +1,7 @@
 import EventComponent from '../components/event.js';
 import EventEditComponent from '../components/event-edit.js';
 import {render, replace, RenderPosition, remove} from '../utils/render.js';
-import {TYPE} from '../const.js';
+import {Type} from '../const.js';
 
 export const Mode = {
   ADDING: `adding`,
@@ -10,7 +10,7 @@ export const Mode = {
 };
 
 export const EmptyEvent = {
-  type: TYPE.FLIGHT,
+  type: Type.FLIGHT,
   destination: ``,
   photo: [],
   description: ``,
