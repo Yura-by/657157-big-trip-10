@@ -1,16 +1,7 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-
-/*const ChartSettings = {
-  MIN: 100,
-  MIDDLE: 60,
-  MAX_THICKNESS: 50,
-  MIN_LENGTH: 40,
-  PADDING: 0,
-  PADDING_LEFT: 100,
-  PERCENTAGE: 0.9
-};*/
+import {TYPES_TRANSPORT} from '../const.js'
 
 const ChartSettings = {
   BAR_MIN: 100,
@@ -51,21 +42,6 @@ const createStatisticsTemplate = () => {
   );
 }
 
-Chart.defaults.global.defaultFontSize = ChartSettings.FONT_SIZE;
-Chart.defaults.global.defaultFontColor = ChartSettings.FONT_COLOR;
-Chart.defaults.global.datasets.horizontalBar.barPercentage = ChartSettings.BAR_PERCENTAGE;
-Chart.defaults.global.layout.padding = {
-  left: ChartSettings.PADDING_LEFT,
-  right: ChartSettings.PADDING,
-  top: ChartSettings.PADDING,
-  bottom: ChartSettings.PADDING
-};
-Chart.defaults.global.legend.display = false;
-Chart.defaults.global.title.display = true;
-Chart.defaults.global.title.position = `left`;
-Chart.defaults.horizontalBar.tooltips.mode = false
-console.dir(Chart)
-
 const getUniqItems = (item, index, array) => {
   return array.indexOf(item) === index;
 };
@@ -83,6 +59,20 @@ const getPrice = (events, type) => {
     reduce((accumulator, item) => accumulator += item.price
   , START_PRICE)
 };
+
+Chart.defaults.global.defaultFontSize = ChartSettings.FONT_SIZE;
+Chart.defaults.global.defaultFontColor = ChartSettings.FONT_COLOR;
+Chart.defaults.global.datasets.horizontalBar.barPercentage = ChartSettings.BAR_PERCENTAGE;
+Chart.defaults.global.layout.padding = {
+  left: ChartSettings.PADDING_LEFT,
+  right: ChartSettings.PADDING,
+  top: ChartSettings.PADDING,
+  bottom: ChartSettings.PADDING
+};
+Chart.defaults.global.legend.display = false;
+Chart.defaults.global.title.display = true;
+Chart.defaults.global.title.position = `left`;
+Chart.defaults.horizontalBar.tooltips.mode = false
 
 const renderMoneyChart = (moneyCtx, events, container) => {
   const types = events
@@ -168,6 +158,97 @@ const renderMoneyChart = (moneyCtx, events, container) => {
   });
 };
 
+const getCount = (events, type) => {
+  return events.filter((event) => event.type === type).length;
+};
+
+const renderTransportChart = (transportCtx, events, container) => {
+  console.log(TYPES_TRANSPORT)
+  const types = events
+    .map((event) => event.type)
+    .filter(getUniqItems);
+  const typesInEvents = TYPES_TRANSPORT.filter((type) => {
+    return events.some((event) => event.type === type)
+  });
+
+  const arrayEvents = () => {
+    const eventsWithCount = typesInEvents.map((name) => {
+      return {
+        type: name,
+        count: getCount(events, name)
+      }
+    });
+    return eventsWithCount.sort((leftType, rightType) => rightType.count - leftType.count)
+  };
+
+  const labelNames = arrayEvents().map((item) => item.type.toUpperCase());
+  const countValues = arrayEvents().map((item) => item.count);
+
+  setChartHeight(transportCtx, types, container);
+
+  return new Chart(transportCtx, {
+    plugins: [ChartDataLabels],
+    type: `horizontalBar`,
+    data: {
+      labels: labelNames,
+      datasets: [{
+        data: countValues,
+        backgroundColor: ChartSettings.BACKGROUND_COLOR,
+        hoverBackgroundColor: ChartSettings.BACKGROUND_COLOR,
+        maxBarThickness: ChartSettings.BAR_MAX_THICKNESS,
+        minBarLength: ChartSettings.BAR_MIN_LENGTH
+      }]
+    },
+    options: {
+      plugins: {
+        datalabels: {
+          labels: {
+            title: {
+              color: ChartSettings.FONT_COLOR,
+              anchor: `end`,
+              align: `start`
+            }
+          },
+          font: {
+            size: ChartSettings.FONT_SIZE_LABELS
+          },
+          formatter: function(value, context) {
+            return `${value}`
+          },
+          color: ChartSettings.FONT_COLOR
+        }
+      },
+      scales: {
+        offset: false,
+        yAxes: [{
+          gridLines: {
+            display: false,
+          },
+        }],
+        xAxes: [{
+          gridLines: {
+            display: false,
+          },
+          ticks: {
+            display: false
+          }
+        }]
+      },
+      title: {
+        text: `TRANSPORT`,
+        fontSize: ChartSettings.FONT_SIZE_TITLE,
+        fontColor: ChartSettings.FONT_COLOR
+      },
+      tooltips: {
+        callbacks: {
+          title: function() {},
+          label: function() {}
+        }
+      }
+    }
+  });
+};
+
 export default class Statistics extends AbstractSmartComponent {
   constructor(events) {
     super();
@@ -195,12 +276,7 @@ export default class Statistics extends AbstractSmartComponent {
     this._resetCharts();
 
     this._moneyChart = renderMoneyChart(moneyCtx, this._events.getEvents(), this._element);
-    //this._moneyChart.canvas.parentNode.style.height = '128px';
-    //this._moneyChart.canvas.parentNode.style.width = '300px';
-    //this._moneyChart.canvas.height = `100`
-
-    //this._transportChart = renderColorsChart(transportCtx, this._events.getEvents());
-    //this._transportChart = renderTransportChart(transportCtx, this._events.getEvents());
+    this._transportChart = renderTransportChart(transportCtx, this._events.getEvents(), this._element);
     //this._timeChart = renderIimeChart(colorsCtx, this._events.getEvents());
   }
 
