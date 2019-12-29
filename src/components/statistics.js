@@ -1,7 +1,8 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {TYPES_TRANSPORT} from '../const.js'
+import {TYPES_TRANSPORT} from '../const.js';
+import moment from 'moment';
 
 const ChartSettings = {
   BAR_MIN: 100,
@@ -60,6 +61,25 @@ const getPrice = (events, type) => {
   , START_PRICE)
 };
 
+const getTypes = (events) => {
+  return events
+    .map((event) => event.type)
+    .filter(getUniqItems);
+};
+
+const getTime = (events, type) => {
+  const eventsByType = events.filter((event) => event.type === type);
+  const result = eventsByType.reduce((accumulator, event) => {
+    const startDateMoment = moment(event.startDate);
+    const endDateMoment = moment(event.endDate);
+    const duration = moment.duration(endDateMoment.diff(startDateMoment));
+    console.log(accumulator)
+    return accumulator += duration.asHours();
+
+  }, 0);
+  return result;
+};
+
 Chart.defaults.global.defaultFontSize = ChartSettings.FONT_SIZE;
 Chart.defaults.global.defaultFontColor = ChartSettings.FONT_COLOR;
 Chart.defaults.global.datasets.horizontalBar.barPercentage = ChartSettings.BAR_PERCENTAGE;
@@ -72,12 +92,15 @@ Chart.defaults.global.layout.padding = {
 Chart.defaults.global.legend.display = false;
 Chart.defaults.global.title.display = true;
 Chart.defaults.global.title.position = `left`;
-Chart.defaults.horizontalBar.tooltips.mode = false
+Chart.defaults.horizontalBar.tooltips.mode = false;
+Chart.scaleService.updateScaleDefaults('linear', {
+    ticks: {
+        min: 0
+    }
+});
 
 const renderMoneyChart = (moneyCtx, events, container) => {
-  const types = events
-    .map((event) => event.type)
-    .filter(getUniqItems);
+  const types = getTypes(events);
 
   const arrayEvents = () => {
     const eventsWithPrice = types.map((name) => {
@@ -163,10 +186,7 @@ const getCount = (events, type) => {
 };
 
 const renderTransportChart = (transportCtx, events, container) => {
-  console.log(TYPES_TRANSPORT)
-  const types = events
-    .map((event) => event.type)
-    .filter(getUniqItems);
+  const types = getTypes(events);
   const typesInEvents = TYPES_TRANSPORT.filter((type) => {
     return events.some((event) => event.type === type)
   });
@@ -183,7 +203,6 @@ const renderTransportChart = (transportCtx, events, container) => {
 
   const labelNames = arrayEvents().map((item) => item.type.toUpperCase());
   const countValues = arrayEvents().map((item) => item.count);
-
   setChartHeight(transportCtx, types, container);
 
   return new Chart(transportCtx, {
@@ -213,7 +232,7 @@ const renderTransportChart = (transportCtx, events, container) => {
             size: ChartSettings.FONT_SIZE_LABELS
           },
           formatter: function(value, context) {
-            return `${value}`
+            return `${value}x`
           },
           color: ChartSettings.FONT_COLOR
         }
@@ -236,6 +255,88 @@ const renderTransportChart = (transportCtx, events, container) => {
       },
       title: {
         text: `TRANSPORT`,
+        fontSize: ChartSettings.FONT_SIZE_TITLE,
+        fontColor: ChartSettings.FONT_COLOR
+      },
+      tooltips: {
+        callbacks: {
+          title: function() {},
+          label: function() {}
+        }
+      }
+    }
+  });
+};
+
+const renderTimeChart = (timeCtx, events, container) => {
+  const types = getTypes(events);
+  console.log(types.length)
+
+  const arrayEvents = () => {
+    const eventsWithTime = types.map((name) => {
+      return {
+        type: name,
+        time: getTime(events, name)
+      }
+    });
+    return eventsWithTime.sort((leftType, rightType) => rightType.time - leftType.time)
+  };
+
+  const labelNames = arrayEvents().map((item) => item.type.toUpperCase());
+  const timeValues = arrayEvents().map((item) => item.time);
+  console.log(timeValues)
+  setChartHeight(timeCtx, types, container);
+
+  return new Chart(timeCtx, {
+    plugins: [ChartDataLabels],
+    type: `horizontalBar`,
+    data: {
+      labels: labelNames,
+      datasets: [{
+        data: timeValues,
+        backgroundColor: ChartSettings.BACKGROUND_COLOR,
+        hoverBackgroundColor: ChartSettings.BACKGROUND_COLOR,
+        maxBarThickness: ChartSettings.BAR_MAX_THICKNESS,
+        minBarLength: ChartSettings.BAR_MIN_LENGTH
+      }]
+    },
+    options: {
+      plugins: {
+        datalabels: {
+          labels: {
+            title: {
+              color: ChartSettings.FONT_COLOR,
+              anchor: `end`,
+              align: `start`
+            }
+          },
+          font: {
+            size: ChartSettings.FONT_SIZE_LABELS
+          },
+          formatter: function(value, context) {
+            return `${Math.round(value)}H`
+          },
+          color: ChartSettings.FONT_COLOR
+        }
+      },
+      scales: {
+        offset: false,
+        yAxes: [{
+          gridLines: {
+            display: false,
+          },
+        }],
+        xAxes: [{
+          gridLines: {
+            display: false,
+          },
+          ticks: {
+            display: false
+          }
+        }]
+      },
+      title: {
+        text: `TIME SPENT`,
         fontSize: ChartSettings.FONT_SIZE_TITLE,
         fontColor: ChartSettings.FONT_COLOR
       },
@@ -277,7 +378,7 @@ export default class Statistics extends AbstractSmartComponent {
 
     this._moneyChart = renderMoneyChart(moneyCtx, this._events.getEvents(), this._element);
     this._transportChart = renderTransportChart(transportCtx, this._events.getEvents(), this._element);
-    //this._timeChart = renderIimeChart(colorsCtx, this._events.getEvents());
+    this._timeChart = renderTimeChart(timeCtx, this._events.getEvents(), this._element);
   }
 
   recoveryListeners() {}
