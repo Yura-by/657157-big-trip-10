@@ -1,32 +1,46 @@
 import AbstractComponent from './abstract-component.js';
 
-const createLinks = (points) => {
-  return points.
-  map((linkName) => {
-    let name = linkName;
-    name = linkName[0].toUpperCase() + name.slice(1);
-    return (
-      `<a class="trip-tabs__btn" href="#">${name}</a>`
-    );
-  }).join(`\n`);
+const ACTIVE_CLASS = `trip-tabs__btn--active`;
+
+export const MenuItem = {
+  STATISTICS: `Stats`,
+  TABLE: `Table`
 };
 
-const createSiteMenuTemplate = (points) => {
-  const linksItems = points.length > 0 ? createLinks(points) : ``;
+const createSiteMenuTemplate = () => {
   return (
     `<nav class="trip-controls__trip-tabs  trip-tabs">
-      ${linksItems}
+      <a class="trip-tabs__btn  trip-tabs__btn--active" href="#">Table</a>
+      <a class="trip-tabs__btn" href="#">Stats</a>
     </nav>`
   );
 };
 
 export default class SiteMenu extends AbstractComponent {
-  constructor(points) {
-    super();
-    this._points = points;
+  getTemplate() {
+    return createSiteMenuTemplate();
   }
 
-  getTemplate() {
-    return createSiteMenuTemplate(this._points);
+  setActiveItem(menuItem) {
+    const items = this.getElement().querySelectorAll(`.trip-tabs__btn`);
+    items.forEach((item) => {
+      if (item.classList.contains(ACTIVE_CLASS)) {
+        item.classList.remove(ACTIVE_CLASS);
+      }
+      if (item.text === menuItem) {
+        item.classList.add(ACTIVE_CLASS);
+      }
+    });
+  }
+
+  setOnChange(handler) {
+    this.getElement().addEventListener(`click`, (evt) => {
+      if (evt.target.tagName !== `A`) {
+        return;
+      }
+      const menuItem = evt.target.text;
+
+      handler(menuItem);
+    });
   }
 }

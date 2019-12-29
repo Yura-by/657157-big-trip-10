@@ -1,4 +1,4 @@
-import {TYPES} from '../const.js';
+import {TYPES_TRANSPORT, TYPES_PLACE} from '../const.js';
 
 const Photo = {
   MIN: 1,
@@ -32,7 +32,7 @@ const Price = {
 
 const Seconds = {
   MIN: 1e6,
-  MAX: 12e6
+  MAX: 12e7
 };
 
 const OffersLength = {
@@ -139,7 +139,7 @@ const generateEvent = () => {
 
   return {
     id: String(new Date() + Math.random()),
-    type: getRandomArrayItem(TYPES),
+    type: getRandomArrayItem(TYPES_TRANSPORT.concat(TYPES_PLACE)),
     destination: getRandomArrayItem(CITIES),
     photo: generateRandomPhotos(),
     description: generateRandomDescription(),

@@ -1,5 +1,4 @@
-import {TYPES, Index} from '../const.js';
-import {castTimeFormat, formatInTime} from '../utils/common.js';
+import {castTimeFormat, formatInTime, getDestinationTitle} from '../utils/common.js';
 import AbstractComponent from './abstract-component.js';
 import moment from 'moment';
 
@@ -45,10 +44,7 @@ const createEventTemplate = (event) => {
   const offersComponent = offers.length > 0 ? createOffers(offers) : ``;
   const nameImage = type === `check` ? `check-in` : type;
 
-  let eventName = TYPES.slice(Index.START_PRETEX_IN).some((name) => type === name) ?
-    `${type} in` : `${type} to`;
-
-  eventName = eventName[Index.UPPERCASE_LETTER].toUpperCase() + eventName.slice(Index.DRAIN_LETTER);
+  const eventName = getDestinationTitle(type);
 
   const startTime = formatInTime(startDate);
   const endTime = formatInTime(endDate);

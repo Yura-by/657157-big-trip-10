@@ -1,29 +1,63 @@
 import AbstractComponent from './abstract-component.js';
 import moment from 'moment';
+import {formatInDay} from '../utils/common.js';
 
 const DAY_COUNTER_CORRECT = 1;
-const INDEX_DAY = 0;
+
+const Index = {
+  FIRST_DAY: 0,
+  LAST_DAY: 1
+};
+
+const createDaysMap = (days) => {
+  const firstDay = days[Index.FIRST_DAY][Index.FIRST_DAY].startDate;
+  const lastDay = days[days.length - Index.LAST_DAY][Index.FIRST_DAY].startDate;
+  const dates = [];
+  let date = new Date(firstDay);
+
+  while (date <= lastDay) {
+    dates.push(formatInDay(date));
+
+    date = new Date(date);
+    date.setDate(date.getDate() + DAY_COUNTER_CORRECT);
+  }
+  if (days.length > Index.LAST_DAY && dates[dates.length - Index.LAST_DAY] !== formatInDay(lastDay)) {
+    dates.push(formatInDay(lastDay));
+  }
+
+  const daysMap = {};
+  dates.forEach((day, index) => {
+    daysMap[day] = index + DAY_COUNTER_CORRECT;
+  });
+
+  return daysMap;
+};
 
 const createDayTemplate = (days) => {
-  return days.
-  map((events, index, array) => {
-    const [event] = events;
-    let dayNumber = DAY_COUNTER_CORRECT;
-    if (index !== 0) {
-      dayNumber += moment(event.startDate).diff(moment(array[INDEX_DAY][INDEX_DAY].startDate), `days`);
-    }
-    const date = moment(event.startDate).format(`MMM D`);
-    return (
-      `<li class="trip-days__item day">
-        <div class="day__info">
-          <span class="day__counter">${dayNumber}</span>
-          <time class="day__date" datetime="2019-03-18">${date}</time>
-        </div>
+  const daysMap = days.length === 0 ? null : createDaysMap(days);
 
-        <ul class="trip-events__list"></ul>
-      </li>`
-    );
-  }).join(`\n`);
+  return days.
+    map((events) => {
+      const [event] = events;
+      let dateTime = ``;
+      let dayNumber = ``;
+      let date = ``;
+      if (daysMap) {
+        dateTime = formatInDay(event.startDate);
+        dayNumber = daysMap[dateTime];
+        date = moment(event.startDate).format(`MMM D`);
+      }
+      return (
+        `<li class="trip-days__item day">
+          <div class="day__info">
+            <span class="day__counter">${dayNumber}</span>
+            <time class="day__date" datetime="${dateTime}">${date}</time>
+          </div>
+
+          <ul class="trip-events__list"></ul>
+        </li>`
+      );
+    }).join(`\n`);
 };
 
 const createDaysTemplate = (days) => {
