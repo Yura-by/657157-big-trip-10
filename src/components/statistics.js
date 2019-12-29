@@ -41,7 +41,7 @@ const createStatisticsTemplate = () => {
       </div>
     </section>`
   );
-}
+};
 
 const getUniqItems = (item, index, array) => {
   return array.indexOf(item) === index;
@@ -57,8 +57,10 @@ const setChartHeight = (ctx, elements, container) => {
 
 const getPrice = (events, type) => {
   return events.filter((event) => event.type === type).
-    reduce((accumulator, item) => accumulator += item.price
-  , START_PRICE)
+    reduce((accumulator, item) => {
+      accumulator += item.price;
+      return accumulator;
+    }, START_PRICE);
 };
 
 const getTypes = (events) => {
@@ -73,8 +75,8 @@ const getTime = (events, type) => {
     const startDateMoment = moment(event.startDate);
     const endDateMoment = moment(event.endDate);
     const duration = moment.duration(endDateMoment.diff(startDateMoment));
-    return accumulator += duration.asDays();
-
+    accumulator += duration.asDays();
+    return accumulator;
   }, 0);
   return result;
 };
@@ -91,10 +93,10 @@ Chart.defaults.global.legend.display = false;
 Chart.defaults.global.title.display = true;
 Chart.defaults.global.title.position = `left`;
 Chart.defaults.horizontalBar.tooltips.mode = false;
-Chart.scaleService.updateScaleDefaults('linear', {
-    ticks: {
-        min: 0
-    }
+Chart.scaleService.updateScaleDefaults(`linear`, {
+  ticks: {
+    min: 0
+  }
 });
 
 const renderMoneyChart = (moneyCtx, events, container) => {
@@ -105,9 +107,9 @@ const renderMoneyChart = (moneyCtx, events, container) => {
       return {
         type: name,
         price: getPrice(events, name)
-      }
+      };
     });
-    return eventsWithPrice.sort((leftType, rightType) => rightType.price - leftType.price)
+    return eventsWithPrice.sort((leftType, rightType) => rightType.price - leftType.price);
   };
 
   const labelNames = arrayEvents().map((item) => item.type.toUpperCase());
@@ -142,8 +144,8 @@ const renderMoneyChart = (moneyCtx, events, container) => {
           font: {
             size: ChartSettings.FONT_SIZE_LABELS
           },
-          formatter: function(value, context) {
-            return `€ ${value}`
+          formatter(value) {
+            return `€ ${value}`;
           },
           color: ChartSettings.FONT_COLOR
         }
@@ -171,8 +173,8 @@ const renderMoneyChart = (moneyCtx, events, container) => {
       },
       tooltips: {
         callbacks: {
-          title: function() {},
-          label: function() {}
+          title() {},
+          label() {}
         }
       }
     }
@@ -184,9 +186,8 @@ const getCount = (events, type) => {
 };
 
 const renderTransportChart = (transportCtx, events, container) => {
-  const types = getTypes(events);
   const typesInEvents = TYPES_TRANSPORT.filter((type) => {
-    return events.some((event) => event.type === type)
+    return events.some((event) => event.type === type);
   });
 
   const arrayEvents = () => {
@@ -194,9 +195,9 @@ const renderTransportChart = (transportCtx, events, container) => {
       return {
         type: name,
         count: getCount(events, name)
-      }
+      };
     });
-    return eventsWithCount.sort((leftType, rightType) => rightType.count - leftType.count)
+    return eventsWithCount.sort((leftType, rightType) => rightType.count - leftType.count);
   };
 
   const labelNames = arrayEvents().map((item) => item.type.toUpperCase());
@@ -229,8 +230,8 @@ const renderTransportChart = (transportCtx, events, container) => {
           font: {
             size: ChartSettings.FONT_SIZE_LABELS
           },
-          formatter: function(value, context) {
-            return `${value}x`
+          formatter(value) {
+            return `${value}x`;
           },
           color: ChartSettings.FONT_COLOR
         }
@@ -258,8 +259,8 @@ const renderTransportChart = (transportCtx, events, container) => {
       },
       tooltips: {
         callbacks: {
-          title: function() {},
-          label: function() {}
+          title() {},
+          label() {}
         }
       }
     }
@@ -274,9 +275,9 @@ const renderTimeChart = (timeCtx, events, container) => {
       return {
         type: name,
         time: getTime(events, name)
-      }
+      };
     });
-    return eventsWithTime.sort((leftType, rightType) => rightType.time - leftType.time)
+    return eventsWithTime.sort((leftType, rightType) => rightType.time - leftType.time);
   };
 
   const eventsMoreDay = arrayEvents().filter((item) => item.time >= 1);
@@ -311,7 +312,7 @@ const renderTimeChart = (timeCtx, events, container) => {
           font: {
             size: ChartSettings.FONT_SIZE_LABELS
           },
-          formatter: function(value, context) {
+          formatter(value) {
             return `${value}D`;
           },
           color: ChartSettings.FONT_COLOR
@@ -340,8 +341,8 @@ const renderTimeChart = (timeCtx, events, container) => {
       },
       tooltips: {
         callbacks: {
-          title: function() {},
-          label: function() {}
+          title() {},
+          label() {}
         }
       }
     }
@@ -380,12 +381,6 @@ export default class Statistics extends AbstractSmartComponent {
   }
 
   recoveryListeners() {}
-
-  /*rerender() {
-    super.rerender();
-
-    this._renderCharts();
-  }*/
 
   show() {
     super.show();

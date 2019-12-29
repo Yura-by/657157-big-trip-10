@@ -26,20 +26,27 @@ const createDaysMap = (days) => {
   }
 
   const daysMap = {};
-  dates.forEach((day, index) => daysMap[day] = index + DAY_COUNTER_CORRECT);
+  dates.forEach((day, index) => {
+    daysMap[day] = index + DAY_COUNTER_CORRECT;
+  });
 
   return daysMap;
 };
 
 const createDayTemplate = (days) => {
-  const daysMap = createDaysMap(days);
+  const daysMap = days.length === 0 ? null : createDaysMap(days);
 
   return days.
-    map((events, index, array) => {
+    map((events) => {
       const [event] = events;
-      const dateTime = formatInDay(event.startDate);
-      const dayNumber = daysMap[dateTime];
-      const date = moment(event.startDate).format(`MMM D`);
+      let dateTime = ``;
+      let dayNumber = ``;
+      let date = ``;
+      if (daysMap) {
+        dateTime = formatInDay(event.startDate);
+        dayNumber = daysMap[dateTime];
+        date = moment(event.startDate).format(`MMM D`);
+      }
       return (
         `<li class="trip-days__item day">
           <div class="day__info">

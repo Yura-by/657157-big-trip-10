@@ -51,11 +51,11 @@ siteMenuComponent.setOnChange((menuItem) => {
 });
 
 const onAddEventClick = () => {
-    statisticsComponent.hide();
-    tripController.show();
-    tripController.createEvent();
-    siteMenuComponent.setActiveItem(MenuItem.TABLE);
-  };
+  statisticsComponent.hide();
+  tripController.show();
+  tripController.createEvent();
+  siteMenuComponent.setActiveItem(MenuItem.TABLE);
+};
 
 siteHeaderElement.querySelector(`.trip-main__event-add-btn`)
   .addEventListener(`click`, onAddEventClick);
