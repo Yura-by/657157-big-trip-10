@@ -32,7 +32,7 @@ const Price = {
 
 const Seconds = {
   MIN: 1e6,
-  MAX: 12e6
+  MAX: 12e7
 };
 
 const OffersLength = {

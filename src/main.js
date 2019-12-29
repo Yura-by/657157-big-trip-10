@@ -6,7 +6,7 @@ import {generateEvents} from './mock/event.js';
 import {RenderPosition, render} from './utils/render.js';
 import TripController from './controller/trip.js';
 
-const EVENT_COUNT = 22;
+const EVENT_COUNT = 10;
 
 const siteHeaderElement = document.querySelector(`.page-header`);
 const siteContolsElement = siteHeaderElement.querySelector(`.trip-controls`);
@@ -34,6 +34,8 @@ const statisticsComponent = new StatisticsComponent(eventsModel);
 
 render(bodyContainerElement, statisticsComponent, RenderPosition.BEFOREEND);
 
+statisticsComponent.hide();
+
 siteMenuComponent.setOnChange((menuItem) => {
   siteMenuComponent.setActiveItem(menuItem);
   switch (menuItem) {
@@ -57,8 +59,6 @@ const onAddEventClick = () => {
 
 siteHeaderElement.querySelector(`.trip-main__event-add-btn`)
   .addEventListener(`click`, onAddEventClick);
-
-statisticsComponent.hide();
 
 const getTotalPrice = () => {
   return events.reduce((total, event) => {

@@ -32,7 +32,7 @@ const createDaysMap = (days) => {
 };
 
 const createDayTemplate = (days) => {
- const daysMap = createDaysMap(days);
+  const daysMap = createDaysMap(days);
 
   return days.
     map((events, index, array) => {

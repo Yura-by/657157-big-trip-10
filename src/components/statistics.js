@@ -5,15 +5,15 @@ import {TYPES_TRANSPORT} from '../const.js';
 import moment from 'moment';
 
 const ChartSettings = {
-  BAR_MIN: 100,
-  BAR_MIDDLE: 60,
-  BAR_MAX_THICKNESS: 50,
+  BAR_MIN: 130,
+  BAR_HEIGHT: 65,
+  BAR_THICKNESS: 40,
   BAR_MIN_LENGTH: 50,
   PADDING: 0,
   PADDING_LEFT: 100,
   BAR_PERCENTAGE: 0.9,
-  FONT_SIZE: 14,
-  FONT_SIZE_TITLE: 20,
+  FONT_SIZE: 12,
+  FONT_SIZE_TITLE: 19,
   FONT_SIZE_LABELS: 12,
   FONT_COLOR: `#000000`,
   BACKGROUND_COLOR: `#ffffff`
@@ -48,7 +48,7 @@ const getUniqItems = (item, index, array) => {
 };
 
 const setChartHeight = (ctx, elements, container) => {
-  ctx.height = elements.length < ELEMENTS_MIN_LENGTH ? ChartSettings.BAR_MIN : ChartSettings.BAR_MIDDLE * elements.length;
+  ctx.height = elements.length < ELEMENTS_MIN_LENGTH ? ChartSettings.BAR_MIN : ChartSettings.BAR_HEIGHT * elements.length;
   const ID_PREFIX = `statistics__chart--`;
   const typeName = ctx.className.substring(ID_PREFIX.length);
   const wrapperClass = `.statistics__item--${typeName}`;
@@ -73,8 +73,7 @@ const getTime = (events, type) => {
     const startDateMoment = moment(event.startDate);
     const endDateMoment = moment(event.endDate);
     const duration = moment.duration(endDateMoment.diff(startDateMoment));
-    console.log(accumulator)
-    return accumulator += duration.asHours();
+    return accumulator += duration.asDays();
 
   }, 0);
   return result;
@@ -82,7 +81,6 @@ const getTime = (events, type) => {
 
 Chart.defaults.global.defaultFontSize = ChartSettings.FONT_SIZE;
 Chart.defaults.global.defaultFontColor = ChartSettings.FONT_COLOR;
-Chart.defaults.global.datasets.horizontalBar.barPercentage = ChartSettings.BAR_PERCENTAGE;
 Chart.defaults.global.layout.padding = {
   left: ChartSettings.PADDING_LEFT,
   right: ChartSettings.PADDING,
@@ -127,8 +125,8 @@ const renderMoneyChart = (moneyCtx, events, container) => {
         data: priceValues,
         backgroundColor: ChartSettings.BACKGROUND_COLOR,
         hoverBackgroundColor: ChartSettings.BACKGROUND_COLOR,
-        maxBarThickness: ChartSettings.BAR_MAX_THICKNESS,
-        minBarLength: ChartSettings.BAR_MIN_LENGTH
+        minBarLength: ChartSettings.BAR_MIN_LENGTH,
+        barThickness: ChartSettings.BAR_THICKNESS
       }]
     },
     options: {
@@ -203,7 +201,7 @@ const renderTransportChart = (transportCtx, events, container) => {
 
   const labelNames = arrayEvents().map((item) => item.type.toUpperCase());
   const countValues = arrayEvents().map((item) => item.count);
-  setChartHeight(transportCtx, types, container);
+  setChartHeight(transportCtx, typesInEvents, container);
 
   return new Chart(transportCtx, {
     plugins: [ChartDataLabels],
@@ -214,8 +212,8 @@ const renderTransportChart = (transportCtx, events, container) => {
         data: countValues,
         backgroundColor: ChartSettings.BACKGROUND_COLOR,
         hoverBackgroundColor: ChartSettings.BACKGROUND_COLOR,
-        maxBarThickness: ChartSettings.BAR_MAX_THICKNESS,
-        minBarLength: ChartSettings.BAR_MIN_LENGTH
+        minBarLength: ChartSettings.BAR_MIN_LENGTH,
+        barThickness: ChartSettings.BAR_THICKNESS
       }]
     },
     options: {
@@ -270,7 +268,6 @@ const renderTransportChart = (transportCtx, events, container) => {
 
 const renderTimeChart = (timeCtx, events, container) => {
   const types = getTypes(events);
-  console.log(types.length)
 
   const arrayEvents = () => {
     const eventsWithTime = types.map((name) => {
@@ -282,10 +279,11 @@ const renderTimeChart = (timeCtx, events, container) => {
     return eventsWithTime.sort((leftType, rightType) => rightType.time - leftType.time)
   };
 
-  const labelNames = arrayEvents().map((item) => item.type.toUpperCase());
-  const timeValues = arrayEvents().map((item) => item.time);
-  console.log(timeValues)
-  setChartHeight(timeCtx, types, container);
+  const eventsMoreDay = arrayEvents().filter((item) => item.time >= 1);
+
+  const labelNames = eventsMoreDay.map((item) => item.type.toUpperCase());
+  const timeValues = eventsMoreDay.map((item) => Math.floor(item.time));
+  setChartHeight(timeCtx, eventsMoreDay, container);
 
   return new Chart(timeCtx, {
     plugins: [ChartDataLabels],
@@ -296,8 +294,8 @@ const renderTimeChart = (timeCtx, events, container) => {
         data: timeValues,
         backgroundColor: ChartSettings.BACKGROUND_COLOR,
         hoverBackgroundColor: ChartSettings.BACKGROUND_COLOR,
-        maxBarThickness: ChartSettings.BAR_MAX_THICKNESS,
-        minBarLength: ChartSettings.BAR_MIN_LENGTH
+        minBarLength: ChartSettings.BAR_MIN_LENGTH,
+        barThickness: ChartSettings.BAR_THICKNESS
       }]
     },
     options: {
@@ -314,7 +312,7 @@ const renderTimeChart = (timeCtx, events, container) => {
             size: ChartSettings.FONT_SIZE_LABELS
           },
           formatter: function(value, context) {
-            return `${Math.round(value)}H`
+            return `${value}D`;
           },
           color: ChartSettings.FONT_COLOR
         }
@@ -383,16 +381,16 @@ export default class Statistics extends AbstractSmartComponent {
 
   recoveryListeners() {}
 
-  rerender() {
+  /*rerender() {
     super.rerender();
 
     this._renderCharts();
-  }
+  }*/
 
   show() {
     super.show();
-
     this.rerender();
+    this._renderCharts();
   }
 
   _resetCharts() {
