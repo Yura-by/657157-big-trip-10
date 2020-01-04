@@ -72,3 +72,18 @@ const getTotalPrice = () => {
 };
 
 siteHeaderElement.querySelector(`.trip-info__cost-value`).textContent = getTotalPrice();
+
+/*const headersBasic = new Headers();
+headersBasic.append(`Authorization`, `Basic hkhGYjkjYUYhHhjhhGPGDSRDhgjk`);
+console.log(headersBasic)
+
+fetch(`https://htmlacademy-es-10.appspot.com/big-trip/points`, {
+    method: `GET`,
+    body: null,
+    headers: headersBasic
+  })
+  .then((response) => response.json())
+  .then(console.log)
+  .catch((err) => {
+    throw err;
+  });*/
