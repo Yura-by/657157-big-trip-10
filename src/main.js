@@ -5,6 +5,17 @@ import StatisticsComponent from './components/statistics.js';
 import {generateEvents} from './mock/event.js';
 import {RenderPosition, render} from './utils/render.js';
 import TripController from './controller/trip.js';
+import Api from './api.js';
+
+const AUTHORIZATION = `Basic kjfslklhVJHlhSREDf8907`;
+const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
+
+const api = new Api(END_POINT, AUTHORIZATION);
+
+api.getEvents()
+  .then((events) => {
+    console.log(events)
+  });
 
 const EVENT_COUNT = 10;
 
@@ -73,9 +84,8 @@ const getTotalPrice = () => {
 
 siteHeaderElement.querySelector(`.trip-info__cost-value`).textContent = getTotalPrice();
 
-/*const headersBasic = new Headers();
+const headersBasic = new Headers();
 headersBasic.append(`Authorization`, `Basic hkhGYjkjYUYhHhjhhGPGDSRDhgjk`);
-console.log(headersBasic)
 
 fetch(`https://htmlacademy-es-10.appspot.com/big-trip/points`, {
     method: `GET`,
@@ -86,4 +96,4 @@ fetch(`https://htmlacademy-es-10.appspot.com/big-trip/points`, {
   .then(console.log)
   .catch((err) => {
     throw err;
-  });*/
+  });
