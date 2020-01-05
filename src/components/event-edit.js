@@ -7,10 +7,7 @@ import AbstractSmartComponent from './abstract-smart-component.js';
 import {generateRandomOffers, generateRandomDescription, generateRandomPhotos, OFFERS} from '../mock/event.js';
 import {getDateObject, formatInDayTime, getDestinationTitle} from '../utils/common.js';
 
-const TypeCheck = {
-  IN_DATA: `check`,
-  OUT_DATA: `check-in`
-};
+const TYPE_CHECK = `check`;
 
 const descriptionMap = {
   'Add luggage': `luggage`,
@@ -59,10 +56,10 @@ const createEventOffersTemplate = (offers) => {
 
 const createEventTypeItems = (types) => {
   return types.map((type) => {
-    if (type === TypeCheck.IN_DATA) {
-      type = TypeCheck.OUT_DATA;
-    }
     let typeName = type;
+    if (type === TYPES_PLACE.Type.CHECK) {
+      typeName = TYPE_CHECK;
+    }
     typeName = typeName[Index.UPPERCASE_LETTER].toUpperCase() + typeName.slice(Index.DRAIN_LETTER);
     return (
       `<div class="event__type-item">
@@ -73,8 +70,11 @@ const createEventTypeItems = (types) => {
   }).join(`\n`);
 };
 
-const createDestinationOptions = (destinations) => {
+const createDestinationOptions = (allDestinations, destinationCurrent) => {
   return destinations.map((destination) => {
+    if (destination === destinationCurrent) {
+      return ``;
+    }
     return (
       `<option value="${destination}"></option>`
     );
@@ -121,20 +121,19 @@ const createEventDetails = (event, offers, description, photo) => {
 };
 
 const createEventEditTemplate = (options = {}, isNewEvent) => {
+  const {allDestinations, allOffers, type, offers, destination, description, photo, startDate, endDate, price, isFavorite} = options;
 
-
-  const {type, offers, destination, description, photo, startDate, endDate, price, isFavorite} = options;
-
-  const nameImage = type === `check` ? `check-in` : type;
+  const nameImage = type;
 
   const eventName = getDestinationTitle(type);
+  const destinationName = destination[`name`];
 
   const eventTypeItemTransfer = createEventTypeItems(TYPES_TRANSPORT);
   const eventTypeItemActivity = createEventTypeItems(TYPES_PLACE);
-  const destinationOptions = createDestinationOptions(CITIES);
-  const eventDetails = createEventDetails(event, offers, description, photo);
+  const destinationOptions = allDestinations.length > 0 ? createDestinationOptions(allDestinations, destination) : ``;
   const valueStartDate = formatInDayTime(startDate);
   const valueEndDate = formatInDayTime(endDate);
+  const eventDetails = createEventDetails(event, offers, description, photo);
 
   const newEventStyle = isNewEvent === null ? `style="display: none"` : ``;
 
@@ -167,7 +166,7 @@ const createEventEditTemplate = (options = {}, isNewEvent) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${eventName}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="destination" value="${destination}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="destination" value="${destinationName}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${destinationOptions}
           </datalist>
