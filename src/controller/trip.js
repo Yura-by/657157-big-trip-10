@@ -6,10 +6,10 @@ import {RenderPosition, render, remove} from '../utils/render.js';
 import PointController, {Mode as PointControllerMode, EmptyEvent} from './point.js';
 import {FilterType, HIDDEN_CLASS} from '../const.js';
 
-const renderEvents = (container, eventsInDay, onDataChange, onViewChange, onFavoriteChange) => {
+const renderEvents = (container, eventsInDay, onDataChange, onViewChange, onFavoriteChange, eventsModel) => {
   const controllersInDay = [];
   eventsInDay.forEach((event) => {
-    const pointController = new PointController(container, onDataChange, onViewChange, onFavoriteChange);
+    const pointController = new PointController(container, onDataChange, onViewChange, onFavoriteChange, eventsModel);
     pointController.render(event, PointControllerMode.DEFAULT);
     controllersInDay.push(pointController);
   });
@@ -112,7 +112,7 @@ export default class TripController {
     const eventsListElements = this._container.querySelectorAll(`.trip-events__list`);
     let pointControllers = [];
     eventsListElements.forEach((day, indexDay) => {
-      pointControllers = pointControllers.concat(renderEvents(day, eventsInDays[indexDay], this._onDataChange, this._onViewChange, this._onFavoriteChange));
+      pointControllers = pointControllers.concat(renderEvents(day, eventsInDays[indexDay], this._onDataChange, this._onViewChange, this._onFavoriteChange, this._eventsModel));
     });
     return pointControllers;
   }

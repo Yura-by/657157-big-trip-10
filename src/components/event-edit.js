@@ -238,11 +238,13 @@ const parseFormData = (formData) => {
 };
 
 export default class EventEdit extends AbstractSmartComponent {
-  constructor(event, isNewEvent) {
+  constructor(event, isNewEvent, allDestinations, allOffers) {
     super();
 
     this._event = event;
     this._isNewEvent = isNewEvent;
+    this._allDestinations = allDestinations;
+    this._allOffers = allOffers;
 
     this._type = event.type;
     this._offers = event.offers;
@@ -266,6 +268,8 @@ export default class EventEdit extends AbstractSmartComponent {
 
   getTemplate() {
     return createEventEditTemplate({
+      allDestinations: this._allDestinations,
+      allOffers: this._allOffers,
       type: this._type,
       offers: this._offers,
       destination: this._destination,

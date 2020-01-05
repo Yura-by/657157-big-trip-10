@@ -22,11 +22,12 @@ export const EmptyEvent = {
 };
 
 export default class PointController {
-  constructor(container, onDataChange, onViewChange, onFavoriteChange) {
+  constructor(container, onDataChange, onViewChange, onFavoriteChange, eventsModel) {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
     this._onFavoriteChange = onFavoriteChange;
+    this._eventsModel = eventsModel;
 
     this._mode = Mode.DEFAULT;
 
@@ -40,9 +41,11 @@ export default class PointController {
     const oldEventComponent = this._eventComponent;
     const oldEventEditComponent = this._eventEditComponent;
     this._mode = mode;
+    const destinations = this._eventsModel.getDestinations();
+    const offers = this._eventsModel.getOffers();
 
     this._eventComponent = new EventComponent(event);
-    this._eventEditComponent = new EventEditComponent(event, this._onFavoriteChange);
+    this._eventEditComponent = new EventEditComponent(event, this._onFavoriteChange, destinations, offers);
 
     this._eventComponent.setRollupButtonClickHandler(() => {
       this._replaceEventToEdit();

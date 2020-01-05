@@ -60,25 +60,28 @@ const onAddEventClick = () => {
 siteHeaderElement.querySelector(`.trip-main__event-add-btn`)
   .addEventListener(`click`, onAddEventClick);
 
-api.getDestinations()
-  .then((destinations) => {
-    eventsModel.setDestinations(destinations);
-    console.log(eventsModel.getDestinations());
-  });
-
-api.getOffers()
-  .then((offers) => {
-    eventsModel.setOffers(offers);
-    console.log(eventsModel.getOffers());
-  });
-
-
 api.getEvents()
   .then((events) => {
     console.log(events);
     eventsModel.setEvents(events);
+  })
+  .finally(() => {
+    return api.getDestinations()
+      .then((destinations) => {
+        eventsModel.setDestinations(destinations);
+        console.log(eventsModel.getDestinations());
+    })
+  .finally(() => {
+    return api.getOffers()
+      .then((offers) => {
+        eventsModel.setOffers(offers);
+        console.log(eventsModel.getOffers());
+    });
+  })
+  .then(() => {
     tripController.render();
   });
+});
 
 /*const getTotalPrice = () => {
   return events.reduce((total, event) => {
