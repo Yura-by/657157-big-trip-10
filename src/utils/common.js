@@ -2,6 +2,9 @@ import moment from 'moment';
 import {TYPES_PLACE, Index} from '../const.js';
 
 export const getDestinationTitle = (type) => {
+  if (type === TYPES_PLACE.Type.CHECK) {
+    return `Check-In in`;
+  }
   const eventName = TYPES_PLACE.some((name) => type === name) ?
     `${type} in` : `${type} to`;
 
