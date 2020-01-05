@@ -37,6 +37,16 @@ export default class Api {
       .then(Event.parseEvents);
   }
 
+  getDestinations() {
+    return this._load({url: `destinations`})
+      .then((response) => response.json())
+  }
+
+  getOffers() {
+    return this._load({url: `offers`})
+      .then((response) => response.json());
+  }
+
   createEvent(task) {
   }
 
