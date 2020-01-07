@@ -140,7 +140,7 @@ export default class TripController {
       remove(this._daysComponent);
       this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
     } else {
-      this._api.updateEvent(oldData.id, newDatas)
+      this._api.updateEvent(oldData.id, newData)
         .then((eventModel) => {
           const isSuccess = this._eventsModel.updateEvent(oldData.id, eventModel);
           if (isSuccess) {
