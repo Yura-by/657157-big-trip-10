@@ -1,6 +1,11 @@
 import moment from 'moment';
 import {TYPES_PLACE, Type, Index} from '../const.js';
 
+
+export const getOffersByType = (type, allOffers) => {
+  return allOffers.filter((item) => item[`type`] === type)[0].offers;
+};
+
 export const getDestinationTitle = (type) => {
   if (type === Type.CHECK) {
     return `Check-In in`;

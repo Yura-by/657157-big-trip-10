@@ -2,6 +2,9 @@ import EventComponent from '../components/event.js';
 import EventEditComponent from '../components/event-edit.js';
 import {render, replace, RenderPosition, remove} from '../utils/render.js';
 import {Type} from '../const.js';
+import EventModel from '../models/event.js';
+import {getDateObject, getOffersByType} from '../utils/common.js';
+
 
 export const Mode = {
   ADDING: `adding`,
@@ -19,6 +22,35 @@ export const EmptyEvent = {
   price: 0,
   offers: [],
   isFavorite: false
+};
+
+const parseOffers = (formData, allOffers) => {
+  const formDataKeys = [];
+  formData.forEach((property, key) => formDataKeys.push(key));
+  const resultOffers = allOffers.filter((item) => {
+    return formDataKeys.some((key) => key === item.title)
+  });
+  return resultOffers;
+};
+
+const getDestinations = (destinationName, allDestinations) => {
+  return allDestinations.filter((destination) => destination[`name`] === destinationName)[0];
+};
+
+const parseFormData = (rawData, allDestinations, allOffers) => {
+  const {formData, type} = rawData;
+
+  const result = new EventModel ({
+    type,
+    base_price: parseInt(formData.get(`price`), 10),
+    date_from: getDateObject(formData.get(`event-start-time`)),
+    date_to: getDateObject(formData.get(`event-end-time`)),
+    is_favorite: formData.get(`favorite`) ? true : false,
+    destination: getDestinations(formData.get(`destination`), allDestinations),
+    offers: parseOffers(formData, getOffersByType(type, allOffers))
+  });
+  console.log(result)
+  return result;
 };
 
 export default class PointController {
@@ -57,7 +89,8 @@ export default class PointController {
 
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      const data = this._eventEditComponent.getData();
+      const rawData = this._eventEditComponent.getData();
+      const data = parseFormData(rawData, this._eventsModel.getDestinations(), this._eventsModel.getOffers());
       this._onDataChange(this, event, data);
     });
 

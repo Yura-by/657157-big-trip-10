@@ -3,8 +3,7 @@ import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
 import {TYPES_TRANSPORT, TYPES_PLACE, Type, Index} from '../const.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
-import {generateRandomOffers, generateRandomDescription, generateRandomPhotos, OFFERS} from '../mock/event.js';
-import {getDateObject, formatInDayTime, getDestinationTitle} from '../utils/common.js';
+import {getDateObject, formatInDayTime, getDestinationTitle, getOffersByType} from '../utils/common.js';
 
 const TYPE_CHECK = `check`;
 
@@ -32,10 +31,6 @@ const getChecked = (offerByType, offers) => {
   });
 };
 
-const getOffersByType = (type, allOffers) => {
-  return allOffers.filter((item) => item[`type`] === type)[0].offers;
-}
-
 const createEventOffersTemplate = (offers, type, allOffers) => {
   const currentOffersByType = getOffersByType(type, allOffers);
   const offersResult = currentOffersByType.map((offerByType) => {
@@ -60,8 +55,9 @@ const createEventOffersTemplate = (offers, type, allOffers) => {
     : ` `;
 };
 
-const createEventTypeItems = (types) => {
+const createEventTypeItems = (types, currentType) => {
   return types.map((type) => {
+    const isChecked = type === currentType;
     let typeName = type;
     if (type === Type.CHECK) {
       typeName = TYPE_CHECK;
@@ -69,7 +65,7 @@ const createEventTypeItems = (types) => {
     typeName = typeName[Index.UPPERCASE_LETTER].toUpperCase() + typeName.slice(Index.DRAIN_LETTER);
     return (
       `<div class="event__type-item">
-        <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="type" value="${type}">
+        <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="type" value="${type}" ${isChecked ? `checked` : ``}>
         <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${typeName}</label>
       </div>`
     );
@@ -136,8 +132,8 @@ const createEventEditTemplate = (options = {}, isNewEvent) => {
   const eventName = getDestinationTitle(type);
   const destinationName = destination[`name`];
 
-  const eventTypeItemTransfer = createEventTypeItems(TYPES_TRANSPORT);
-  const eventTypeItemActivity = createEventTypeItems(TYPES_PLACE);
+  const eventTypeItemTransfer = createEventTypeItems(TYPES_TRANSPORT, type);
+  const eventTypeItemActivity = createEventTypeItems(TYPES_PLACE, type);
   const destinationOptions = allDestinations.length > 0 ? createDestinationOptions(allDestinations, destination) : ``;
   const valueStartDate = formatInDayTime(startDate);
   const valueEndDate = formatInDayTime(endDate);
@@ -222,28 +218,6 @@ const checkDestinationValid = (destination, allDestinations) => {
   return allDestinations.some((city) => city[`name`] === destination);
 };
 
-const parseOffers = (formData) => {
-  const formDataKeys = [];
-  formData.forEach((property, key) => formDataKeys.push(key));
-  return OFFERS.filter((offer) => {
-    return formDataKeys.some((keyForm) => {
-      return keyForm === offer.description;
-    });
-  });
-};
-
-const parseFormData = (formData) => {
-  return {
-    destination: formData.get(`destination`),
-    description: ``,
-    startDate: getDateObject(formData.get(`event-start-time`)),
-    endDate: getDateObject(formData.get(`event-end-time`)),
-    price: parseInt(formData.get(`price`), 10),
-    isFavorite: formData.get(`favorite`) ? true : false,
-    offers: parseOffers(formData)
-  };
-};
-
 export default class EventEdit extends AbstractSmartComponent {
   constructor(event, isNewEvent, allDestinations, allOffers) {
     super();
@@ -287,14 +261,10 @@ export default class EventEdit extends AbstractSmartComponent {
 
   getData() {
     const form = this.getElement();
-    const formData = new FormData(form);
-    const result = Object.assign(parseFormData(formData), {
-      id: String(new Date() + Math.random()),
-      type: this._type,
-      description: ``,
-      photo: []
-    });
-    return result;
+    return {
+      formData: new FormData(form),
+      type: this._type
+    }
   }
 
   setCancelButtonClickHandler(handler) {
