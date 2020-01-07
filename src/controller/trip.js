@@ -37,9 +37,10 @@ const sortEvents = (events) => {
 };
 
 export default class TripController {
-  constructor(container, eventsModel) {
+  constructor(container, eventsModel, api) {
     this._container = container;
     this._eventsModel = eventsModel;
+    this._api = api;
 
     this._daysWithEvents = null;
     this._pointControllers = [];
@@ -139,17 +140,32 @@ export default class TripController {
       remove(this._daysComponent);
       this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
     } else {
-      const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
+      this._api.updateEvent(oldData.id, newDatas)
+        .then((eventModel) => {
+          const isSuccess = this._eventsModel.updateEvent(oldData.id, eventModel);
+          if (isSuccess) {
+            this._removeEvents();
+            this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
+          }
+        })
+      /*const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
 
       if (isSuccess) {
         this._removeEvents();
         this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
-      }
+      }*/
     }
   }
 
-  _onFavoriteChange(oldData, newData) {
-    this._eventsModel.updateEvent(oldData.id, newData);
+  _onFavoriteChange(editComponent, oldData, newData) {
+    this._api.updateEvent(oldData.id, newData)
+      .then((eventModel) => {
+        const isSuccess = this._eventsModel.updateEvent(oldData.id, eventModel);
+        if (isSuccess) {
+          editComponent.rerender(eventModel);
+        }
+      })
+    //this._eventsModel.updateEvent(oldData.id, newData);
   }
 
   _onDataModulChange() {

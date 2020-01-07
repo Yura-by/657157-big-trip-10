@@ -27,7 +27,7 @@ const tripEventsElement = siteMainElement.querySelector(`.trip-events`);
 
 const siteMenuComponent = new SiteMenuComponent();
 const filterController = new FilterController(siteContolsElement, eventsModel);
-const tripController = new TripController(tripEventsElement, eventsModel);
+const tripController = new TripController(tripEventsElement, eventsModel, api);
 const statisticsComponent = new StatisticsComponent(eventsModel);
 
 render(siteContolsElement, siteMenuComponent, RenderPosition.INSERT_BEFORE, switchTabsTitleElement);

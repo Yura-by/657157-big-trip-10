@@ -98,11 +98,13 @@ export default class PointController {
       this._onDataChange(this, event, null);
     });
 
-    this._eventEditComponent.setFavoriteInputClickHandler(() => {
-      this._onFavoriteChange(event, Object.assign({}, event, {
-        isFavorite: !event.isFavorite
-      }));
+    this._eventEditComponent.setFavoriteInputClickHandler((evt, isFavorite) => {
+      evt.preventDefault();
+      const newEvent = EventModel.clone(event);
+      newEvent.isFavorite = !isFavorite;
+      this._onFavoriteChange(this._eventEditComponent, event, newEvent);
     });
+
     switch (mode) {
       case Mode.DEFAULT:
         if (oldEventEditComponent && oldEventComponent) {
@@ -125,6 +127,10 @@ export default class PointController {
           render(this._container, this._eventEditComponent, RenderPosition.BEFOREEND);
         }
         break;
+      /*case Mode.EDIT:
+        replace(this._eventComponent, oldEventComponent);
+        replace(this._eventEditComponent, oldEventEditComponent);
+        this._replaceEventToEdit();*/
     }
   }
 

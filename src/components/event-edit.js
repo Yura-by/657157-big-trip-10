@@ -282,7 +282,10 @@ export default class EventEdit extends AbstractSmartComponent {
     this.setCancelButtonClickHandler(this._cancelButtonClickHandler);
   }
 
-  rerender() {
+  rerender(newEvent) {
+    if (newEvent) {
+      this._isFavorite = newEvent.isFavorite;
+    }
     super.rerender();
 
     this._applyFlatpickr();
@@ -325,7 +328,9 @@ export default class EventEdit extends AbstractSmartComponent {
 
   setFavoriteInputClickHandler(handler) {
     this.getElement().querySelector(`.event__favorite-checkbox`)
-    .addEventListener(`click`, handler);
+    .addEventListener(`click`, (evt) => {
+      handler(evt, this._isFavorite);
+    });
     this._favoriteInputClickHandler = handler;
   }
 
@@ -336,10 +341,10 @@ export default class EventEdit extends AbstractSmartComponent {
     const endDateElement = element.querySelector(`input[name="event-end-time"]`);
     const eventInput = element.querySelector(`.event__input--destination`);
 
-    element.querySelector(`.event__favorite-checkbox`)
+    /*element.querySelector(`.event__favorite-checkbox`)
       .addEventListener(`change`, (evt) => {
         this._isFavorite = evt.target.checked;
-      });
+      });*/
 
     element.querySelector(`.event__input--price`)
       .addEventListener(`change`, (evt) => {
