@@ -132,6 +132,9 @@ export default class TripController {
           .then((eventModel) => {
             this._eventsModel.addEvent(eventModel);
             this._tripRerender();
+          })
+          .catch(() => {
+            pointController.shake()
           });
       }
     } else if (newData === null) {
@@ -139,6 +142,9 @@ export default class TripController {
         .then(() => {
           this._eventsModel.removeEvent(oldData.id);
           this._tripRerender();
+        })
+        .catch(() => {
+          pointController.shake()
         });
     } else {
       this._api.updateEvent(oldData.id, newData)
@@ -147,17 +153,23 @@ export default class TripController {
           if (isSuccess) {
             this._tripRerender();
           }
+        })
+        .catch(() => {
+          pointController.shake()
         });
     }
   }
 
-  _onFavoriteChange(editComponent, oldData, newData) {
+  _onFavoriteChange(editComponent, oldData, newData, pointController) {
     this._api.updateEvent(oldData.id, newData)
       .then((eventModel) => {
         const isSuccess = this._eventsModel.updateEvent(oldData.id, eventModel);
         if (isSuccess) {
           editComponent.rerender(eventModel);
         }
+      })
+      .catch(() => {
+        pointController.shake()
       });
   }
 
