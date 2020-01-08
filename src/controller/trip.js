@@ -81,7 +81,6 @@ export default class TripController {
     render(this._container, this._sortComponent, RenderPosition.BEFOREEND);
 
     this._daysWithEvents = sortEvents(events);
-    console.log(this._daysWithEvents)
 
     this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
   }
@@ -192,7 +191,6 @@ export default class TripController {
           }));
         }
         remove(this._daysComponent);
-        console.log(sortedEvents)
         this._pointControllers = this._renderEventsInDays(sortedEvents);
         this._clearDaysTitle();
         break;
@@ -202,7 +200,7 @@ export default class TripController {
         }
         remove(this._daysComponent);
         this._pointControllers = this._renderEventsInDays(sortedEvents);
-        this._clearDaysTitle()
+        this._clearDaysTitle();
         break;
       case SortType.DEFAULT:
         remove(this._daysComponent);
@@ -212,7 +210,7 @@ export default class TripController {
 
     const filterValue = this._eventsModel.getFilterName();
     if (filterValue !== FilterType.EVERYTHING) {
-      this._clearDaysTitle()
+      this._clearDaysTitle();
     }
   }
 
@@ -246,7 +244,7 @@ export default class TripController {
       this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
       const filterValue = this._eventsModel.getFilterName();
       if (filterValue !== FilterType.EVERYTHING) {
-        this._clearDaysTitle()
+        this._clearDaysTitle();
       }
     }
   }
