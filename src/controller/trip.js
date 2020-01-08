@@ -53,12 +53,12 @@ export default class TripController {
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
     this._renderEventsInDays = this._renderEventsInDays.bind(this);
-    this._onFilterChange = this._onFilterChange.bind(this);
+    this._tripRerender = this._tripRerender.bind(this);
     this._onDataModulChange = this._onDataModulChange.bind(this);
     this._onFavoriteChange = this._onFavoriteChange.bind(this);
 
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
-    this._eventsModel.setFilterChangeHandler(this._onFilterChange);
+    this._eventsModel.setFilterChangeHandler(this._tripRerender);
     this._eventsModel.setDataChangeHandler(this._onDataModulChange);
   }
 
@@ -131,21 +131,21 @@ export default class TripController {
         this._api.createEvent(newData)
           .then((eventModel) => {
             this._eventsModel.addEvent(eventModel);
-            this._onFilterChange();
+            this._tripRerender();
           });
       }
     } else if (newData === null) {
       this._api.deleteEvent(oldData.id)
         .then(() => {
           this._eventsModel.removeEvent(oldData.id);
-          this._onFilterChange();
+          this._tripRerender();
         });
     } else {
       this._api.updateEvent(oldData.id, newData)
         .then((eventModel) => {
           const isSuccess = this._eventsModel.updateEvent(oldData.id, eventModel);
           if (isSuccess) {
-            this._onFilterChange();
+            this._tripRerender();
           }
         });
     }
@@ -234,7 +234,7 @@ export default class TripController {
     }
   }
 
-  _onFilterChange() {
+  _tripRerender() {
     const sortType = this._container.querySelectorAll(`.trip-sort__input`);
     const activeSortType = Array.from(sortType).find((item) => item.checked).dataset.sortType;
     if (activeSortType !== SortType.DEFAULT) {
