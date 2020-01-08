@@ -147,13 +147,7 @@ export default class TripController {
             this._removeEvents();
             this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
           }
-        })
-      /*const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
-
-      if (isSuccess) {
-        this._removeEvents();
-        this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
-      }*/
+        });
     }
   }
 
@@ -164,8 +158,7 @@ export default class TripController {
         if (isSuccess) {
           editComponent.rerender(eventModel);
         }
-      })
-    //this._eventsModel.updateEvent(oldData.id, newData);
+      });
   }
 
   _onDataModulChange() {

@@ -39,15 +39,12 @@ export default class Api {
 
   getDestinations() {
     return this._load({url: `destinations`})
-      .then((response) => response.json())
+      .then((response) => response.json());
   }
 
   getOffers() {
     return this._load({url: `offers`})
       .then((response) => response.json());
-  }
-
-  createEvent(task) {
   }
 
   updateEvent(id, data) {
@@ -59,8 +56,5 @@ export default class Api {
     })
       .then((response) => response.json())
       .then(Event.parseEvent);
-  }
-
-  deleteEvent(id) {
   }
 }

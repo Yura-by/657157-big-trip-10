@@ -3,7 +3,7 @@ import EventEditComponent from '../components/event-edit.js';
 import {render, replace, RenderPosition, remove} from '../utils/render.js';
 import {Type} from '../const.js';
 import EventModel from '../models/event.js';
-import {getDateObject, getOffersByType} from '../utils/common.js';
+import {getDateObject} from '../utils/common.js';
 
 
 export const Mode = {
@@ -28,19 +28,17 @@ const getDestinations = (destinationName, allDestinations) => {
   return allDestinations.find((destination) => destination[`name`] === destinationName);
 };
 
-const parseFormData = (rawData, allDestinations, allOffers) => {
+const parseFormData = (rawData, allDestinations) => {
   const {formData, type, offers} = rawData;
-
-  const result = new EventModel ({
+  const result = new EventModel({
     type,
-    base_price: parseInt(formData.get(`price`), 10),
-    date_from: getDateObject(formData.get(`event-start-time`)),
-    date_to: getDateObject(formData.get(`event-end-time`)),
-    is_favorite: formData.get(`favorite`) ? true : false,
-    destination: getDestinations(formData.get(`destination`), allDestinations),
-    offers
+    offers,
+    'base_price': parseInt(formData.get(`price`), 10),
+    'date_from': getDateObject(formData.get(`event-start-time`)),
+    'date_to': getDateObject(formData.get(`event-end-time`)),
+    'is_favorite': formData.get(`favorite`) ? true : false,
+    'destination': getDestinations(formData.get(`destination`), allDestinations)
   });
-  console.log(result)
   return result;
 };
 
@@ -118,10 +116,6 @@ export default class PointController {
           render(this._container, this._eventEditComponent, RenderPosition.BEFOREEND);
         }
         break;
-      /*case Mode.EDIT:
-        replace(this._eventComponent, oldEventComponent);
-        replace(this._eventEditComponent, oldEventEditComponent);
-        this._replaceEventToEdit();*/
     }
   }
 

@@ -3,7 +3,7 @@ import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
 import {TYPES_TRANSPORT, TYPES_PLACE, Type, Index} from '../const.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
-import {getDateObject, formatInDayTime, getDestinationTitle, getOffersByType} from '../utils/common.js';
+import {getDateObject, formatInDayTime, getDestinationTitle} from '../utils/common.js';
 
 const TYPE_CHECK = `check`;
 
@@ -37,6 +37,10 @@ const getPriceOffer = (offerByType, offers) => {
   return resultPrice;
 };
 
+export const getOffersByType = (type, allOffers) => {
+  return allOffers.filter((item) => item[`type`] === type)[0].offers;
+};
+
 const getOffers = (type, allOffers, currentOffers) => {
   const offersByType = getOffersByType(type, allOffers);
   const offersResult = offersByType.map((offerByType) => {
@@ -45,7 +49,7 @@ const getOffers = (type, allOffers, currentOffers) => {
       title,
       price: getPriceOffer(offerByType, currentOffers),
       isChecked: getCheckedOffer(offerByType, currentOffers)
-    }
+    };
   });
   return offersResult;
 };
@@ -81,7 +85,7 @@ const createEventTypeItems = (types, currentType) => {
   }).join(`\n`);
 };
 
-const createDestinationOptions = (allDestinations, destinationCurrent) => {
+const createDestinationOptions = (allDestinations) => {
   return allDestinations.map((destination) => {
     return (
       `<option value="${destination[`name`]}"></option>`
@@ -122,7 +126,7 @@ const createEventDescriptionTemplate = (destination) => {
     : ` `;
 };
 
-const createEventDetails = (offers, destination, type) => {
+const createEventDetails = (offers, destination) => {
   const offersTemplate = createEventOffersTemplate(offers);
   const descriptionTemplate = createEventDescriptionTemplate(destination);
   const {description, pictures} = destination;
@@ -140,8 +144,8 @@ const getCheckedOffers = (allOffers) => {
     return {
       title,
       price
-    }
-  })
+    };
+  });
 };
 
 const createEventEditTemplate = (options = {}, isNewEvent) => {
@@ -280,12 +284,12 @@ export default class EventEdit extends AbstractSmartComponent {
 
   getData() {
     const form = this.getElement();
-    const offers = getCheckedOffers(this._offers)
+    const offers = getCheckedOffers(this._offers);
     return {
       formData: new FormData(form),
       type: this._type,
       offers
-    }
+    };
   }
 
   setCancelButtonClickHandler(handler) {
@@ -368,7 +372,7 @@ export default class EventEdit extends AbstractSmartComponent {
       item.addEventListener(`change`, (evt) => {
         const targetOffer = this._offers.find((offer) => offer.title === evt.target.name);
         targetOffer.isChecked = !targetOffer.isChecked;
-      })
+      });
     });
 
     priceInput.addEventListener(`change`, (evt) => {
@@ -402,7 +406,9 @@ export default class EventEdit extends AbstractSmartComponent {
         this._type = evt.target.value;
         if (this._event.type === evt.target.value) {
           this._offers = getOffers(this._event.type, this._allOffers, this._event.offers);
-          this._offers.forEach((offer) => offer.isChecked = false);
+          this._offers.forEach((offer) => {
+            offer.isChecked = false;
+          });
         } else {
           this._offers = getOffers(this._type, this._allOffers, this._event.offers);
         }
@@ -423,7 +429,7 @@ export default class EventEdit extends AbstractSmartComponent {
           name: evt.target.value,
           pictures: [],
           description: ``
-        }
+        };
       }
       this.rerender();
     });

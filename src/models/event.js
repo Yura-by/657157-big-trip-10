@@ -12,14 +12,14 @@ export default class Event {
 
   toRAW() {
     return {
-      id: this.id,
-      type: this.type,
-      base_price: this.price,
-      date_from: this.startDate.toISOString(),
-      date_to: this.endDate.toISOString(),
-      is_favorite: this.isFavorite,
-      offers: this.offers,
-      destination: this.destination
+      'id': this.id,
+      'type': this.type,
+      'base_price': this.price,
+      'date_from': this.startDate.toISOString(),
+      'date_to': this.endDate.toISOString(),
+      'is_favorite': this.isFavorite,
+      'offers': this.offers,
+      'destination': this.destination
     };
   }
 
