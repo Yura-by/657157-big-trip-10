@@ -5,24 +5,25 @@ import {Type} from '../const.js';
 import EventModel from '../models/event.js';
 import {getDateObject} from '../utils/common.js';
 
-
 export const Mode = {
   ADDING: `adding`,
   DEFAULT: `default`,
   EDIT: `edit`,
 };
 
-export const EmptyEvent = {
-  type: Type.FLIGHT,
-  destination: ``,
-  photo: [],
-  description: ``,
-  startDate: new Date(),
-  endDate: new Date(),
-  price: 0,
-  offers: [],
-  isFavorite: false
-};
+export const EmptyEvent = new EventModel ({
+  'type': Type.FLIGHT,
+  'offers': [],
+  'base_price': ``,
+  'date_from': new Date(),
+  'date_to': new Date(),
+  'is_favorite': false,
+  'destination': {
+      'name': ``,
+      'pictures': [],
+      'description': ``
+    }
+});
 
 const getDestinations = (destinationName, allDestinations) => {
   return allDestinations.find((destination) => destination[`name`] === destinationName);

@@ -97,7 +97,7 @@ export default class TripController {
     }
 
     const adjacentElement = this._container.querySelector(`.trip-days`);
-    this._creatingEvent = new PointController(this._container, this._onDataChange, this._onViewChange, null);
+    this._creatingEvent = new PointController(this._container, this._onDataChange, this._onViewChange, null, this._eventsModel);
     this._pointControllers.unshift(this._creatingEvent);
 
     if (adjacentElement) {
@@ -128,17 +128,18 @@ export default class TripController {
           render(this._container, this._noEventsComponent, RenderPosition.BEFOREEND);
         }
       } else {
-        this._eventsModel.addEvent(newData);
-        pointController.destroy();
-        this._removeEvents();
-        render(this._container, this._sortComponent, RenderPosition.BEFOREEND);
-        this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
-        this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
+        this._api.createEvent(newData)
+          .then((eventModel) => {
+            this._eventsModel.addEvent(eventModel);
+            this._onFilterChange();
+          });
       }
     } else if (newData === null) {
-      this._eventsModel.removeEvent(oldData.id);
-      remove(this._daysComponent);
-      this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
+      this._api.deleteEvent(oldData.id)
+        .then(() => {
+          this._eventsModel.removeEvent(oldData.id);
+          this._onFilterChange();
+        });
     } else {
       this._api.updateEvent(oldData.id, newData)
         .then((eventModel) => {
