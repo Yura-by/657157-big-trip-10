@@ -8,7 +8,7 @@ const Type = {
   TAXI: `taxi`,
   SIGHTSEEING: `sightseeing`,
   RESTAURANT: `restaurant`,
-  CHECK: `check`
+  CHECK: `check-in`
 };
 
 const TYPES_TRANSPORT = [

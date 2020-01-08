@@ -5,6 +5,8 @@ export default class Events {
   constructor() {
     this._events = [];
     this._activeFilterType = FilterType.EVERYTHING;
+    this._destinations = [];
+    this._offers = [];
 
     this._filterChangeHandlers = [];
     this._dataChangeHandlers = [];
@@ -20,6 +22,23 @@ export default class Events {
 
   setEvents(events) {
     this._events = Array.from(events);
+    this._callHandlers(this._dataChangeHandlers);
+  }
+
+  setDestinations(destinations) {
+    this._destinations = destinations;
+  }
+
+  getDestinations() {
+    return this._destinations;
+  }
+
+  setOffers(offers) {
+    this._offers = offers;
+  }
+
+  getOffers() {
+    return this._offers;
   }
 
   setFilter(filterType) {

@@ -2,6 +2,9 @@ import EventComponent from '../components/event.js';
 import EventEditComponent from '../components/event-edit.js';
 import {render, replace, RenderPosition, remove} from '../utils/render.js';
 import {Type} from '../const.js';
+import EventModel from '../models/event.js';
+import {getDateObject} from '../utils/common.js';
+
 
 export const Mode = {
   ADDING: `adding`,
@@ -21,12 +24,31 @@ export const EmptyEvent = {
   isFavorite: false
 };
 
+const getDestinations = (destinationName, allDestinations) => {
+  return allDestinations.find((destination) => destination[`name`] === destinationName);
+};
+
+const parseFormData = (rawData, allDestinations) => {
+  const {formData, type, offers} = rawData;
+  const result = new EventModel({
+    type,
+    offers,
+    'base_price': parseInt(formData.get(`price`), 10),
+    'date_from': getDateObject(formData.get(`event-start-time`)),
+    'date_to': getDateObject(formData.get(`event-end-time`)),
+    'is_favorite': formData.get(`favorite`) ? true : false,
+    'destination': getDestinations(formData.get(`destination`), allDestinations)
+  });
+  return result;
+};
+
 export default class PointController {
-  constructor(container, onDataChange, onViewChange, onFavoriteChange) {
+  constructor(container, onDataChange, onViewChange, onFavoriteChange, eventsModel) {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
     this._onFavoriteChange = onFavoriteChange;
+    this._eventsModel = eventsModel;
 
     this._mode = Mode.DEFAULT;
 
@@ -40,9 +62,11 @@ export default class PointController {
     const oldEventComponent = this._eventComponent;
     const oldEventEditComponent = this._eventEditComponent;
     this._mode = mode;
+    const destinations = this._eventsModel.getDestinations();
+    const offers = this._eventsModel.getOffers();
 
     this._eventComponent = new EventComponent(event);
-    this._eventEditComponent = new EventEditComponent(event, this._onFavoriteChange);
+    this._eventEditComponent = new EventEditComponent(event, this._onFavoriteChange, destinations, offers);
 
     this._eventComponent.setRollupButtonClickHandler(() => {
       this._replaceEventToEdit();
@@ -54,7 +78,8 @@ export default class PointController {
 
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      const data = this._eventEditComponent.getData();
+      const rawData = this._eventEditComponent.getData();
+      const data = parseFormData(rawData, this._eventsModel.getDestinations(), this._eventsModel.getOffers());
       this._onDataChange(this, event, data);
     });
 
@@ -62,11 +87,13 @@ export default class PointController {
       this._onDataChange(this, event, null);
     });
 
-    this._eventEditComponent.setFavoriteInputClickHandler(() => {
-      this._onFavoriteChange(event, Object.assign({}, event, {
-        isFavorite: !event.isFavorite
-      }));
+    this._eventEditComponent.setFavoriteInputClickHandler((evt, isFavorite) => {
+      evt.preventDefault();
+      const newEvent = EventModel.clone(event);
+      newEvent.isFavorite = !isFavorite;
+      this._onFavoriteChange(this._eventEditComponent, event, newEvent);
     });
+
     switch (mode) {
       case Mode.DEFAULT:
         if (oldEventEditComponent && oldEventComponent) {

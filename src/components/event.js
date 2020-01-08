@@ -1,16 +1,21 @@
 import {castTimeFormat, formatInTime, getDestinationTitle} from '../utils/common.js';
 import AbstractComponent from './abstract-component.js';
 import moment from 'moment';
+const MAX_LENGTH_OFFERS = 3;
 
 const createOffersItems = (offers) => {
-  return offers.
+  const offersArray = offers.slice();
+  if (offers.length > MAX_LENGTH_OFFERS) {
+    offersArray.length = MAX_LENGTH_OFFERS;
+  }
+  return offersArray.
   map((offer) => {
-    const {description, currency, add} = offer;
+    const {price, title} = offer;
     return (
       `<li class="event__offer">
-        <span class="event__offer-title">${description}</span>
+        <span class="event__offer-title">${title}</span>
         &plus;
-        ${currency}&nbsp;<span class="event__offer-price">${add}</span>
+        ${price}&nbsp;<span class="event__offer-price">€</span>
       </li>`
     );
   }).join(`\n`);
@@ -41,8 +46,9 @@ const getDifferenceTimeInFormat = (event) => {
 
 const createEventTemplate = (event) => {
   const {offers, type, startDate, endDate, destination, price} = event;
-  const offersComponent = offers.length > 0 ? createOffers(offers) : ``;
-  const nameImage = type === `check` ? `check-in` : type;
+  const offersTemplate = offers.length > 0 ? createOffers(offers) : ``;
+  const nameImage = type;
+  const destinationName = destination[`name`];
 
   const eventName = getDestinationTitle(type);
 
@@ -57,7 +63,7 @@ const createEventTemplate = (event) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${nameImage}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${eventName} ${destination}</h3>
+        <h3 class="event__title">${eventName} ${destinationName}</h3>
 
         <div class="event__schedule">
           <p class="event__time">
@@ -71,7 +77,7 @@ const createEventTemplate = (event) => {
         <p class="event__price">
           &euro;&nbsp;<span class="event__price-value">${price}</span>
         </p>
-        ${offersComponent}
+        ${offersTemplate}
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
