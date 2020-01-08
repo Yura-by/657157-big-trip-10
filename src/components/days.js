@@ -34,7 +34,10 @@ const createDaysMap = (days) => {
 };
 
 const createDayTemplate = (days) => {
-  const daysMap = days.length === 0 ? null : createDaysMap(days);
+  if (days.length === 0) {
+    console.log('LOL')
+  }
+    const daysMap = days.length === 0 ? null : createDaysMap(days);
 
   return days.
     map((events) => {
