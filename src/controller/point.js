@@ -24,21 +24,12 @@ export const EmptyEvent = {
   isFavorite: false
 };
 
-const parseOffers = (formData, allOffers) => {
-  const formDataKeys = [];
-  formData.forEach((property, key) => formDataKeys.push(key));
-  const resultOffers = allOffers.filter((item) => {
-    return formDataKeys.some((key) => key === item.title)
-  });
-  return resultOffers;
-};
-
 const getDestinations = (destinationName, allDestinations) => {
-  return allDestinations.filter((destination) => destination[`name`] === destinationName)[0];
+  return allDestinations.find((destination) => destination[`name`] === destinationName);
 };
 
 const parseFormData = (rawData, allDestinations, allOffers) => {
-  const {formData, type} = rawData;
+  const {formData, type, offers} = rawData;
 
   const result = new EventModel ({
     type,
@@ -47,7 +38,7 @@ const parseFormData = (rawData, allDestinations, allOffers) => {
     date_to: getDateObject(formData.get(`event-end-time`)),
     is_favorite: formData.get(`favorite`) ? true : false,
     destination: getDestinations(formData.get(`destination`), allDestinations),
-    offers: parseOffers(formData, getOffersByType(type, allOffers))
+    offers
   });
   console.log(result)
   return result;

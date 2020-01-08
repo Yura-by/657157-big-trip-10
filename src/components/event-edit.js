@@ -25,15 +25,15 @@ const createSelectors = (offers) => {
   }).join(`\n`);
 };
 
-const getChecked = (offerByType, offers) => {
+const getCheckedOffer = (offerByType, offers) => {
   return offers.some((item) => {
     return item[`title`] === offerByType[`title`];
   });
 };
 
 const getPriceOffer = (offerByType, offers) => {
-  const offer = offers.filter((item) => item.title === offerByType.title);
-  const resultPrice = offer.length > 0 ? offer[0].price : offerByType.price;
+  const offer = offers.find((item) => item.title === offerByType.title);
+  const resultPrice = offer ? offer.price : offerByType.price;
   return resultPrice;
 };
 
@@ -44,7 +44,7 @@ const getOffers = (type, allOffers, currentOffers) => {
     return {
       title,
       price: getPriceOffer(offerByType, currentOffers),
-      isChecked: getChecked(offerByType, currentOffers)
+      isChecked: getCheckedOffer(offerByType, currentOffers)
     }
   });
   return offersResult;
@@ -133,6 +133,17 @@ const createEventDetails = (offers, destination, type) => {
   return detailsTemplate;
 };
 
+const getCheckedOffers = (allOffers) => {
+  const fullOffers = allOffers.filter((offer) => offer.isChecked);
+  return fullOffers.map((offer) => {
+    const {title, price} = offer;
+    return {
+      title,
+      price
+    }
+  })
+};
+
 const createEventEditTemplate = (options = {}, isNewEvent) => {
   const {allDestinations, type, offers, destination, startDate, endDate, price, isFavorite} = options;
 
@@ -202,7 +213,7 @@ const createEventEditTemplate = (options = {}, isNewEvent) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="price" value="${price}" required>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -269,9 +280,11 @@ export default class EventEdit extends AbstractSmartComponent {
 
   getData() {
     const form = this.getElement();
+    const offers = getCheckedOffers(this._offers)
     return {
       formData: new FormData(form),
-      type: this._type
+      type: this._type,
+      offers
     }
   }
 
@@ -349,6 +362,7 @@ export default class EventEdit extends AbstractSmartComponent {
     const endDateElement = element.querySelector(`input[name="event-end-time"]`);
     const eventInput = element.querySelector(`.event__input--destination`);
     const offersCheckboxes = element.querySelectorAll(`.event__offer-checkbox`);
+    const priceInput = element.querySelector(`.event__input--price`);
 
     offersCheckboxes.forEach((item) => {
       item.addEventListener(`change`, (evt) => {
@@ -357,15 +371,17 @@ export default class EventEdit extends AbstractSmartComponent {
       })
     });
 
-    element.querySelector(`.event__input--price`)
-      .addEventListener(`change`, (evt) => {
-        this._price = evt.target.value;
-      });
+    priceInput.addEventListener(`change`, (evt) => {
+      this._price = evt.target.value;
+      setButtonDisabled();
+    });
 
     const setButtonDisabled = () => {
       const isEventDestinationValid = checkDestinationValid(eventInput.value, this._allDestinations);
       const isDateValid = getDateObject(startDateElement.value) < getDateObject(endDateElement.value);
-      saveButton.disabled = !isEventDestinationValid || !isDateValid;
+      const priceNumber = parseInt(this._price, 10);
+      const isPriceValid = priceNumber || priceNumber === 0 ? true : false;
+      saveButton.disabled = !isEventDestinationValid || !isDateValid || !isPriceValid;
     };
 
     setButtonDisabled();
@@ -399,9 +415,9 @@ export default class EventEdit extends AbstractSmartComponent {
     });
 
     eventInput.addEventListener(`change`, (evt) => {
-      const target = this._allDestinations.filter((item) => item[`name`] === evt.target.value);
-      if (target.length > 0) {
-        this._destination = target[0];
+      const target = this._allDestinations.find((item) => item[`name`] === evt.target.value);
+      if (target) {
+        this._destination = target;
       } else {
         this._destination = {
           name: evt.target.value,
