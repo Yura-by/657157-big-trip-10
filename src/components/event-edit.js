@@ -273,6 +273,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._favoriteInputClickHandler = null;
     this._cancelButtonClickHandler = null;
     this._externalData = DefaultData;
+    this._isSendingForm = false;
 
     this._subscribeOnEvents();
     this._applyFlatpickr();
@@ -295,6 +296,17 @@ export default class EventEdit extends AbstractSmartComponent {
   setData(data) {
     this._externalData = Object.assign({}, DefaultData, data);
     this.rerender();
+  }
+
+  getSandingState() {
+    return this._isSendingForm;
+  }
+
+  setDisabledState() {
+    this._isSendingForm = true;
+    this.getElement().querySelector(`.event__save-btn`).disabled = true;
+    this.getElement().querySelector(`.event__favorite-checkbox`).disabled = true;
+    this.getElement().querySelector(`.event__reset-btn`).disabled = true;
   }
 
   getData() {

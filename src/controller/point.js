@@ -81,13 +81,23 @@ export default class PointController {
 
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-
-      this._eventEditComponent.setData({
-        saveButtonText: `Saving...`
-      });
-
+      if (this._eventEditComponent.getSandingState()) {
+        return;
+      }
+      if (this._mode === Mode.ADDING) {
+        this._eventEditComponent.setData({
+          saveButtonText: `Saving...`,
+          deleteButtonText: `Cancel`
+        })
+      } else {
+        this._eventEditComponent.setData({
+          saveButtonText: `Saving...`
+        });
+      }
+      this._eventEditComponent.setDisabledState();
       const rawData = this._eventEditComponent.getData();
       const data = parseFormData(rawData, this._eventsModel.getDestinations(), this._eventsModel.getOffers());
+
       this._onDataChange(this, event, data);
     });
 
@@ -100,6 +110,7 @@ export default class PointController {
 
     this._eventEditComponent.setFavoriteInputClickHandler((evt, isFavorite) => {
       evt.preventDefault();
+
       const newEvent = EventModel.clone(event);
       newEvent.isFavorite = !isFavorite;
       this._onFavoriteChange(this._eventEditComponent, event, newEvent, this);
@@ -120,6 +131,9 @@ export default class PointController {
           remove(oldEventEditComponent);
           remove(oldEventComponent);
         }
+        this._eventEditComponent.setData({
+          deleteButtonText: `Cancel`
+        });
         document.addEventListener(`keydown`, this._onEscKeyDown);
         if (adjacentElement) {
           render(this._container, this._eventEditComponent, RenderPosition.INSERT_BEFORE, adjacentElement);
@@ -182,11 +196,17 @@ export default class PointController {
     this._eventEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
     setTimeout(() => {
       this._eventEditComponent.getElement().style.animation = ``;
-
-      this._eventEditComponent.setData({
-        saveButtonText: `Save`,
-        deleteButtonText: `Delete`,
-      });
+      if (this._mode === Mode.ADDING) {
+        this._eventEditComponent.setData({
+          saveButtonText: `Save`,
+          deleteButtonText: `Cancel`
+        })
+      } else {
+        this._eventEditComponent.setData({
+          saveButtonText: `Save`,
+          deleteButtonText: `Delete`
+        });
+      }
     }, SHAKE_ANIMATION_TIMEOUT);
   }
 }
