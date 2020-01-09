@@ -338,6 +338,7 @@ export default class EventEdit extends AbstractSmartComponent {
     if (newEvent) {
       this._isFavorite = newEvent.isFavorite;
     }
+    this._isSendingForm = false;
     super.rerender();
 
     this._applyFlatpickr();

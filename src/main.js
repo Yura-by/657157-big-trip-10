@@ -2,9 +2,10 @@ import FilterController from './controller/filter.js';
 import SiteMenuComponent, {MenuItem} from './components/site-menu.js';
 import EventsModel from './models/events.js';
 import StatisticsComponent from './components/statistics.js';
-import {RenderPosition, render} from './utils/render.js';
+import {RenderPosition, render, remove} from './utils/render.js';
 import TripController from './controller/trip.js';
 import Api from './api.js';
+import LoadingComponent from './components/loading.js';
 
 const AUTHORIZATION = `Basic kjfslklhVJHlhSREDf8907`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
@@ -23,9 +24,11 @@ const siteMenuComponent = new SiteMenuComponent();
 const filterController = new FilterController(siteContolsElement, eventsModel);
 const tripController = new TripController(tripEventsElement, eventsModel, api);
 const statisticsComponent = new StatisticsComponent(eventsModel);
+const loadingComponent = new LoadingComponent();
 
 render(siteContolsElement, siteMenuComponent, RenderPosition.INSERT_BEFORE, switchTabsTitleElement);
 filterController.render();
+render(tripEventsElement, loadingComponent, RenderPosition.BEFOREEND);
 render(bodyContainerElement, statisticsComponent, RenderPosition.BEFOREEND);
 statisticsComponent.hide();
 
@@ -57,19 +60,20 @@ api.getEvents()
   .then((events) => {
     eventsModel.setEvents(events);
   })
-  .finally(() => {
+  .then(() => {
     return api.getDestinations()
       .then((destinations) => {
         eventsModel.setDestinations(destinations);
       });
   })
-  .finally(() => {
+  .then(() => {
     return api.getOffers()
       .then((offers) => {
         eventsModel.setOffers(offers);
       });
   })
   .then(() => {
+    remove(loadingComponent);
     tripController.render();
   });
 

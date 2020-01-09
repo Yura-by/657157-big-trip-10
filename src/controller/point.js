@@ -105,12 +105,13 @@ export default class PointController {
       this._eventEditComponent.setData({
         deleteButtonText: `Deleting...`
       });
+      this._eventEditComponent.setDisabledState();
       this._onDataChange(this, event, null);
     });
 
     this._eventEditComponent.setFavoriteInputClickHandler((evt, isFavorite) => {
       evt.preventDefault();
-
+      this._eventEditComponent.setDisabledState();
       const newEvent = EventModel.clone(event);
       newEvent.isFavorite = !isFavorite;
       this._onFavoriteChange(this._eventEditComponent, event, newEvent, this);
@@ -194,6 +195,7 @@ export default class PointController {
 
   shake() {
     this._eventEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._eventEditComponent.getElement().style.boxShadow = `0 0 10px 5px red`;
     setTimeout(() => {
       this._eventEditComponent.getElement().style.animation = ``;
       if (this._mode === Mode.ADDING) {
