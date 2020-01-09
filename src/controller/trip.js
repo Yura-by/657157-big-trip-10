@@ -248,6 +248,11 @@ export default class TripController {
 
   _tripRerender() {
     const sortType = this._container.querySelectorAll(`.trip-sort__input`);
+    if (!sortType) {
+      this._daysWithEvents = sortEvents(this._eventsModel.getEvents());
+      this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
+      return;
+    }
     const activeSortType = Array.from(sortType).find((item) => item.checked).dataset.sortType;
     if (activeSortType !== SortType.DEFAULT) {
       this._onSortTypeChange(activeSortType);
