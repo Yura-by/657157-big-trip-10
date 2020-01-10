@@ -1,6 +1,7 @@
 import FilterComponent from '../components/site-filter.js';
 import {FilterType} from '../const.js';
 import {render, replace, RenderPosition} from '../utils/render.js';
+import {getEventsByFilter} from '../utils/filter.js';
 
 export default class FilterController {
   constructor(container, eventsModel) {
@@ -11,6 +12,8 @@ export default class FilterController {
     this._filterComponent = null;
 
     this._onFilterChange = this._onFilterChange.bind(this);
+    this._onEventsChange = this._onEventsChange.bind(this);
+    this._eventsModel.setDataChangeHandler(this._onEventsChange);
   }
 
   render() {
@@ -21,20 +24,32 @@ export default class FilterController {
         checked: filterType === this._activeFilterType
       };
     });
-    const oldComponent = this._filterComponent;
+    //const oldComponent = this._filterComponent;
 
     this._filterComponent = new FilterComponent(filters);
     this._filterComponent.setFilterChangeHandler(this._onFilterChange);
 
-    if (oldComponent) {
-      replace(this._filterComponent, oldComponent);
-    } else {
+    //if (oldComponent) {
+      //replace(this._filterComponent, oldComponent);
+    //} else {
       render(container, this._filterComponent, RenderPosition.BEFOREEND);
-    }
+    //}
   }
 
   _onFilterChange(filterType) {
     this._eventsModel.setFilter(filterType);
     this._activeFilterType = filterType;
+  }
+
+  _onEventsChange() {
+    this._filterComponent.setFiltersUndisabled();
+    const pastEvents = getEventsByFilter(this._eventsModel.getEventsAll(), FilterType.PAST);
+    if (pastEvents.length === 0) {
+      this._filterComponent.setFilterDisabled(FilterType.PAST);
+    }
+    const futureEvents = getEventsByFilter(this._eventsModel.getEventsAll(), FilterType.FUTURE);
+    if (futureEvents.length === 0) {
+      this._filterComponent.setFilterDisabled(FilterType.FUTURE);
+    }
   }
 }

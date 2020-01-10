@@ -43,4 +43,23 @@ export default class SiteFilter extends AbstractComponent {
       handler(filterName);
     });
   }
+
+  setFilterDisabled(name) {
+    const inputElement = this.getElement().querySelector(`#${FILTER_ID_PREFIX}${name}`);
+    inputElement.disabled = true;
+    const labelSelector = `label[for="${FILTER_ID_PREFIX}${name}"]`;
+    const labelElement = this.getElement().querySelector(`${labelSelector}`);
+    labelElement.classList.add(`trip-filter-blocked`);
+  }
+
+  setFiltersUndisabled() {
+    const filtersElement = this.getElement().querySelectorAll(`.trip-filters__filter-input`);
+    filtersElement.forEach((item) => item.disabled = false);
+    const labelsElements = this.getElement().querySelectorAll(`.trip-filters__filter-label`);
+    labelsElements.forEach((item) => {
+      if (item.classList.contains(`trip-filter-blocked`)) {
+        item.classList.remove(`trip-filter-blocked`);
+      }
+    })
+  }
 }

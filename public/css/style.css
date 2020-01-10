@@ -298,6 +298,10 @@ main {
   opacity: 1;
   cursor: default; }
 
+.trip-filter-blocked:hover {
+  opacity: 0.6;
+}
+
 .trip-search {
   -ms-flex-positive: 1;
       flex-grow: 1;
