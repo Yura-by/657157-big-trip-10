@@ -34,7 +34,7 @@ export const sortEventsInOrder = (events) => {
 export const isOneDay = (dateA, dateB) => {
   const momentDateA = moment(dateA);
   const momentDateB = moment(dateB);
-  return momentDateA.diff(momentDateB, `days`) === 0;
+  return momentDateA.diff(momentDateB, `days`) === 0 && dateA.getDate() === dateB.getDate();
 };
 
 export const getDateObject = (string) => {
