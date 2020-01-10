@@ -133,8 +133,9 @@ export default class TripController {
             this._eventsModel.addEvent(eventModel);
             this._tripRerender();
           })
-          .catch(() => {
+          .catch((error) => {
             pointController.shake()
+            console.log(error)
           });
       }
     } else if (newData === null) {
@@ -155,7 +156,7 @@ export default class TripController {
           }
         })
         .catch(() => {
-          pointController.shake()
+          pointController.shake();
         });
     }
   }
@@ -179,6 +180,15 @@ export default class TripController {
       remove(this._sortComponent);
       render(this._container, this._noEventsComponent, RenderPosition.BEFOREEND);
     }
+    const poitsSorted = sortEventsInOrder(this._eventsModel.getEventsAll());
+    const totalPrice = poitsSorted.reduce((total, event) => {
+      const {price, offers} = event;
+      const offersPrice = offers.reduce((totalOffer, offer) => {
+        return totalOffer += offer.price;
+      }, 0);
+      return total += price + offersPrice;
+    }, 0);
+    document.querySelector(`.trip-info__cost-value`).textContent = totalPrice;
   }
 
   _onViewChange() {
