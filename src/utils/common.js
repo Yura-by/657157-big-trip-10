@@ -27,6 +27,10 @@ export const formatInTime = (date) => {
   return moment(date).format(`HH:mm`);
 };
 
+export const formatForTitle = (date) => {
+  return moment(date).format(`D MMM`);
+};
+
 export const sortEventsInOrder = (events) => {
   return events.sort((eventBefore, eventAfter) => eventBefore.startDate.getTime() - eventAfter.startDate.getTime());
 };
@@ -34,7 +38,7 @@ export const sortEventsInOrder = (events) => {
 export const isOneDay = (dateA, dateB) => {
   const momentDateA = moment(dateA);
   const momentDateB = moment(dateB);
-  return momentDateA.diff(momentDateB, `days`) === 0;
+  return momentDateA.diff(momentDateB, `days`) === 0 && dateA.getDate() === dateB.getDate();
 };
 
 export const getDateObject = (string) => {

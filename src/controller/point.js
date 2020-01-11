@@ -5,6 +5,7 @@ import {Type} from '../const.js';
 import EventModel from '../models/event.js';
 import {getDateObject} from '../utils/common.js';
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
 
 export const Mode = {
   ADDING: `adding`,
@@ -12,17 +13,19 @@ export const Mode = {
   EDIT: `edit`,
 };
 
-export const EmptyEvent = {
-  type: Type.FLIGHT,
-  destination: ``,
-  photo: [],
-  description: ``,
-  startDate: new Date(),
-  endDate: new Date(),
-  price: 0,
-  offers: [],
-  isFavorite: false
-};
+export const EmptyEvent = new EventModel({
+  'type': Type.FLIGHT,
+  'offers': [],
+  'base_price': ``,
+  'date_from': new Date(),
+  'date_to': new Date(),
+  'is_favorite': false,
+  'destination': {
+    'name': ``,
+    'pictures': [],
+    'description': ``
+  }
+});
 
 const getDestinations = (destinationName, allDestinations) => {
   return allDestinations.find((destination) => destination[`name`] === destinationName);
@@ -78,20 +81,40 @@ export default class PointController {
 
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
+      if (this._eventEditComponent.getSandingState()) {
+        return;
+      }
+      if (this._mode === Mode.ADDING) {
+        this._eventEditComponent.setData({
+          saveButtonText: `Saving...`,
+          deleteButtonText: `Cancel`
+        });
+      } else {
+        this._eventEditComponent.setData({
+          saveButtonText: `Saving...`
+        });
+      }
+      this._eventEditComponent.setDisabledState();
       const rawData = this._eventEditComponent.getData();
       const data = parseFormData(rawData, this._eventsModel.getDestinations(), this._eventsModel.getOffers());
+
       this._onDataChange(this, event, data);
     });
 
     this._eventEditComponent.setCancelButtonClickHandler(() => {
+      this._eventEditComponent.setData({
+        deleteButtonText: `Deleting...`
+      });
+      this._eventEditComponent.setDisabledState();
       this._onDataChange(this, event, null);
     });
 
     this._eventEditComponent.setFavoriteInputClickHandler((evt, isFavorite) => {
       evt.preventDefault();
+      this._eventEditComponent.setDisabledState();
       const newEvent = EventModel.clone(event);
       newEvent.isFavorite = !isFavorite;
-      this._onFavoriteChange(this._eventEditComponent, event, newEvent);
+      this._onFavoriteChange(this._eventEditComponent, event, newEvent, this);
     });
 
     switch (mode) {
@@ -109,6 +132,9 @@ export default class PointController {
           remove(oldEventEditComponent);
           remove(oldEventComponent);
         }
+        this._eventEditComponent.setData({
+          deleteButtonText: `Cancel`
+        });
         document.addEventListener(`keydown`, this._onEscKeyDown);
         if (adjacentElement) {
           render(this._container, this._eventEditComponent, RenderPosition.INSERT_BEFORE, adjacentElement);
@@ -165,5 +191,24 @@ export default class PointController {
       this._replaceEditToEvent();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
+  }
+
+  shake() {
+    this._eventEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._eventEditComponent.getElement().style.boxShadow = `0 0 10px 5px red`;
+    setTimeout(() => {
+      this._eventEditComponent.getElement().style.animation = ``;
+      if (this._mode === Mode.ADDING) {
+        this._eventEditComponent.setData({
+          saveButtonText: `Save`,
+          deleteButtonText: `Cancel`
+        });
+      } else {
+        this._eventEditComponent.setData({
+          saveButtonText: `Save`,
+          deleteButtonText: `Delete`
+        });
+      }
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }

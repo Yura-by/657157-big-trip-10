@@ -5,6 +5,11 @@ import {TYPES_TRANSPORT, TYPES_PLACE, Type, Index} from '../const.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
 import {getDateObject, formatInDayTime, getDestinationTitle} from '../utils/common.js';
 
+const DefaultData = {
+  deleteButtonText: `Delete`,
+  saveButtonText: `Save`,
+};
+
 const TYPE_CHECK = `check`;
 
 const createSelectors = (offers) => {
@@ -149,7 +154,7 @@ const getCheckedOffers = (allOffers) => {
 };
 
 const createEventEditTemplate = (options = {}, isNewEvent) => {
-  const {allDestinations, type, offers, destination, startDate, endDate, price, isFavorite} = options;
+  const {allDestinations, type, offers, destination, startDate, endDate, price, isFavorite, externalData} = options;
 
   const nameImage = type;
 
@@ -164,6 +169,9 @@ const createEventEditTemplate = (options = {}, isNewEvent) => {
   const eventDetails = createEventDetails(offers, destination, type);
 
   const newEventStyle = isNewEvent === null ? `style="display: none"` : ``;
+
+  const deleteButtonText = externalData.deleteButtonText;
+  const saveButtonText = externalData.saveButtonText;
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -220,8 +228,8 @@ const createEventEditTemplate = (options = {}, isNewEvent) => {
           <input class="event__input  event__input--price" id="event-price-1" type="text" name="price" value="${price}" required>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Cancel</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit">${saveButtonText}</button>
+        <button class="event__reset-btn" type="reset">${deleteButtonText}</button>
         <input id="event-favorite-${startDate.getTime()}" class="event__favorite-checkbox visually-hidden" type="checkbox" name="favorite" ${isFavorite ? `checked` : ``}>
         <label class="event__favorite-btn" ${newEventStyle} for="event-favorite-${startDate.getTime()}">
           <span class="visually-hidden">Add to favorite</span>
@@ -264,6 +272,8 @@ export default class EventEdit extends AbstractSmartComponent {
     this._RollupButtonClickHandler = null;
     this._favoriteInputClickHandler = null;
     this._cancelButtonClickHandler = null;
+    this._externalData = DefaultData;
+    this._isSendingForm = false;
 
     this._subscribeOnEvents();
     this._applyFlatpickr();
@@ -278,8 +288,25 @@ export default class EventEdit extends AbstractSmartComponent {
       startDate: this._startDate,
       endDate: this._endDate,
       price: this._price,
-      isFavorite: this._isFavorite
+      isFavorite: this._isFavorite,
+      externalData: this._externalData
     }, this._isNewEvent);
+  }
+
+  setData(data) {
+    this._externalData = Object.assign({}, DefaultData, data);
+    this.rerender();
+  }
+
+  getSandingState() {
+    return this._isSendingForm;
+  }
+
+  setDisabledState() {
+    this._isSendingForm = true;
+    this.getElement().querySelector(`.event__save-btn`).disabled = true;
+    this.getElement().querySelector(`.event__favorite-checkbox`).disabled = true;
+    this.getElement().querySelector(`.event__reset-btn`).disabled = true;
   }
 
   getData() {
@@ -311,6 +338,7 @@ export default class EventEdit extends AbstractSmartComponent {
     if (newEvent) {
       this._isFavorite = newEvent.isFavorite;
     }
+    this._isSendingForm = false;
     super.rerender();
 
     this._applyFlatpickr();
