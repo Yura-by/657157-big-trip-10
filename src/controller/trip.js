@@ -39,7 +39,7 @@ const sortEvents = (events) => {
 };
 
 export default class TripController {
-  constructor(container, eventsModel, api) {
+  constructor(container, eventsModel, api, newEventButton) {
     this._container = container;
     this._eventsModel = eventsModel;
     this._api = api;
@@ -51,6 +51,7 @@ export default class TripController {
     this._daysComponent = null;
     this._creatingEvent = null;
     this._tripInfoComponent = null;
+    this._newEventButton = newEventButton;
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
@@ -75,6 +76,7 @@ export default class TripController {
 
   render() {
     const events = this._eventsModel.getEvents();
+    this._newEventButton.disabled = false;
 
     if (!events || events === 0 || events.length === 0) {
       render(this._container, this._noEventsComponent, RenderPosition.BEFOREEND);
@@ -89,6 +91,7 @@ export default class TripController {
   }
 
   createEvent() {
+    this._newEventButton.disabled = true;
     if (this._creatingEvent) {
       return;
     }
@@ -138,7 +141,7 @@ export default class TripController {
             this._tripRerender();
           })
           .catch(() => {
-            pointController.shake()
+            pointController.shake();
           });
       }
     } else if (newData === null) {
@@ -168,6 +171,9 @@ export default class TripController {
           pointController.shake();
         });
     }
+    if (this._creatingEvent === null) {
+      this._newEventButton.disabled = false;
+    }
   }
 
   _onFavoriteChange(editComponent, oldData, newData, pointController) {
@@ -179,7 +185,7 @@ export default class TripController {
         }
       })
       .catch(() => {
-        pointController.shake()
+        pointController.shake();
       });
   }
 
@@ -193,12 +199,11 @@ export default class TripController {
     const totalPrice = pointsSorted.reduce((total, event) => {
       const {price, offers} = event;
       const offersPrice = offers.reduce((totalOffer, offer) => {
-        return totalOffer += offer.price;
+        return totalOffer + offer.price;
       }, 0);
-      return total += price + offersPrice;
+      return total + price + offersPrice;
     }, 0);
     document.querySelector(`.trip-info__cost-value`).textContent = totalPrice;
-    const titleElement = document.querySelector(`.trip-info__title`);
     const infoContainer = document.querySelector(`.trip-main__trip-info`);
     if (this._tripInfoComponent) {
       remove(this._tripInfoComponent);

@@ -13,7 +13,7 @@ export const Mode = {
   EDIT: `edit`,
 };
 
-export const EmptyEvent = new EventModel ({
+export const EmptyEvent = new EventModel({
   'type': Type.FLIGHT,
   'offers': [],
   'base_price': ``,
@@ -21,10 +21,10 @@ export const EmptyEvent = new EventModel ({
   'date_to': new Date(),
   'is_favorite': false,
   'destination': {
-      'name': ``,
-      'pictures': [],
-      'description': ``
-    }
+    'name': ``,
+    'pictures': [],
+    'description': ``
+  }
 });
 
 const getDestinations = (destinationName, allDestinations) => {
@@ -88,7 +88,7 @@ export default class PointController {
         this._eventEditComponent.setData({
           saveButtonText: `Saving...`,
           deleteButtonText: `Cancel`
-        })
+        });
       } else {
         this._eventEditComponent.setData({
           saveButtonText: `Saving...`
@@ -202,7 +202,7 @@ export default class PointController {
         this._eventEditComponent.setData({
           saveButtonText: `Save`,
           deleteButtonText: `Cancel`
-        })
+        });
       } else {
         this._eventEditComponent.setData({
           saveButtonText: `Save`,

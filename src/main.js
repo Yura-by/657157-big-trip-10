@@ -20,9 +20,20 @@ const siteMainElement = document.querySelector(`.page-main`);
 const bodyContainerElement = siteMainElement.querySelector(`.page-body__container`);
 const tripEventsElement = siteMainElement.querySelector(`.trip-events`);
 
+const onAddEventClick = () => {
+  statisticsComponent.hide();
+  tripController.show();
+  tripController.createEvent();
+  siteMenuComponent.setActiveItem(MenuItem.TABLE);
+};
+
+const newEventButton = siteHeaderElement.querySelector(`.trip-main__event-add-btn`);
+newEventButton.disabled = true;
+newEventButton.addEventListener(`click`, onAddEventClick);
+
 const siteMenuComponent = new SiteMenuComponent();
 const filterController = new FilterController(siteContolsElement, eventsModel);
-const tripController = new TripController(tripEventsElement, eventsModel, api);
+const tripController = new TripController(tripEventsElement, eventsModel, api, newEventButton);
 const statisticsComponent = new StatisticsComponent(eventsModel);
 const loadingComponent = new LoadingComponent();
 
@@ -46,16 +57,6 @@ siteMenuComponent.setOnChange((menuItem) => {
   }
 });
 
-const onAddEventClick = () => {
-  statisticsComponent.hide();
-  tripController.show();
-  tripController.createEvent();
-  siteMenuComponent.setActiveItem(MenuItem.TABLE);
-};
-
-siteHeaderElement.querySelector(`.trip-main__event-add-btn`)
-  .addEventListener(`click`, onAddEventClick);
-
 api.getEvents()
   .then((events) => {
     eventsModel.setEvents(events);
@@ -76,16 +77,3 @@ api.getEvents()
     remove(loadingComponent);
     tripController.render();
   });
-
-/* const getTotalPrice = () => {
-  return events.reduce((total, event) => {
-    const {price, offers} = event;
-    const resultOffres = offers.reduce((amount, offer) => {
-      return amount + offer.add;
-    }, 0);
-
-    return total + price + resultOffres;
-  }, 0);
-};
-
-siteHeaderElement.querySelector(`.trip-info__cost-value`).textContent = getTotalPrice(); */

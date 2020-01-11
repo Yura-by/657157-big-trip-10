@@ -54,12 +54,14 @@ export default class SiteFilter extends AbstractComponent {
 
   setFiltersUndisabled() {
     const filtersElement = this.getElement().querySelectorAll(`.trip-filters__filter-input`);
-    filtersElement.forEach((item) => item.disabled = false);
+    filtersElement.forEach((item) => {
+      item.disabled = false;
+    });
     const labelsElements = this.getElement().querySelectorAll(`.trip-filters__filter-label`);
     labelsElements.forEach((item) => {
       if (item.classList.contains(`trip-filter-blocked`)) {
         item.classList.remove(`trip-filter-blocked`);
       }
-    })
+    });
   }
 }
