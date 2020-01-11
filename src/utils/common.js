@@ -27,6 +27,10 @@ export const formatInTime = (date) => {
   return moment(date).format(`HH:mm`);
 };
 
+export const formatForTitle = (date) => {
+  return moment(date).format(`D MMM`);
+};
+
 export const sortEventsInOrder = (events) => {
   return events.sort((eventBefore, eventAfter) => eventBefore.startDate.getTime() - eventAfter.startDate.getTime());
 };

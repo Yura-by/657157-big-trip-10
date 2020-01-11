@@ -5,6 +5,8 @@ import {formatInDay, sortEventsInOrder} from '../utils/common.js';
 import {RenderPosition, render, remove} from '../utils/render.js';
 import PointController, {Mode as PointControllerMode, EmptyEvent} from './point.js';
 import {FilterType, HIDDEN_CLASS} from '../const.js';
+import TripInfoComponent from '../components/trip-info.js';
+import {getTripInfoContent} from '../utils/trip-info.js';
 
 const renderEvents = (container, eventsInDay, onDataChange, onViewChange, onFavoriteChange, eventsModel) => {
   const controllersInDay = [];
@@ -48,6 +50,7 @@ export default class TripController {
     this._sortComponent = new SortComponent();
     this._daysComponent = null;
     this._creatingEvent = null;
+    this._tripInfoComponent = null;
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
@@ -150,9 +153,8 @@ export default class TripController {
             this._tripRerender();
           }
         })
-        .catch((err) => {
+        .catch(() => {
           pointController.shake();
-          console.log(err)
         });
     } else {
       this._api.updateEvent(oldData.id, newData)
@@ -187,8 +189,8 @@ export default class TripController {
       remove(this._sortComponent);
       render(this._container, this._noEventsComponent, RenderPosition.BEFOREEND);
     }
-    const poitsSorted = sortEventsInOrder(this._eventsModel.getEventsAll());
-    const totalPrice = poitsSorted.reduce((total, event) => {
+    const pointsSorted = sortEventsInOrder(this._eventsModel.getEventsAll());
+    const totalPrice = pointsSorted.reduce((total, event) => {
       const {price, offers} = event;
       const offersPrice = offers.reduce((totalOffer, offer) => {
         return totalOffer += offer.price;
@@ -196,6 +198,13 @@ export default class TripController {
       return total += price + offersPrice;
     }, 0);
     document.querySelector(`.trip-info__cost-value`).textContent = totalPrice;
+    const titleElement = document.querySelector(`.trip-info__title`);
+    const infoContainer = document.querySelector(`.trip-main__trip-info`);
+    if (this._tripInfoComponent) {
+      remove(this._tripInfoComponent);
+    }
+    this._tripInfoComponent = new TripInfoComponent(getTripInfoContent(pointsSorted));
+    render(infoContainer, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
   }
 
   _onViewChange() {
