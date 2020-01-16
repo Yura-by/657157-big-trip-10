@@ -2,7 +2,7 @@ const CACHE_PREFIX = `trip-cache`;
 const CACHE_VER = `v1`;
 const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VER}`;
 
-/*self.addEventListener(`install`, (evt) => {
+self.addEventListener(`install`, (evt) => {
   evt.waitUntil(
       caches.open(CACHE_NAME)
         .then((cache) => {
@@ -12,22 +12,68 @@ const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VER}`;
             `/bundle.js`,
             `/css/normalize.css`,
             `/css/style.css`,
-            `/fonts/HelveticaNeueCyr-Bold.woff`,
-            `/fonts/HelveticaNeueCyr-Bold.woff2`,
-            `/fonts/HelveticaNeueCyr-Medium.woff`,
-            `/fonts/HelveticaNeueCyr-Medium.woff2`,
-            `/fonts/HelveticaNeueCyr-Roman.woff`,
-            `/fonts/HelveticaNeueCyr-Roman.woff2`,
-            `/img/add-photo.svg`,
-            `/img/close.svg`,
-            `/img/sample-img.jpg`,
-            `/img/wave.svg`,
+            `/fonts/montserrat-bold-webfont.woff2`,
+            `/fonts/montserrat-extrabold-webfont.woff2`,
+            `/fonts/montserrat-medium-webfont.woff2`,
+            `/fonts/montserrat-regular-webfont.woff2`,
+            `/fonts/montserrat-semibold-webfont.woff2`,
+            `/img/header-bg.png`,
+            `/img/header-bg@2x.png`,
+            `/img/logo.png`,
+            `/img/icons/bus.png`,
+            `/img/icons/check-in.png`,
+            `/img/icons/drive.png`,
+            `/img/icons/flight.png`,
+            `/img/icons/restaurant.png`,
+            `/img/icons/ship.png`,
+            `/img/icons/sightseeing.png`,
+            `/img/icons/taxi.png`,
+            `/img/icons/train.png`,
+            `/img/icons/transport.png`,
+            `/img/icons/trip.png`
           ]);
         })
   );
-});*/
-
-self.addEventListener(`activate`, (evt) => {
 });
 
-self.addEventListener(`fetch`, (evt) => {});
+self.addEventListener(`activate`, (evt) => {
+  evt.waitUntil(
+      caches.keys()
+        .then(
+            (keys) => Promise.all(
+                keys.map(
+                    (key) => {
+                      if (key.indexOf(CACHE_PREFIX) === 0 && key !== CACHE_NAME) {
+                        return caches.delete(key);
+                      }
+                      return null;
+                    }
+                ).filter(
+                    (key) => key !== null
+                )
+            )
+        )
+  );
+});
+
+self.addEventListener(`fetch`, (evt) => {
+  const {request} = evt;
+  evt.respondWith(
+      caches.match(request)
+        .then((cacheResponse) => {
+          if (cacheResponse) {
+            return cacheResponse;
+          }
+          return fetch(request).then(
+              (response) => {
+                if (!response || response.status !== 200 || response.type !== `basic`) {
+                  return response;
+                }
+                const clonedResponse = response.clone();
+                caches.open(CACHE_NAME).then((cache) => cache.put(request, clonedResponse));
+                return response;
+              }
+          );
+        })
+  );
+});
