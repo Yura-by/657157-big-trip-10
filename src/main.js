@@ -10,6 +10,15 @@ import LoadingComponent from './components/loading.js';
 const AUTHORIZATION = `Basic kjfslklhVJHlhSREDf8907`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
 
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`)
+    .then(() => {
+      // Действие, в случае успешной регистрации ServiceWorker
+    }).catch(() => {
+      // Действие, в случае ошибки при регистрации ServiceWorker
+    });
+});
+
 const api = new Api(END_POINT, AUTHORIZATION);
 const eventsModel = new EventsModel();
 
