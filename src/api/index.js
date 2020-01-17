@@ -31,6 +31,16 @@ export default class Api {
       });
   }
 
+  sync(data) {
+    return this._load({
+      url: `points/sync`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+      .then((response) => response.json());
+  }
+
   getEvents() {
     return this._load({url: `points`})
       .then((response) => response.json())

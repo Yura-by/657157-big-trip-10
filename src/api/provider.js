@@ -1,10 +1,44 @@
 import Event from "../models/event.js";
 
+const getSyncedEvents = (items) => {
+  return items.filter(({success}) => success).map(({payload}) => payload.point)
+};
+
 export default class Provider {
   constructor(api, store) {
     this._api = api;
     this._store = store;
     this._isSynchronized = true;
+  }
+
+  sync() {
+    if (this._isOnLine()) {
+      const storeEvents = Object.values(this._store.getAll());
+      const eventsToSend = storeEvents.map((event) => Object.assign({}, event));
+      eventsToSend.forEach((event) => {
+        if(event.hasOwnProperty(`offline`)) {
+          delete event.offline;
+        }
+      });
+
+      return this._api.sync(eventsToSend)
+        .then((response) => {
+          storeEvents.filter((event) => event.offline).forEach((event) => {
+            this._store.removeItem(event.id);
+          });
+          const createdEvents = getSyncedEvents(response.created);
+          const updatedEvents = getSyncedEvents(response.updated);
+          [...createdEvents, ...updatedEvents].forEach((event) => {
+            this._store.setItem(event.id, event);
+          });
+
+          this._isSynchronized = true;
+
+          return Promise.resolve();
+        });
+    }
+
+    return Promise.reject(new Error(`Sync data failed`));
   }
 
   getEvents() {
@@ -75,6 +109,10 @@ export default class Provider {
     this._isSynchronized = false;
     this._store.removeItem(id);
     return Promise.resolve();
+  }
+
+  getSynchronize() {
+    return this._isSynchronized;
   }
 
   _isOnLine() {
