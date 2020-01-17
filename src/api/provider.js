@@ -29,8 +29,6 @@ export default class Provider {
           });
           const createdEvents = response.created;
           const updatedEvents = getSyncedEvents(response.updated);
-          console.log(createdEvents);
-          console.log(updatedEvents);
           [...createdEvents, ...updatedEvents].forEach((event) => {
             this._store.setItem(event.id, event);
           });
