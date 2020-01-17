@@ -4,6 +4,7 @@ const getSyncedEvents = (items) => {
   return items.filter(({success}) => success).map(({payload}) => payload.point)
 };
 
+
 export default class Provider {
   constructor(api, store) {
     this._api = api;
@@ -26,8 +27,10 @@ export default class Provider {
           storeEvents.filter((event) => event.offline).forEach((event) => {
             this._store.removeItem(event.id);
           });
-          const createdEvents = getSyncedEvents(response.created);
+          const createdEvents = response.created;
           const updatedEvents = getSyncedEvents(response.updated);
+          console.log(createdEvents);
+          console.log(updatedEvents);
           [...createdEvents, ...updatedEvents].forEach((event) => {
             this._store.setItem(event.id, event);
           });
