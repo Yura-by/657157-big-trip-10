@@ -60,10 +60,18 @@ export default class TripController {
     this._tripRerender = this._tripRerender.bind(this);
     this._onDataModulChange = this._onDataModulChange.bind(this);
     this._onFavoriteChange = this._onFavoriteChange.bind(this);
+    this._tripSynchronization = this._tripSynchronization.bind(this);
 
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
     this._eventsModel.setFilterChangeHandler(this._tripRerender);
     this._eventsModel.setDataChangeHandler(this._onDataModulChange);
+    this._eventsModel.setDataUpdateHandler(this._tripSynchronization);
+  }
+
+  _tripSynchronization() {
+    this._tripRerender();
+    this._creatingEvent = null;
+    this._newEventButton.disabled = false;
   }
 
   hide() {

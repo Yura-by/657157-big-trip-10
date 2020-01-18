@@ -10,6 +10,13 @@ export default class Events {
 
     this._filterChangeHandlers = [];
     this._dataChangeHandlers = [];
+    this._updateChangeHandlers = [];
+  }
+
+  updateEvents(events) {
+    this._events = events;
+    this._callHandlers(this._dataChangeHandlers);
+    this._callHandlers(this._updateChangeHandlers);
   }
 
   getEvents() {
@@ -86,6 +93,10 @@ export default class Events {
 
   setDataChangeHandler(handler) {
     this._dataChangeHandlers.push(handler);
+  }
+
+  setDataUpdateHandler(handler) {
+    this._updateChangeHandlers.push(handler);
   }
 
   _callHandlers(handlers) {

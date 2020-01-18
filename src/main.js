@@ -4,13 +4,36 @@ import EventsModel from './models/events.js';
 import StatisticsComponent from './components/statistics.js';
 import {RenderPosition, render, remove} from './utils/render.js';
 import TripController from './controller/trip.js';
-import Api from './api.js';
+import Api from './api/index.js';
 import LoadingComponent from './components/loading.js';
+import Store from './api/store.js';
+import Provaider from './api/provider.js';
 
 const AUTHORIZATION = `Basic kjfslklhVJHlhSREDf8907`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
 
+const STORE_PREFIX = `trip-localstorage`;
+
+const Option = {
+  EVENTS: `events`,
+  DESTINATIONS: `destinations`,
+  OFFERS: `offers`
+};
+
+const StoreName = {
+  EVENTS: `${STORE_PREFIX}-${Option.EVENTS}`,
+  DESTINATIONS: `${STORE_PREFIX}-${Option.DESTINATIONS}`,
+  OFFERS: `${STORE_PREFIX}-${Option.OFFERS}`
+};
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`);
+});
+
 const api = new Api(END_POINT, AUTHORIZATION);
+const store = new Store(window.localStorage, StoreName.EVENTS, StoreName.DESTINATIONS, StoreName.OFFERS);
+const apiWithProvider = new Provaider(api, store);
+
 const eventsModel = new EventsModel();
 
 const siteHeaderElement = document.querySelector(`.page-header`);
@@ -33,7 +56,7 @@ newEventButton.addEventListener(`click`, onAddEventClick);
 
 const siteMenuComponent = new SiteMenuComponent();
 const filterController = new FilterController(siteContolsElement, eventsModel);
-const tripController = new TripController(tripEventsElement, eventsModel, api, newEventButton);
+const tripController = new TripController(tripEventsElement, eventsModel, apiWithProvider, newEventButton);
 const statisticsComponent = new StatisticsComponent(eventsModel);
 const loadingComponent = new LoadingComponent();
 
@@ -57,18 +80,18 @@ siteMenuComponent.setOnChange((menuItem) => {
   }
 });
 
-api.getEvents()
+apiWithProvider.getEvents()
   .then((events) => {
     eventsModel.setEvents(events);
   })
   .then(() => {
-    return api.getDestinations()
+    return apiWithProvider.getDestinations()
       .then((destinations) => {
         eventsModel.setDestinations(destinations);
       });
   })
   .then(() => {
-    return api.getOffers()
+    return apiWithProvider.getOffers()
       .then((offers) => {
         eventsModel.setOffers(offers);
       });
@@ -77,3 +100,28 @@ api.getEvents()
     remove(loadingComponent);
     tripController.render();
   });
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+
+  if (!apiWithProvider.getSynchronize()) {
+    apiWithProvider.sync()
+      .then((synchronizedEvents) => {
+        eventsModel.updateEvents(synchronizedEvents);
+      })
+      .catch((error) => {
+        const errorElement = document.createElement(`div`);
+        errorElement.style = `display: flex; margin: 0 auto 0 auto; font-size: 30px;`;
+        errorElement.textContent = `Ошибка загрузки приложения ${error.message}`;
+        siteMainElement.prepend(errorElement);
+      });
+  }
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
+});
+
+if (!window.navigator.onLine) {
+  document.title += ` [offline]`;
+}

@@ -1,4 +1,4 @@
-import Event from './models/event.js';
+import Event from '../models/event.js';
 
 const Method = {
   GET: `GET`,
@@ -29,6 +29,16 @@ export default class Api {
       .catch((err) => {
         throw err;
       });
+  }
+
+  sync(data) {
+    return this._load({
+      url: `points/sync`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+      .then((response) => response.json());
   }
 
   getEvents() {
