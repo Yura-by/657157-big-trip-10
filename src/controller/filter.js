@@ -36,13 +36,17 @@ export default class FilterController {
 
   _onEventsChange() {
     this._filterComponent.setFiltersUndisabled();
-    const pastEvents = getEventsByFilter(this._eventsModel.getEventsAll(), FilterType.PAST);
+    const eventsFromModel = this._eventsModel.getEventsAll();
+    const pastEvents = getEventsByFilter(eventsFromModel, FilterType.PAST);
     if (pastEvents.length === 0) {
       this._filterComponent.setFilterDisabled(FilterType.PAST);
     }
-    const futureEvents = getEventsByFilter(this._eventsModel.getEventsAll(), FilterType.FUTURE);
+    const futureEvents = getEventsByFilter(eventsFromModel, FilterType.FUTURE);
     if (futureEvents.length === 0) {
       this._filterComponent.setFilterDisabled(FilterType.FUTURE);
+    }
+    if (eventsFromModel.length === 0) {
+      this._filterComponent.setFilterDisabled(FilterType.EVERYTHING);
     }
   }
 }

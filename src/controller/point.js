@@ -111,7 +111,6 @@ export default class PointController {
 
     this._eventEditComponent.setFavoriteInputClickHandler((evt, isFavorite) => {
       evt.preventDefault();
-      this._eventEditComponent.setDisabledState();
       const newEvent = EventModel.clone(event);
       newEvent.isFavorite = !isFavorite;
       this._onFavoriteChange(this._eventEditComponent, event, newEvent, this);
