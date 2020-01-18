@@ -111,8 +111,9 @@ window.addEventListener(`online`, () => {
 
   if (!apiWithProvider.getSynchronize()) {
     apiWithProvider.sync()
-      .then(() => {
+      .then((synchronizedEvents) => {
         // Действие, в случае успешной синхронизации
+        eventsModel.updateEvents(synchronizedEvents);
       })
       .catch(() => {
         // Действие, в случае ошибки синхронизации

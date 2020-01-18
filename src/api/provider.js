@@ -29,13 +29,14 @@ export default class Provider {
           });
           const createdEvents = response.created;
           const updatedEvents = getSyncedEvents(response.updated);
-          [...createdEvents, ...updatedEvents].forEach((event) => {
+          const synchronizedEvents = createdEvents.concat(updatedEvents);
+          synchronizedEvents.forEach((event) => {
             this._store.setItem(event.id, event);
           });
 
           this._isSynchronized = true;
 
-          return Promise.resolve();
+          return Promise.resolve(Event.parseEvents(synchronizedEvents));
         });
     }
 
