@@ -1,4 +1,4 @@
-/*const CACHE_PREFIX = `trip-cache`;
+const CACHE_PREFIX = `trip-cache`;
 const CACHE_VER = `v1`;
 const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VER}`;
 
@@ -73,7 +73,10 @@ self.addEventListener(`fetch`, (evt) => {
                 caches.open(CACHE_NAME).then((cache) => cache.put(request, clonedResponse));
                 return response;
               }
-          );
+          ).catch((error) => {
+            console.log(error)
+            return Promise.resolve(new Response());
+          });
         })
   );
-});*/
+});

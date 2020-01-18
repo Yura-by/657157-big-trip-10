@@ -126,3 +126,7 @@ window.addEventListener(`online`, () => {
 window.addEventListener(`offline`, () => {
   document.title += ` [offline]`;
 });
+
+if (!window.navigator.onLine) {
+  document.title += ` [offline]`;
+}

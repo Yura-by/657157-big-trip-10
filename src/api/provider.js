@@ -60,11 +60,29 @@ export default class Provider {
   }
 
   getDestinations() {
-    return this._api.getDestinations()
+    if (this._isOnLine()) {
+      return this._api.getDestinations().then(
+          (destinations) => {
+            this._store.setDestinations(destinations);
+            return destinations;
+          }
+      );
+    }
+
+    return Promise.resolve(this._store.getDestinations());
   }
 
   getOffers() {
-    return this._api.getOffers()
+    if (this._isOnLine()) {
+      return this._api.getOffers().then(
+          (offers) => {
+            this._store.setOffers(offers);
+            return offers;
+          }
+      );
+    }
+
+    return Promise.resolve(this._store.getOffers());
   }
 
   updateEvent(id, event) {

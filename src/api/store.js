@@ -24,6 +24,36 @@ export default class Store {
     );
   }
 
+  setDestinations(destinations) {
+    this._storage.setItem(
+        this._destinationsKey,
+        JSON.stringify(destinations)
+    );
+  }
+
+  getDestinations() {
+    try {
+      return JSON.parse(this._storage.getItem(this._destinationsKey));
+    } catch (err) {
+      return {};
+    }
+  }
+
+  setOffers(offers) {
+    this._storage.setItem(
+        this._offersKey,
+        JSON.stringify(offers)
+    );
+  }
+
+  getOffers() {
+    try {
+      return JSON.parse(this._storage.getItem(this._offersKey));
+    } catch (err) {
+      return {};
+    }
+  }
+
   removeItem(key) {
     const store = this.getAll();
     delete store[key];
