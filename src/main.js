@@ -80,6 +80,15 @@ siteMenuComponent.setOnChange((menuItem) => {
   }
 });
 
+
+const onPageClick = (evt) => {
+  evt.preventDefault();
+  evt.stopPropagation();
+};
+
+document.addEventListener(`click`, onPageClick, true);
+
+
 apiWithProvider.getEvents()
   .then((events) => {
     eventsModel.setEvents(events);
@@ -99,6 +108,7 @@ apiWithProvider.getEvents()
   .then(() => {
     remove(loadingComponent);
     tripController.render();
+    document.removeEventListener(`click`, onPageClick, true);
   });
 
 window.addEventListener(`online`, () => {

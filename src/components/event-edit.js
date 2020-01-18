@@ -389,8 +389,7 @@ export default class EventEdit extends AbstractSmartComponent {
       handler(evt, this._isFavorite);
     };
     this.getElement().querySelector(`.event__favorite-checkbox`)
-    .addEventListener(`change`, debounce(onFavoriteClick, DEBOUNCE_TIMEOUT));
-    //.addEventListener(`click`, onFavoriteClick);
+      .addEventListener(`click`, debounce(onFavoriteClick, DEBOUNCE_TIMEOUT));
     this._favoriteInputClickHandler = handler;
   }
 
