@@ -112,11 +112,13 @@ window.addEventListener(`online`, () => {
   if (!apiWithProvider.getSynchronize()) {
     apiWithProvider.sync()
       .then((synchronizedEvents) => {
-        // Действие, в случае успешной синхронизации
         eventsModel.updateEvents(synchronizedEvents);
       })
-      .catch(() => {
-        // Действие, в случае ошибки синхронизации
+      .catch((error) => {
+        const errorElement = document.createElement(`div`);
+        errorElement.style = `display: flex; margin: 0 auto 0 auto; font-size: 30px;`;
+        errorElement.textContent = `Ошибка загрузки приложения ${error.message}`;
+        siteMainElement.prepend(errorElement);
       });
   }
 });
