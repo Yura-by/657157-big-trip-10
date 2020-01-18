@@ -32,14 +32,14 @@ const getDestinations = (destinationName, allDestinations) => {
 };
 
 const parseFormData = (rawData, allDestinations) => {
-  const {formData, type, offers} = rawData;
+  const {formData, type, offers, isFavorite} = rawData;
   const result = new EventModel({
     type,
     offers,
     'base_price': parseInt(formData.get(`price`), 10),
     'date_from': getDateObject(formData.get(`event-start-time`)),
     'date_to': getDateObject(formData.get(`event-end-time`)),
-    'is_favorite': formData.get(`favorite`) ? true : false,
+    'is_favorite': isFavorite,
     'destination': getDestinations(formData.get(`destination`), allDestinations)
   });
   return result;

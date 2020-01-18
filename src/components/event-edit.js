@@ -304,9 +304,10 @@ export default class EventEdit extends AbstractSmartComponent {
 
   setDisabledState() {
     this._isSendingForm = true;
-    this.getElement().querySelector(`.event__save-btn`).disabled = true;
-    this.getElement().querySelector(`.event__favorite-checkbox`).disabled = true;
-    this.getElement().querySelector(`.event__reset-btn`).disabled = true;
+    const editElement = this.getElement();
+    editElement.querySelector(`.event__save-btn`).disabled = true;
+    editElement.querySelector(`.event__favorite-checkbox`).disabled = true;
+    editElement.querySelector(`.event__reset-btn`).disabled = true;
   }
 
   getData() {
@@ -315,7 +316,8 @@ export default class EventEdit extends AbstractSmartComponent {
     return {
       formData: new FormData(form),
       type: this._type,
-      offers
+      offers,
+      isFavorite: this._isFavorite
     };
   }
 
