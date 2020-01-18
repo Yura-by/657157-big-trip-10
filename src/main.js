@@ -24,15 +24,10 @@ const StoreName = {
   EVENTS: `${STORE_PREFIX}-${Option.EVENTS}`,
   DESTINATIONS: `${STORE_PREFIX}-${Option.DESTINATIONS}`,
   OFFERS: `${STORE_PREFIX}-${Option.OFFERS}`
-}
+};
 
 window.addEventListener(`load`, () => {
-  navigator.serviceWorker.register(`/sw.js`)
-    .then(() => {
-      // Действие, в случае успешной регистрации ServiceWorker
-    }).catch(() => {
-      // Действие, в случае ошибки при регистрации ServiceWorker
-    });
+  navigator.serviceWorker.register(`/sw.js`);
 });
 
 const api = new Api(END_POINT, AUTHORIZATION);

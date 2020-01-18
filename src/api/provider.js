@@ -1,7 +1,7 @@
 import Event from "../models/event.js";
 
 const getSyncedEvents = (items) => {
-  return items.filter(({success}) => success).map(({payload}) => payload.point)
+  return items.filter(({success}) => success).map(({payload}) => payload.point);
 };
 
 
@@ -17,7 +17,7 @@ export default class Provider {
       const storeEvents = Object.values(this._store.getAll());
       const eventsToSend = storeEvents.map((event) => Object.assign({}, event));
       eventsToSend.forEach((event) => {
-        if(event.hasOwnProperty(`offline`)) {
+        if (event.hasOwnProperty(`offline`)) {
           delete event.offline;
         }
       });
