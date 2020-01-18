@@ -4,6 +4,9 @@ import 'flatpickr/dist/themes/light.css';
 import {TYPES_TRANSPORT, TYPES_PLACE, Type, Index} from '../const.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
 import {getDateObject, formatInDayTime, getDestinationTitle} from '../utils/common.js';
+import debounce from 'lodash/debounce';
+
+const DEBOUNCE_TIMEOUT = 500;
 
 const DefaultData = {
   deleteButtonText: `Delete`,
@@ -382,10 +385,12 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   setFavoriteInputClickHandler(handler) {
-    this.getElement().querySelector(`.event__favorite-checkbox`)
-    .addEventListener(`click`, (evt) => {
+    const onFavoriteClick = (evt) => {
       handler(evt, this._isFavorite);
-    });
+    };
+    this.getElement().querySelector(`.event__favorite-checkbox`)
+    .addEventListener(`change`, debounce(onFavoriteClick, DEBOUNCE_TIMEOUT));
+    //.addEventListener(`click`, onFavoriteClick);
     this._favoriteInputClickHandler = handler;
   }
 
