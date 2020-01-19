@@ -1,6 +1,9 @@
 import moment from 'moment';
 import {TYPES_PLACE, Type, Index} from '../const.js';
 
+const NO_DAYS = 0;
+const TIME_COMPARATOR = 10;
+
 export const getDestinationTitle = (type) => {
   if (type === Type.CHECK) {
     return `Check-In in`;
@@ -12,7 +15,7 @@ export const getDestinationTitle = (type) => {
 };
 
 export const castTimeFormat = (value) => {
-  return value < 10 ? `0${value}` : String(value);
+  return value < TIME_COMPARATOR ? `0${value}` : String(value);
 };
 
 export const formatInDay = (date) => {
@@ -38,7 +41,7 @@ export const sortEventsInOrder = (events) => {
 export const isOneDay = (dateA, dateB) => {
   const momentDateA = moment(dateA);
   const momentDateB = moment(dateB);
-  return momentDateA.diff(momentDateB, `days`) === 0 && dateA.getDate() === dateB.getDate();
+  return momentDateA.diff(momentDateB, `days`) === NO_DAYS && dateA.getDate() === dateB.getDate();
 };
 
 export const getDateObject = (string) => {

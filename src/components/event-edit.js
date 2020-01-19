@@ -7,6 +7,8 @@ import {getDateObject, formatInDayTime, getDestinationTitle} from '../utils/comm
 import debounce from 'lodash/debounce';
 
 const DEBOUNCE_TIMEOUT = 500;
+const EMPTY_NUMBER = 0;
+const NUMBER_SYSTEM = 10;
 
 const DefaultText = {
   deleteButtonText: `Delete`,
@@ -46,7 +48,7 @@ const getPriceOffer = (offerByType, offers) => {
 };
 
 export const getOffersByType = (type, allOffers) => {
-  return allOffers.filter((offer) => offer[`type`] === type)[0].offers;
+  return allOffers.filter((offer) => offer[`type`] === type)[EMPTY_NUMBER].offers;
 };
 
 const getOffers = (type, allOffers, currentOffers) => {
@@ -63,8 +65,8 @@ const getOffers = (type, allOffers, currentOffers) => {
 };
 
 const createEventOffersTemplate = (offers) => {
-  const offerSelectors = offers.length > 0 ? createSelectors(offers) : ``;
-  return offers.length > 0 ? (
+  const offerSelectors = offers.length > EMPTY_NUMBER ? createSelectors(offers) : ``;
+  return offers.length > EMPTY_NUMBER ? (
     `<section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
@@ -123,8 +125,8 @@ const createImagesTemplate = (pictures) => {
 
 const createEventDescriptionTemplate = (destination) => {
   const {description, pictures} = destination;
-  const descriptionImages = pictures.length > 0 ? createImagesTemplate(destination.pictures) : ``;
-  return description.length > 0 || pictures.length > 0 ? (
+  const descriptionImages = pictures.length > EMPTY_NUMBER ? createImagesTemplate(destination.pictures) : ``;
+  return description.length > EMPTY_NUMBER || pictures.length > EMPTY_NUMBER ? (
     `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${description}</p>
@@ -138,9 +140,9 @@ const createEventDetails = (offers, destination) => {
   const offersTemplate = createEventOffersTemplate(offers);
   const descriptionTemplate = createEventDescriptionTemplate(destination);
   const {description, pictures} = destination;
-  const detailsTemplate = offers.length > 0 ||
-    description.length > 0 ||
-    pictures.length > 0 ?
+  const detailsTemplate = offers.length > EMPTY_NUMBER ||
+    description.length > EMPTY_NUMBER ||
+    pictures.length > EMPTY_NUMBER ?
     `<section class="event__details">${offersTemplate} ${descriptionTemplate}</section>` : ``;
   return detailsTemplate;
 };
@@ -166,7 +168,7 @@ const createEventEditTemplate = (options = {}, isNewEvent) => {
 
   const eventTypeItemTransfer = createEventTypeItems(TYPES_TRANSPORT, type);
   const eventTypeItemActivity = createEventTypeItems(TYPES_PLACE, type);
-  const destinationOptions = allDestinations.length > 0 ? createDestinationOptions(allDestinations, destination) : ``;
+  const destinationOptions = allDestinations.length > EMPTY_NUMBER ? createDestinationOptions(allDestinations, destination) : ``;
   const valueStartDate = formatInDayTime(startDate);
   const valueEndDate = formatInDayTime(endDate);
   const eventDetails = createEventDetails(offers, destination, type);
@@ -417,8 +419,8 @@ export default class EventEdit extends AbstractSmartComponent {
     const setButtonDisabled = () => {
       const isEventDestinationValid = checkDestinationValid(eventInput.value, this._allDestinations);
       const isDateValid = getDateObject(startDateElement.value) < getDateObject(endDateElement.value);
-      const priceNumber = parseInt(this._price, 10);
-      const isPriceValid = priceNumber || priceNumber === 0 ? true : false;
+      const priceNumber = parseInt(this._price, NUMBER_SYSTEM);
+      const isPriceValid = priceNumber || priceNumber === EMPTY_NUMBER ? true : false;
       saveButton.disabled = !isEventDestinationValid || !isDateValid || !isPriceValid;
     };
 

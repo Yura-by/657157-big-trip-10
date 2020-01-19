@@ -8,6 +8,8 @@ import {FilterType, HIDDEN_CLASS} from '../const.js';
 import TripInfoComponent from '../components/trip-info.js';
 import {getTripInfoContent} from '../utils/trip-info.js';
 
+const EMPTY_NUMBER = 0;
+
 const renderEvents = (container, eventsInDay, onDataChange, onViewChange, onFavoriteChange, eventsModel) => {
   const controllersInDay = [];
   eventsInDay.forEach((event) => {
@@ -86,7 +88,7 @@ export default class TripController {
     const events = this._eventsModel.getEvents();
     this._newEventButton.disabled = false;
 
-    if (!events || events === 0 || events.length === 0) {
+    if (!events || events === EMPTY_NUMBER || events.length === EMPTY_NUMBER) {
       render(this._container, this._noEventsComponent, RenderPosition.BEFOREEND);
       return;
     }
@@ -138,7 +140,7 @@ export default class TripController {
       if (newData === null) {
         pointController.destroy();
         this._pointControllers.shift();
-        if (this._pointControllers.length === 0) {
+        if (this._pointControllers.length === EMPTY_NUMBER) {
           render(this._container, this._noEventsComponent, RenderPosition.BEFOREEND);
         }
       } else {
@@ -156,7 +158,7 @@ export default class TripController {
       this._api.deleteEvent(oldData.id)
         .then(() => {
           this._eventsModel.removeEvent(oldData.id);
-          if (this._eventsModel.getEventsAll().length === 0) {
+          if (this._eventsModel.getEventsAll().length === EMPTY_NUMBER) {
             pointController.destroy();
             this._pointControllers = [];
             remove(this._daysComponent);
@@ -199,7 +201,7 @@ export default class TripController {
 
   _onDataModulChange() {
     this._daysWithEvents = sortEvents(this._eventsModel.getEvents());
-    if (this._eventsModel.getEventsAll().length === 0) {
+    if (this._eventsModel.getEventsAll().length === EMPTY_NUMBER) {
       remove(this._sortComponent);
       render(this._container, this._noEventsComponent, RenderPosition.BEFOREEND);
     }
@@ -208,9 +210,9 @@ export default class TripController {
       const {price, offers} = event;
       const offersPrice = offers.reduce((totalOffer, offer) => {
         return totalOffer + offer.price;
-      }, 0);
+      }, EMPTY_NUMBER);
       return total + price + offersPrice;
-    }, 0);
+    }, EMPTY_NUMBER);
     document.querySelector(`.trip-info__cost-value`).textContent = totalPrice;
     const infoContainer = document.querySelector(`.trip-main__trip-info`);
     if (this._tripInfoComponent) {
@@ -221,7 +223,7 @@ export default class TripController {
   }
 
   _onViewChange() {
-    const addingConroller = this._pointControllers[0];
+    const addingConroller = this._pointControllers[EMPTY_NUMBER];
     if (addingConroller && addingConroller.getMode() === PointControllerMode.ADDING) {
       addingConroller.destroy();
       this._pointControllers.shift();
@@ -236,7 +238,7 @@ export default class TripController {
 
     switch (sortType) {
       case SortType.TIME:
-        if (sortedEvents.length > 0) {
+        if (sortedEvents.length > EMPTY_NUMBER) {
           sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => {
             const eventLeftDifferenceTime = eventLeft.endDate.getTime() - eventLeft.startDate.getTime();
             const eventRightDifferenceTime = eventRight.endDate.getTime() - eventRight.startDate.getTime();
@@ -248,7 +250,7 @@ export default class TripController {
         this._clearDaysTitle();
         break;
       case SortType.PRICE:
-        if (sortedEvents.length > 0) {
+        if (sortedEvents.length > EMPTY_NUMBER) {
           sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => eventLeft.price - eventRight.price));
         }
         this._removeEvents();
@@ -290,10 +292,10 @@ export default class TripController {
 
   _tripRerender() {
     const sortType = this._container.querySelectorAll(`.trip-sort__input`);
-    if (sortType.length === 0) {
+    if (sortType.length === EMPTY_NUMBER) {
       const events = this._eventsModel.getEvents();
       this._daysWithEvents = sortEvents(events);
-      if (events.length > 0) {
+      if (events.length > EMPTY_NUMBER) {
         render(this._container, this._sortComponent, RenderPosition.BEFOREEND);
         this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
       }

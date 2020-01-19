@@ -20,7 +20,7 @@ const ChartSettings = {
   BACKGROUND_COLOR: `#ffffff`
 };
 
-const START_PRICE = 0;
+const EMPTY_NUMBER = 0;
 
 const ELEMENTS_MIN_LENGTH = 2;
 
@@ -61,7 +61,7 @@ const getPrice = (events, type) => {
     reduce((accumulator, point) => {
       accumulator += point.price;
       return accumulator;
-    }, START_PRICE);
+    }, EMPTY_NUMBER);
 };
 
 const getTypes = (events) => {
@@ -78,7 +78,7 @@ const getTime = (events, type) => {
     const duration = moment.duration(endDateMoment.diff(startDateMoment));
     accumulator += duration.asDays();
     return accumulator;
-  }, 0);
+  }, EMPTY_NUMBER);
   return result;
 };
 
@@ -96,7 +96,7 @@ Chart.defaults.global.title.position = `left`;
 Chart.defaults.horizontalBar.tooltips.mode = false;
 Chart.scaleService.updateScaleDefaults(`linear`, {
   ticks: {
-    min: 0
+    min: EMPTY_NUMBER
   }
 });
 

@@ -1,6 +1,7 @@
 import AbstractComponent from './abstract-component.js';
 
 const ACTIVE_CLASS = `trip-tabs__btn--active`;
+const TAG_NAME = `A`;
 
 export const MenuItem = {
   STATISTICS: `Stats`,
@@ -35,7 +36,7 @@ export default class SiteMenu extends AbstractComponent {
 
   setOnChange(handler) {
     this.getElement().addEventListener(`click`, (evt) => {
-      if (evt.target.tagName !== `A`) {
+      if (evt.target.tagName !== TAG_NAME) {
         return;
       }
       const menuItem = evt.target.text;

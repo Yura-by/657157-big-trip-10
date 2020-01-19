@@ -2,6 +2,7 @@ import {castTimeFormat, formatInTime, getDestinationTitle} from '../utils/common
 import AbstractComponent from './abstract-component.js';
 import moment from 'moment';
 const MAX_LENGTH_OFFERS = 3;
+const EMPTY_NUMBER = 0;
 
 const createOffersItems = (offers) => {
   const offersArray = offers.slice();
@@ -37,16 +38,16 @@ const getDifferenceTimeInFormat = (event) => {
   const hour = durationEvent.hours();
   const minute = durationEvent.minutes();
 
-  const resultDay = day > 0 ? `${castTimeFormat(day)}D` : ``;
-  const resultHour = hour > 0 ? `${castTimeFormat(hour)}H` : ``;
-  const resultMinute = minute > 0 ? `${castTimeFormat(minute)}M` : ``;
+  const resultDay = day > EMPTY_NUMBER ? `${castTimeFormat(day)}D` : ``;
+  const resultHour = hour > EMPTY_NUMBER ? `${castTimeFormat(hour)}H` : ``;
+  const resultMinute = minute > EMPTY_NUMBER ? `${castTimeFormat(minute)}M` : ``;
 
   return `${resultDay} ${resultHour} ${resultMinute}`;
 };
 
 const createEventTemplate = (event) => {
   const {offers, type, startDate, endDate, destination, price} = event;
-  const offersTemplate = offers.length > 0 ? createOffers(offers) : ``;
+  const offersTemplate = offers.length > EMPTY_NUMBER ? createOffers(offers) : ``;
   const nameImage = type;
   const destinationName = destination[`name`];
 

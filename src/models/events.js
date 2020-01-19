@@ -1,6 +1,12 @@
 import {getEventsByFilter} from '../utils/filter.js';
 import {FilterType} from '../const.js';
 
+const Index = {
+  FIRST: 0,
+  NEXT: 1,
+  NOT_FOUND: -1
+};
+
 export default class Events {
   constructor() {
     this._events = [];
@@ -56,11 +62,11 @@ export default class Events {
   removeEvent(id) {
     const index = this._events.findIndex((eventItem) => eventItem.id === id);
 
-    if (index === -1) {
+    if (index === Index.NOT_FOUND) {
       return false;
     }
 
-    this._events = [].concat(this._events.slice(0, index), this._events.slice(index + 1));
+    this._events = [].concat(this._events.slice(Index.FIRST, index), this._events.slice(index + Index.NEXT));
 
 
     this._callHandlers(this._dataChangeHandlers);
@@ -71,11 +77,11 @@ export default class Events {
   updateEvent(id, event) {
     const index = this._events.findIndex((eventItem) => eventItem.id === id);
 
-    if (index === -1) {
+    if (index === Index.NOT_FOUND) {
       return false;
     }
 
-    this._events = [].concat(this._events.slice(0, index), event, this._events.slice(index + 1));
+    this._events = [].concat(this._events.slice(Index.FIRST, index), event, this._events.slice(index + Index.NEXT));
 
     this._callHandlers(this._dataChangeHandlers);
 

@@ -4,7 +4,6 @@ const getSyncedEvents = (items) => {
   return items.filter(({success}) => success).map(({payload}) => payload.point);
 };
 
-
 export default class Provider {
   constructor(api, store) {
     this._api = api;

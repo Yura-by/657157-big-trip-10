@@ -4,8 +4,10 @@ export const RenderPosition = {
   INSERT_BEFORE: `insertBefore`
 };
 
+const TAG_NAME = `div`;
+
 export const createElement = (template) => {
-  const newElement = document.createElement(`div`);
+  const newElement = document.createElement(TAG_NAME);
   newElement.innerHTML = template;
 
   return newElement.firstChild;

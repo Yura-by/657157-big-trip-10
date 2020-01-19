@@ -7,10 +7,28 @@ import {getDateObject} from '../utils/common.js';
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
+const NUMBER_SYSTEM = 10;
+
+const MILISECONDS = 1000;
+const SHADOW_STYLE = `0 0 10px 5px red`;
+
+const Designation = {
+  FULL: `Escape`,
+  ABBREVIATED: `Esc`
+}
+
 export const Mode = {
   ADDING: `adding`,
   DEFAULT: `default`,
   EDIT: `edit`,
+};
+
+const CustomText = {
+  SAVE: `Save`,
+  DELETE: `Delete`,
+  SAVING: `Saving...`,
+  DELETING: `Deleting...`,
+  CANCEL: `Cancel`
 };
 
 export const EMPTY_EVENT = new EventModel(EventModel.toRawFromCustom({
@@ -36,7 +54,7 @@ const parseFormData = (rawData, allDestinations) => {
   const result = new EventModel(EventModel.toRawFromCustom({
     type,
     offers,
-    price: parseInt(formData.get(`price`), 10),
+    price: parseInt(formData.get(`price`), NUMBER_SYSTEM),
     startDate: getDateObject(formData.get(`event-start-time`)),
     endDate: getDateObject(formData.get(`event-end-time`)),
     isFavorite: isFavorite,
@@ -86,12 +104,12 @@ export default class PointController {
       }
       if (this._mode === Mode.ADDING) {
         this._eventEditComponent.setData({
-          saveButtonText: `Saving...`,
-          deleteButtonText: `Cancel`
+          saveButtonText: CustomText.SAVING,
+          deleteButtonText: CustomText.CANCEL
         });
       } else {
         this._eventEditComponent.setData({
-          saveButtonText: `Saving...`
+          saveButtonText: CustomText.SAVING
         });
       }
       this._eventEditComponent.setDisabledState();
@@ -103,7 +121,7 @@ export default class PointController {
 
     this._eventEditComponent.setCancelButtonClickHandler(() => {
       this._eventEditComponent.setData({
-        deleteButtonText: `Deleting...`
+        deleteButtonText: CustomText.DELETING
       });
       this._eventEditComponent.setDisabledState();
       this._onDataChange(this, event, null);
@@ -132,7 +150,7 @@ export default class PointController {
           remove(oldEventComponent);
         }
         this._eventEditComponent.setData({
-          deleteButtonText: `Cancel`
+          deleteButtonText: CustomText.CANCEL
         });
         document.addEventListener(`keydown`, this._onEscKeyDown);
         if (adjacentElement) {
@@ -181,7 +199,7 @@ export default class PointController {
   }
 
   _onEscKeyDown(evt) {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+    const isEscKey = evt.key === Designation.FULL || evt.key === Designation.ABBREVIATED;
 
     if (isEscKey) {
       if (this._mode === Mode.ADDING) {
@@ -193,19 +211,19 @@ export default class PointController {
   }
 
   shake() {
-    this._eventEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    this._eventEditComponent.getElement().style.boxShadow = `0 0 10px 5px red`;
+    this._eventEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / MILISECONDS}s`;
+    this._eventEditComponent.getElement().style.boxShadow = SHADOW_STYLE;
     setTimeout(() => {
       this._eventEditComponent.getElement().style.animation = ``;
       if (this._mode === Mode.ADDING) {
         this._eventEditComponent.setData({
-          saveButtonText: `Save`,
-          deleteButtonText: `Cancel`
+          saveButtonText: CustomText.SAVE,
+          deleteButtonText: CustomText.CANCEL
         });
       } else {
         this._eventEditComponent.setData({
-          saveButtonText: `Save`,
-          deleteButtonText: `Delete`
+          saveButtonText: CustomText.SAVE,
+          deleteButtonText: CustomText.DELETE
         });
       }
     }, SHAKE_ANIMATION_TIMEOUT);

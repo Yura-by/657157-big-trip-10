@@ -14,6 +14,9 @@ const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
 
 const STORE_PREFIX = `trip-localstorage`;
 
+const TAG_NAME = `div`;
+const STYLE_ELEMENT = `display: flex; margin: 0 auto 0 auto; font-size: 30px;`;
+
 const Option = {
   EVENTS: `events`,
   DESTINATIONS: `destinations`,
@@ -118,8 +121,8 @@ window.addEventListener(`online`, () => {
         eventsModel.updateEvents(synchronizedEvents);
       })
       .catch((error) => {
-        const errorElement = document.createElement(`div`);
-        errorElement.style = `display: flex; margin: 0 auto 0 auto; font-size: 30px;`;
+        const errorElement = document.createElement(TAG_NAME);
+        errorElement.style = STYLE_ELEMENT;
         errorElement.textContent = `Ошибка загрузки приложения ${error.message}`;
         siteMainElement.prepend(errorElement);
       });
