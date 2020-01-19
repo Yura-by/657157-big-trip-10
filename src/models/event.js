@@ -34,4 +34,16 @@ export default class Event {
   static clone(data) {
     return new Event(data.toRAW());
   }
+
+  static toRawFromCustom(data) {
+    return {
+      'type': data[`type`],
+      'base_price': data[`price`],
+      'date_from': data[`startDate`],
+      'date_to': data[`endDate`],
+      'is_favorite': data[`isFavorite`],
+      'offers': data[`offers`],
+      'destination': data[`destination`]
+    };
+  }
 }

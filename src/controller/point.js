@@ -13,19 +13,21 @@ export const Mode = {
   EDIT: `edit`,
 };
 
-export const EmptyEvent = new EventModel({
-  'type': Type.FLIGHT,
-  'offers': [],
-  'base_price': ``,
-  'date_from': new Date(),
-  'date_to': new Date(),
-  'is_favorite': false,
-  'destination': {
-    'name': ``,
-    'pictures': [],
-    'description': ``
+const EMPTY_TEMPLATE = {
+  type: Type.FLIGHT,
+  offers: [],
+  price: ``,
+  startDate: new Date(),
+  endDate: new Date(),
+  isFavorite: false,
+  destination: {
+    name: ``,
+    pictures: [],
+    description: ``
   }
-});
+}
+
+export const EMPTY_EVENT = new EventModel(EventModel.toRawFromCustom(EMPTY_TEMPLATE));
 
 const getDestinations = (destinationName, allDestinations) => {
   return allDestinations.find((destination) => destination[`name`] === destinationName);
@@ -33,15 +35,15 @@ const getDestinations = (destinationName, allDestinations) => {
 
 const parseFormData = (rawData, allDestinations) => {
   const {formData, type, offers, isFavorite} = rawData;
-  const result = new EventModel({
+  const result = new EventModel(EventModel.toRawFromCustom({
     type,
     offers,
-    'base_price': parseInt(formData.get(`price`), 10),
-    'date_from': getDateObject(formData.get(`event-start-time`)),
-    'date_to': getDateObject(formData.get(`event-end-time`)),
-    'is_favorite': isFavorite,
-    'destination': getDestinations(formData.get(`destination`), allDestinations)
-  });
+    price: parseInt(formData.get(`price`), 10),
+    startDate: getDateObject(formData.get(`event-start-time`)),
+    endDate: getDateObject(formData.get(`event-end-time`)),
+    isFavorite: isFavorite,
+    destination: getDestinations(formData.get(`destination`), allDestinations)
+  }));
   return result;
 };
 
@@ -185,7 +187,7 @@ export default class PointController {
 
     if (isEscKey) {
       if (this._mode === Mode.ADDING) {
-        this._onDataChange(this, EmptyEvent, null);
+        this._onDataChange(this, EMPTY_EVENT, null);
       }
       this._replaceEditToEvent();
       document.removeEventListener(`keydown`, this._onEscKeyDown);

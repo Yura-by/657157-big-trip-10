@@ -3,7 +3,7 @@ import SortComponent, {SortType} from '../components/sort.js';
 import NoEventsComponent from '../components/no-events.js';
 import {formatInDay, sortEventsInOrder} from '../utils/common.js';
 import {RenderPosition, render, remove} from '../utils/render.js';
-import PointController, {Mode as PointControllerMode, EmptyEvent} from './point.js';
+import PointController, {Mode as PointControllerMode, EMPTY_EVENT} from './point.js';
 import {FilterType, HIDDEN_CLASS} from '../const.js';
 import TripInfoComponent from '../components/trip-info.js';
 import {getTripInfoContent} from '../utils/trip-info.js';
@@ -115,9 +115,9 @@ export default class TripController {
     this._pointControllers.unshift(this._creatingEvent);
 
     if (adjacentElement) {
-      this._creatingEvent.render(EmptyEvent, PointControllerMode.ADDING, adjacentElement);
+      this._creatingEvent.render(EMPTY_EVENT, PointControllerMode.ADDING, adjacentElement);
     } else {
-      this._creatingEvent.render(EmptyEvent, PointControllerMode.ADDING);
+      this._creatingEvent.render(EMPTY_EVENT, PointControllerMode.ADDING);
     }
   }
 
@@ -133,7 +133,7 @@ export default class TripController {
   }
 
   _onDataChange(pointController, oldData, newData) {
-    if (oldData === EmptyEvent) {
+    if (oldData === EMPTY_EVENT) {
       this._creatingEvent = null;
       if (newData === null) {
         pointController.destroy();
