@@ -10,7 +10,7 @@ const DEBOUNCE_TIMEOUT = 500;
 const EMPTY_NUMBER = 0;
 const NUMBER_SYSTEM = 10;
 
-const DefaultText = {
+const DEFAULT_TEXT = {
   deleteButtonText: `Delete`,
   saveButtonText: `Save`,
 };
@@ -277,7 +277,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._RollupButtonClickHandler = null;
     this._favoriteInputClickHandler = null;
     this._cancelButtonClickHandler = null;
-    this._externalData = DefaultText;
+    this._externalData = DEFAULT_TEXT;
     this._isSendingForm = false;
 
     this._subscribeOnEvents();
@@ -299,7 +299,7 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   setData(customText) {
-    this._externalData = Object.assign({}, DefaultText, customText);
+    this._externalData = Object.assign({}, DEFAULT_TEXT, customText);
     this.rerender();
   }
 

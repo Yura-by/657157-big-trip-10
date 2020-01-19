@@ -103,7 +103,7 @@ Chart.scaleService.updateScaleDefaults(`linear`, {
 const renderMoneyChart = (moneyCtx, events, container) => {
   const types = getTypes(events);
 
-  const arrayEvents = () => {
+  const getEventsModify = () => {
     const eventsWithPrice = types.map((name) => {
       return {
         type: name,
@@ -113,8 +113,8 @@ const renderMoneyChart = (moneyCtx, events, container) => {
     return eventsWithPrice.sort((leftType, rightType) => rightType.price - leftType.price);
   };
 
-  const labelNames = arrayEvents().map((point) => point.type.toUpperCase());
-  const priceValues = arrayEvents().map((point) => point.price);
+  const labelNames = getEventsModify().map((point) => point.type.toUpperCase());
+  const priceValues = getEventsModify().map((point) => point.price);
 
   setChartHeight(moneyCtx, types, container);
 
@@ -191,7 +191,7 @@ const renderTransportChart = (transportCtx, events, container) => {
     return events.some((event) => event.type === type);
   });
 
-  const arrayEvents = () => {
+  const getEventsModify = () => {
     const eventsWithCount = typesInEvents.map((name) => {
       return {
         type: name,
@@ -201,8 +201,8 @@ const renderTransportChart = (transportCtx, events, container) => {
     return eventsWithCount.sort((leftType, rightType) => rightType.count - leftType.count);
   };
 
-  const labelNames = arrayEvents().map((point) => point.type.toUpperCase());
-  const countValues = arrayEvents().map((point) => point.count);
+  const labelNames = getEventsModify().map((point) => point.type.toUpperCase());
+  const countValues = getEventsModify().map((point) => point.count);
   setChartHeight(transportCtx, typesInEvents, container);
 
   return new Chart(transportCtx, {
@@ -271,7 +271,7 @@ const renderTransportChart = (transportCtx, events, container) => {
 const renderTimeChart = (timeCtx, events, container) => {
   const types = getTypes(events);
 
-  const arrayEvents = () => {
+  const getEventsModify = () => {
     const eventsWithTime = types.map((name) => {
       return {
         type: name,
@@ -281,7 +281,7 @@ const renderTimeChart = (timeCtx, events, container) => {
     return eventsWithTime.sort((leftType, rightType) => rightType.time - leftType.time);
   };
 
-  const eventsMoreDay = arrayEvents().filter((point) => point.time >= 1);
+  const eventsMoreDay = getEventsModify().filter((point) => point.time >= 1);
 
   const labelNames = eventsMoreDay.map((point) => point.type.toUpperCase());
   const timeValues = eventsMoreDay.map((point) => Math.floor(point.time));

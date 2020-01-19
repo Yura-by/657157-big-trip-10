@@ -3,7 +3,7 @@ import moment from 'moment';
 import {formatInDay} from '../utils/common.js';
 
 const DAY_COUNTER_CORRECT = 1;
-const LENGTH_EMPTY_ARRAY = 0;
+const EMPTY_NUMBER = 0;
 
 const Index = {
   FIRST_DAY: 0,
@@ -35,7 +35,7 @@ const createDaysMap = (days) => {
 };
 
 const createDayTemplate = (days) => {
-  const daysMap = days.length === LENGTH_EMPTY_ARRAY ? null : createDaysMap(days);
+  const daysMap = days.length === EMPTY_NUMBER ? null : createDaysMap(days);
 
   return days.
     map((events) => {

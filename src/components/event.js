@@ -5,11 +5,11 @@ const MAX_LENGTH_OFFERS = 3;
 const EMPTY_NUMBER = 0;
 
 const createOffersItems = (offers) => {
-  const offersArray = offers.slice();
+  const offersCopy = offers.slice();
   if (offers.length > MAX_LENGTH_OFFERS) {
-    offersArray.length = MAX_LENGTH_OFFERS;
+    offersCopy.length = MAX_LENGTH_OFFERS;
   }
-  return offersArray.
+  return offersCopy.
   map((offer) => {
     const {price, title} = offer;
     return (
