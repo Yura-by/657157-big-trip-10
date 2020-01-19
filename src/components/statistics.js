@@ -5,6 +5,9 @@ import {TYPES_TRANSPORT} from '../const.js';
 import moment from 'moment';
 import {sortEventsInOrder} from '../utils/common.js';
 
+const EMPTY_NUMBER = 0;
+const ELEMENTS_MIN_LENGTH = 2;
+
 const ChartSettings = {
   BAR_MIN: 130,
   BAR_HEIGHT: 65,
@@ -19,10 +22,6 @@ const ChartSettings = {
   FONT_COLOR: `#000000`,
   BACKGROUND_COLOR: `#ffffff`
 };
-
-const EMPTY_NUMBER = 0;
-
-const ELEMENTS_MIN_LENGTH = 2;
 
 const createStatisticsTemplate = () => {
   return (
@@ -81,24 +80,6 @@ const getTime = (events, type) => {
   }, EMPTY_NUMBER);
   return result;
 };
-
-Chart.defaults.global.defaultFontSize = ChartSettings.FONT_SIZE;
-Chart.defaults.global.defaultFontColor = ChartSettings.FONT_COLOR;
-Chart.defaults.global.layout.padding = {
-  left: ChartSettings.PADDING_LEFT,
-  right: ChartSettings.PADDING,
-  top: ChartSettings.PADDING,
-  bottom: ChartSettings.PADDING
-};
-Chart.defaults.global.legend.display = false;
-Chart.defaults.global.title.display = true;
-Chart.defaults.global.title.position = `left`;
-Chart.defaults.horizontalBar.tooltips.mode = false;
-Chart.scaleService.updateScaleDefaults(`linear`, {
-  ticks: {
-    min: EMPTY_NUMBER
-  }
-});
 
 const renderMoneyChart = (moneyCtx, events, container) => {
   const types = getTypes(events);
@@ -349,6 +330,24 @@ const renderTimeChart = (timeCtx, events, container) => {
     }
   });
 };
+
+Chart.defaults.global.defaultFontSize = ChartSettings.FONT_SIZE;
+Chart.defaults.global.defaultFontColor = ChartSettings.FONT_COLOR;
+Chart.defaults.global.layout.padding = {
+  left: ChartSettings.PADDING_LEFT,
+  right: ChartSettings.PADDING,
+  top: ChartSettings.PADDING,
+  bottom: ChartSettings.PADDING
+};
+Chart.defaults.global.legend.display = false;
+Chart.defaults.global.title.display = true;
+Chart.defaults.global.title.position = `left`;
+Chart.defaults.horizontalBar.tooltips.mode = false;
+Chart.scaleService.updateScaleDefaults(`linear`, {
+  ticks: {
+    min: EMPTY_NUMBER
+  }
+});
 
 export default class Statistics extends AbstractSmartComponent {
   constructor(events) {

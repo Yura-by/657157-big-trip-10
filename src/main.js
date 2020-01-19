@@ -11,9 +11,7 @@ import Provaider from './api/provider.js';
 
 const AUTHORIZATION = `Basic kjfslklhVJHlhSREDf8907`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
-
 const STORE_PREFIX = `trip-localstorage`;
-
 const TAG_NAME = `div`;
 const STYLE_ELEMENT = `display: flex; margin: 0 auto 0 auto; font-size: 30px;`;
 
@@ -29,22 +27,18 @@ const StoreName = {
   OFFERS: `${STORE_PREFIX}-${Option.OFFERS}`
 };
 
-window.addEventListener(`load`, () => {
-  navigator.serviceWorker.register(`/sw.js`);
-});
-
-const api = new Api(END_POINT, AUTHORIZATION);
-const store = new Store(window.localStorage, StoreName.EVENTS, StoreName.DESTINATIONS, StoreName.OFFERS);
-const apiWithProvider = new Provaider(api, store);
-
-const eventsModel = new EventsModel();
-
 const siteHeaderElement = document.querySelector(`.page-header`);
 const siteContolsElement = siteHeaderElement.querySelector(`.trip-controls`);
 const switchTabsTitleElement = siteContolsElement.querySelector(`h2:last-child`);
 const siteMainElement = document.querySelector(`.page-main`);
 const bodyContainerElement = siteMainElement.querySelector(`.page-body__container`);
 const tripEventsElement = siteMainElement.querySelector(`.trip-events`);
+const newEventButton = siteHeaderElement.querySelector(`.trip-main__event-add-btn`);
+
+const onPageClick = (evt) => {
+  evt.preventDefault();
+  evt.stopPropagation();
+};
 
 const onAddEventClick = () => {
   statisticsComponent.hide();
@@ -53,15 +47,23 @@ const onAddEventClick = () => {
   siteMenuComponent.setActiveItem(MenuItem.TABLE);
 };
 
-const newEventButton = siteHeaderElement.querySelector(`.trip-main__event-add-btn`);
-newEventButton.disabled = true;
-newEventButton.addEventListener(`click`, onAddEventClick);
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`);
+});
 
+const api = new Api(END_POINT, AUTHORIZATION);
+const store = new Store(window.localStorage, StoreName.EVENTS, StoreName.DESTINATIONS, StoreName.OFFERS);
+const apiWithProvider = new Provaider(api, store);
+const eventsModel = new EventsModel();
 const siteMenuComponent = new SiteMenuComponent();
 const filterController = new FilterController(siteContolsElement, eventsModel);
 const tripController = new TripController(tripEventsElement, eventsModel, apiWithProvider, newEventButton);
 const statisticsComponent = new StatisticsComponent(eventsModel);
 const loadingComponent = new LoadingComponent();
+
+newEventButton.disabled = true;
+newEventButton.addEventListener(`click`, onAddEventClick);
+document.addEventListener(`click`, onPageClick, true);
 
 render(siteContolsElement, siteMenuComponent, RenderPosition.INSERT_BEFORE, switchTabsTitleElement);
 filterController.render();
@@ -82,13 +84,6 @@ siteMenuComponent.setOnChange((menuItem) => {
       break;
   }
 });
-
-const onPageClick = (evt) => {
-  evt.preventDefault();
-  evt.stopPropagation();
-};
-
-document.addEventListener(`click`, onPageClick, true);
 
 apiWithProvider.getEvents()
   .then((events) => {

@@ -109,7 +109,7 @@ export default class Provider {
           }
       );
     }
-    const fakeNewEventId = String(new Date() + Math.random());
+    const fakeNewEventId = String(Number(new Date()) + Math.random());
     const fakeNewEvent = Event.parseEvent(Object.assign({}, event.toRAW(), {id: fakeNewEventId}));
     this._isSynchronized = false;
     this._store.setItem(fakeNewEvent.id, Object.assign({}, fakeNewEvent.toRAW(), {offline: true}));

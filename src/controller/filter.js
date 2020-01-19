@@ -3,7 +3,7 @@ import {FilterType} from '../const.js';
 import {render, RenderPosition} from '../utils/render.js';
 import {getEventsByFilter} from '../utils/filter.js';
 
-const LENGTH_EMPTY_ARRAY = 0;
+const EMPTY_NUMBER = 0;
 
 export default class FilterController {
   constructor(container, eventsModel) {
@@ -40,14 +40,14 @@ export default class FilterController {
     this._filterComponent.setFiltersUndisabled();
     const eventsFromModel = this._eventsModel.getEventsAll();
     const pastEvents = getEventsByFilter(eventsFromModel, FilterType.PAST);
-    if (pastEvents.length === LENGTH_EMPTY_ARRAY) {
+    if (pastEvents.length === EMPTY_NUMBER) {
       this._filterComponent.setFilterDisabled(FilterType.PAST);
     }
     const futureEvents = getEventsByFilter(eventsFromModel, FilterType.FUTURE);
-    if (futureEvents.length === LENGTH_EMPTY_ARRAY) {
+    if (futureEvents.length === EMPTY_NUMBER) {
       this._filterComponent.setFilterDisabled(FilterType.FUTURE);
     }
-    if (eventsFromModel.length === LENGTH_EMPTY_ARRAY) {
+    if (eventsFromModel.length === EMPTY_NUMBER) {
       this._filterComponent.setFilterDisabled(FilterType.EVERYTHING);
     }
   }

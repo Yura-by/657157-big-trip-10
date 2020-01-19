@@ -3,35 +3,13 @@ import EventEditComponent from '../components/event-edit.js';
 import {render, replace, RenderPosition, remove} from '../utils/render.js';
 import {Type} from '../const.js';
 import EventModel from '../models/event.js';
-import {getDateObject} from '../utils/common.js';
+import {getDateStructure} from '../utils/common.js';
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
-
 const NUMBER_SYSTEM = 10;
-
 const MILISECONDS = 1000;
 const SHADOW_STYLE = `0 0 10px 5px red`;
-
-const Designation = {
-  FULL: `Escape`,
-  ABBREVIATED: `Esc`
-}
-
-export const Mode = {
-  ADDING: `adding`,
-  DEFAULT: `default`,
-  EDIT: `edit`,
-};
-
-const CustomText = {
-  SAVE: `Save`,
-  DELETE: `Delete`,
-  SAVING: `Saving...`,
-  DELETING: `Deleting...`,
-  CANCEL: `Cancel`
-};
-
-export const EMPTY_EVENT = new EventModel(EventModel.toRawFromCustom({
+const EMPTY_EVENT = new EventModel(EventModel.toRawFromCustom({
   type: Type.FLIGHT,
   offers: [],
   price: ``,
@@ -45,6 +23,25 @@ export const EMPTY_EVENT = new EventModel(EventModel.toRawFromCustom({
   }
 }));
 
+const Designation = {
+  FULL: `Escape`,
+  ABBREVIATED: `Esc`
+};
+
+const Mode = {
+  ADDING: `adding`,
+  DEFAULT: `default`,
+  EDIT: `edit`,
+};
+
+const CustomText = {
+  SAVE: `Save`,
+  DELETE: `Delete`,
+  SAVING: `Saving...`,
+  DELETING: `Deleting...`,
+  CANCEL: `Cancel`
+};
+
 const getDestinations = (destinationName, allDestinations) => {
   return allDestinations.find((destination) => destination[`name`] === destinationName);
 };
@@ -55,9 +52,9 @@ const parseFormData = (rawData, allDestinations) => {
     type,
     offers,
     price: parseInt(formData.get(`price`), NUMBER_SYSTEM),
-    startDate: getDateObject(formData.get(`event-start-time`)),
-    endDate: getDateObject(formData.get(`event-end-time`)),
-    isFavorite: isFavorite,
+    startDate: getDateStructure(formData.get(`event-start-time`)),
+    endDate: getDateStructure(formData.get(`event-end-time`)),
+    isFavorite,
     destination: getDestinations(formData.get(`destination`), allDestinations)
   }));
   return result;
@@ -229,3 +226,5 @@ export default class PointController {
     }, SHAKE_ANIMATION_TIMEOUT);
   }
 }
+
+export {Mode, EMPTY_EVENT};

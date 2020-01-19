@@ -17,7 +17,7 @@ const getPastEvents = (events, nowDate) => {
   });
 };
 
-export const getEventsByFilter = (events, filterType) => {
+const getEventsByFilter = (events, filterType) => {
   const sortEvents = sortEventsInOrder(events);
   const nowDate = new Date();
 
@@ -32,3 +32,5 @@ export const getEventsByFilter = (events, filterType) => {
 
   return events;
 };
+
+export {getEventsByFilter};

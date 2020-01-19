@@ -7,7 +7,7 @@ const Number = {
   MAX_LENGTH: 3
 };
 
-export const getTripInfoContent = (events) => {
+const getTripInfoContent = (events) => {
   let titleValue = ``;
   let dateValue = ``;
 
@@ -36,3 +36,5 @@ export const getTripInfoContent = (events) => {
     date: `${dateValue}`
   };
 };
+
+export {getTripInfoContent};

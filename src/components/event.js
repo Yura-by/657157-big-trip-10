@@ -1,6 +1,7 @@
 import {castTimeFormat, formatInTime, getDestinationTitle} from '../utils/common.js';
 import AbstractComponent from './abstract-component.js';
 import moment from 'moment';
+
 const MAX_LENGTH_OFFERS = 3;
 const EMPTY_NUMBER = 0;
 

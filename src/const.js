@@ -1,3 +1,5 @@
+const HIDDEN_CLASS = `visually-hidden`;
+
 const Type = {
   BUS: `bus`,
   DRIVE: `drive`,
@@ -38,7 +40,5 @@ const FilterType = {
   FUTURE: `future`,
   PAST: `past`
 };
-
-const HIDDEN_CLASS = `visually-hidden`;
 
 export {TYPES_TRANSPORT, TYPES_PLACE, Type, Index, FilterType, HIDDEN_CLASS};

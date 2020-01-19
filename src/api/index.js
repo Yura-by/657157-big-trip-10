@@ -10,7 +10,7 @@ const Method = {
 const Status = {
   MIN: 200,
   MAX: 300
-}
+};
 
 const checkStatus = (response) => {
   if (response.status >= Status.MIN && response.status < Status.MAX) {

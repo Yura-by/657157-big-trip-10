@@ -28,15 +28,15 @@ const sortEvents = (events) => {
     return formatInDay(startDate);
   });
 
-  const daysEventInSet = new Set(daysEventAll);
+  const daysEventUnique = new Set(daysEventAll);
 
-  const createArrayEventsByDay = (day, array) => {
-    return array.filter((event) => formatInDay(event.startDate) === day);
+  const createEventsByDay = (day, points) => {
+    return points.filter((point) => formatInDay(point.startDate) === day);
   };
 
-  const daysEventInArray = Array.from(daysEventInSet);
+  const daysEvents = Array.from(daysEventUnique);
 
-  const daysWithEvents = daysEventInArray.map((day) => createArrayEventsByDay(day, eventsSorted));
+  const daysWithEvents = daysEvents.map((day) => createEventsByDay(day, eventsSorted));
   return daysWithEvents;
 };
 

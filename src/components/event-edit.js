@@ -3,19 +3,17 @@ import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
 import {TYPES_TRANSPORT, TYPES_PLACE, Type, Index} from '../const.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
-import {getDateObject, formatInDayTime, getDestinationTitle} from '../utils/common.js';
+import {getDateStructure, formatInDayTime, getDestinationTitle} from '../utils/common.js';
 import debounce from 'lodash/debounce';
 
 const DEBOUNCE_TIMEOUT = 500;
 const EMPTY_NUMBER = 0;
 const NUMBER_SYSTEM = 10;
-
+const TYPE_CHECK = `check`;
 const DEFAULT_TEXT = {
   deleteButtonText: `Delete`,
   saveButtonText: `Save`,
 };
-
-const TYPE_CHECK = `check`;
 
 const createSelectors = (offers) => {
   return offers.
@@ -42,12 +40,12 @@ const getCheckedOffer = (offerByType, offers) => {
 };
 
 const getPriceOffer = (offerByType, offers) => {
-  const offer = offers.find((offer) => offer.title === offerByType.title);
+  const offer = offers.find((offerItem) => offerItem.title === offerByType.title);
   const resultPrice = offer ? offer.price : offerByType.price;
   return resultPrice;
 };
 
-export const getOffersByType = (type, allOffers) => {
+const getOffersByType = (type, allOffers) => {
   return allOffers.filter((offer) => offer[`type`] === type)[EMPTY_NUMBER].offers;
 };
 
@@ -418,7 +416,7 @@ export default class EventEdit extends AbstractSmartComponent {
 
     const setButtonDisabled = () => {
       const isEventDestinationValid = checkDestinationValid(eventInput.value, this._allDestinations);
-      const isDateValid = getDateObject(startDateElement.value) < getDateObject(endDateElement.value);
+      const isDateValid = getDateStructure(startDateElement.value) < getDateStructure(endDateElement.value);
       const priceNumber = parseInt(this._price, NUMBER_SYSTEM);
       const isPriceValid = priceNumber || priceNumber === EMPTY_NUMBER ? true : false;
       saveButton.disabled = !isEventDestinationValid || !isDateValid || !isPriceValid;
@@ -428,12 +426,12 @@ export default class EventEdit extends AbstractSmartComponent {
 
     startDateElement.addEventListener(`change`, () => {
       setButtonDisabled();
-      this._startDate = getDateObject(startDateElement.value);
+      this._startDate = getDateStructure(startDateElement.value);
     });
 
     endDateElement.addEventListener(`change`, () => {
       setButtonDisabled();
-      this._endDate = getDateObject(endDateElement.value);
+      this._endDate = getDateStructure(endDateElement.value);
     });
 
     const typesList = element.querySelectorAll(`.event__type-input`);
@@ -496,3 +494,5 @@ export default class EventEdit extends AbstractSmartComponent {
     });
   }
 }
+
+export {getOffersByType};

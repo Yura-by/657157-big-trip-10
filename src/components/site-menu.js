@@ -3,7 +3,7 @@ import AbstractComponent from './abstract-component.js';
 const ACTIVE_CLASS = `trip-tabs__btn--active`;
 const TAG_NAME = `A`;
 
-export const MenuItem = {
+const MenuItem = {
   STATISTICS: `Stats`,
   TABLE: `Table`
 };
@@ -45,3 +45,5 @@ export default class SiteMenu extends AbstractComponent {
     });
   }
 }
+
+export {MenuItem};
