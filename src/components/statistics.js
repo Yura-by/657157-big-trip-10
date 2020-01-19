@@ -58,8 +58,8 @@ const setChartHeight = (ctx, elements, container) => {
 
 const getPrice = (events, type) => {
   return events.filter((event) => event.type === type).
-    reduce((accumulator, item) => {
-      accumulator += item.price;
+    reduce((accumulator, point) => {
+      accumulator += point.price;
       return accumulator;
     }, START_PRICE);
 };
@@ -113,8 +113,8 @@ const renderMoneyChart = (moneyCtx, events, container) => {
     return eventsWithPrice.sort((leftType, rightType) => rightType.price - leftType.price);
   };
 
-  const labelNames = arrayEvents().map((item) => item.type.toUpperCase());
-  const priceValues = arrayEvents().map((item) => item.price);
+  const labelNames = arrayEvents().map((point) => point.type.toUpperCase());
+  const priceValues = arrayEvents().map((point) => point.price);
 
   setChartHeight(moneyCtx, types, container);
 
@@ -201,8 +201,8 @@ const renderTransportChart = (transportCtx, events, container) => {
     return eventsWithCount.sort((leftType, rightType) => rightType.count - leftType.count);
   };
 
-  const labelNames = arrayEvents().map((item) => item.type.toUpperCase());
-  const countValues = arrayEvents().map((item) => item.count);
+  const labelNames = arrayEvents().map((point) => point.type.toUpperCase());
+  const countValues = arrayEvents().map((point) => point.count);
   setChartHeight(transportCtx, typesInEvents, container);
 
   return new Chart(transportCtx, {
@@ -281,10 +281,10 @@ const renderTimeChart = (timeCtx, events, container) => {
     return eventsWithTime.sort((leftType, rightType) => rightType.time - leftType.time);
   };
 
-  const eventsMoreDay = arrayEvents().filter((item) => item.time >= 1);
+  const eventsMoreDay = arrayEvents().filter((point) => point.time >= 1);
 
-  const labelNames = eventsMoreDay.map((item) => item.type.toUpperCase());
-  const timeValues = eventsMoreDay.map((item) => Math.floor(item.time));
+  const labelNames = eventsMoreDay.map((point) => point.type.toUpperCase());
+  const timeValues = eventsMoreDay.map((point) => Math.floor(point.time));
   setChartHeight(timeCtx, eventsMoreDay, container);
 
   return new Chart(timeCtx, {

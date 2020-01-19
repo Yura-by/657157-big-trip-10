@@ -226,6 +226,7 @@ export default class TripController {
       addingConroller.destroy();
       this._pointControllers.shift();
       this._creatingEvent = null;
+      this._newEventButton.disabled = false;
     }
     this._pointControllers.forEach((point) => point.setDefaultView());
   }
@@ -242,7 +243,7 @@ export default class TripController {
             return eventLeftDifferenceTime - eventRightDifferenceTime;
           }));
         }
-        remove(this._daysComponent);
+        this._removeEvents();
         this._pointControllers = this._renderEventsInDays(sortedEvents);
         this._clearDaysTitle();
         break;
@@ -250,12 +251,12 @@ export default class TripController {
         if (sortedEvents.length > 0) {
           sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => eventLeft.price - eventRight.price));
         }
-        remove(this._daysComponent);
+        this._removeEvents();
         this._pointControllers = this._renderEventsInDays(sortedEvents);
         this._clearDaysTitle();
         break;
       case SortType.DEFAULT:
-        remove(this._daysComponent);
+        this._removeEvents();
         this._pointControllers = this._renderEventsInDays(this._daysWithEvents.slice());
         break;
     }
@@ -270,6 +271,8 @@ export default class TripController {
     if (this._pointControllers) {
       this._pointControllers.forEach((pointController) => pointController.destroy());
       this._pointControllers = [];
+      this._creatingEvent = null;
+      this._newEventButton.disabled = false;
       if (this._daysComponent) {
         remove(this._daysComponent);
       }
@@ -297,7 +300,7 @@ export default class TripController {
       this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
       return;
     }
-    const activeSortType = Array.from(sortType).find((item) => item.checked).dataset.sortType;
+    const activeSortType = Array.from(sortType).find((sortElement) => sortElement.checked).dataset.sortType;
     if (activeSortType !== SortType.DEFAULT) {
       this._onSortTypeChange(activeSortType);
     } else {

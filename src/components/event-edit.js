@@ -8,7 +8,7 @@ import debounce from 'lodash/debounce';
 
 const DEBOUNCE_TIMEOUT = 500;
 
-const DefaultData = {
+const DefaultText = {
   deleteButtonText: `Delete`,
   saveButtonText: `Save`,
 };
@@ -34,19 +34,19 @@ const createSelectors = (offers) => {
 };
 
 const getCheckedOffer = (offerByType, offers) => {
-  return offers.some((item) => {
-    return item[`title`] === offerByType[`title`];
+  return offers.some((offer) => {
+    return offer[`title`] === offerByType[`title`];
   });
 };
 
 const getPriceOffer = (offerByType, offers) => {
-  const offer = offers.find((item) => item.title === offerByType.title);
+  const offer = offers.find((offer) => offer.title === offerByType.title);
   const resultPrice = offer ? offer.price : offerByType.price;
   return resultPrice;
 };
 
 export const getOffersByType = (type, allOffers) => {
-  return allOffers.filter((item) => item[`type`] === type)[0].offers;
+  return allOffers.filter((offer) => offer[`type`] === type)[0].offers;
 };
 
 const getOffers = (type, allOffers, currentOffers) => {
@@ -275,7 +275,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._RollupButtonClickHandler = null;
     this._favoriteInputClickHandler = null;
     this._cancelButtonClickHandler = null;
-    this._externalData = DefaultData;
+    this._externalData = DefaultText;
     this._isSendingForm = false;
 
     this._subscribeOnEvents();
@@ -296,8 +296,8 @@ export default class EventEdit extends AbstractSmartComponent {
     }, this._isNewEvent);
   }
 
-  setData(data) {
-    this._externalData = Object.assign({}, DefaultData, data);
+  setData(customText) {
+    this._externalData = Object.assign({}, DefaultText, customText);
     this.rerender();
   }
 
@@ -314,10 +314,10 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   getData() {
-    const form = this.getElement();
+    const formElement = this.getElement();
     const offers = getCheckedOffers(this._offers);
     return {
-      formData: new FormData(form),
+      formData: new FormData(formElement),
       type: this._type,
       offers,
       isFavorite: this._isFavorite
@@ -402,8 +402,8 @@ export default class EventEdit extends AbstractSmartComponent {
     const offersCheckboxes = element.querySelectorAll(`.event__offer-checkbox`);
     const priceInput = element.querySelector(`.event__input--price`);
 
-    offersCheckboxes.forEach((item) => {
-      item.addEventListener(`change`, (evt) => {
+    offersCheckboxes.forEach((offerItem) => {
+      offerItem.addEventListener(`change`, (evt) => {
         const targetOffer = this._offers.find((offer) => offer.title === evt.target.name);
         targetOffer.isChecked = !targetOffer.isChecked;
       });
@@ -455,7 +455,7 @@ export default class EventEdit extends AbstractSmartComponent {
     });
 
     eventInput.addEventListener(`change`, (evt) => {
-      const target = this._allDestinations.find((item) => item[`name`] === evt.target.value);
+      const target = this._allDestinations.find((destinationItem) => destinationItem[`name`] === evt.target.value);
       if (target) {
         this._destination = target;
       } else {

@@ -13,7 +13,7 @@ export const Mode = {
   EDIT: `edit`,
 };
 
-const EMPTY_TEMPLATE = {
+export const EMPTY_EVENT = new EventModel(EventModel.toRawFromCustom({
   type: Type.FLIGHT,
   offers: [],
   price: ``,
@@ -25,9 +25,7 @@ const EMPTY_TEMPLATE = {
     pictures: [],
     description: ``
   }
-}
-
-export const EMPTY_EVENT = new EventModel(EventModel.toRawFromCustom(EMPTY_TEMPLATE));
+}));
 
 const getDestinations = (destinationName, allDestinations) => {
   return allDestinations.find((destination) => destination[`name`] === destinationName);

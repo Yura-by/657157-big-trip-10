@@ -22,13 +22,13 @@ export default class SiteMenu extends AbstractComponent {
   }
 
   setActiveItem(menuItem) {
-    const items = this.getElement().querySelectorAll(`.trip-tabs__btn`);
-    items.forEach((item) => {
-      if (item.classList.contains(ACTIVE_CLASS)) {
-        item.classList.remove(ACTIVE_CLASS);
+    const itemsMenu = this.getElement().querySelectorAll(`.trip-tabs__btn`);
+    itemsMenu.forEach((point) => {
+      if (point.classList.contains(ACTIVE_CLASS)) {
+        point.classList.remove(ACTIVE_CLASS);
       }
-      if (item.text === menuItem) {
-        item.classList.add(ACTIVE_CLASS);
+      if (point.text === menuItem) {
+        point.classList.add(ACTIVE_CLASS);
       }
     });
   }

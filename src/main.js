@@ -80,14 +80,12 @@ siteMenuComponent.setOnChange((menuItem) => {
   }
 });
 
-
 const onPageClick = (evt) => {
   evt.preventDefault();
   evt.stopPropagation();
 };
 
 document.addEventListener(`click`, onPageClick, true);
-
 
 apiWithProvider.getEvents()
   .then((events) => {
