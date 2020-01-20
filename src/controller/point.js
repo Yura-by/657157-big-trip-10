@@ -96,16 +96,16 @@ export default class PointController {
 
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      if (this._eventEditComponent.getSandingState()) {
+      if (this._eventEditComponent.getSendingState()) {
         return;
       }
       if (this._mode === Mode.ADDING) {
-        this._eventEditComponent.setData({
+        this._eventEditComponent.setCustomText({
           saveButtonText: CustomText.SAVING,
           deleteButtonText: CustomText.CANCEL
         });
       } else {
-        this._eventEditComponent.setData({
+        this._eventEditComponent.setCustomText({
           saveButtonText: CustomText.SAVING
         });
       }
@@ -117,7 +117,7 @@ export default class PointController {
     });
 
     this._eventEditComponent.setCancelButtonClickHandler(() => {
-      this._eventEditComponent.setData({
+      this._eventEditComponent.setCustomText({
         deleteButtonText: CustomText.DELETING
       });
       this._eventEditComponent.setDisabledState();
@@ -146,7 +146,7 @@ export default class PointController {
           remove(oldEventEditComponent);
           remove(oldEventComponent);
         }
-        this._eventEditComponent.setData({
+        this._eventEditComponent.setCustomText({
           deleteButtonText: CustomText.CANCEL
         });
         document.addEventListener(`keydown`, this._onEscKeyDown);
@@ -213,12 +213,12 @@ export default class PointController {
     setTimeout(() => {
       this._eventEditComponent.getElement().style.animation = ``;
       if (this._mode === Mode.ADDING) {
-        this._eventEditComponent.setData({
+        this._eventEditComponent.setCustomText({
           saveButtonText: CustomText.SAVE,
           deleteButtonText: CustomText.CANCEL
         });
       } else {
-        this._eventEditComponent.setData({
+        this._eventEditComponent.setCustomText({
           saveButtonText: CustomText.SAVE,
           deleteButtonText: CustomText.DELETE
         });

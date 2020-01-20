@@ -35,7 +35,7 @@ export default class Provider {
 
           this._isSynchronized = true;
 
-          return Promise.resolve(Event.parseEvents(synchronizedEvents));
+          return Promise.resolve(Event.parsePoints(synchronizedEvents));
         });
     }
 
@@ -55,7 +55,7 @@ export default class Provider {
 
     const storeEvents = Object.values(this._store.getAll());
     this._isSynchronized = false;
-    return Promise.resolve(Event.parseEvents(storeEvents));
+    return Promise.resolve(Event.parsePoints(storeEvents));
   }
 
   getDestinations() {
@@ -93,7 +93,7 @@ export default class Provider {
           }
       );
     }
-    const fakeUpdatedEvent = Event.parseEvent(Object.assign({}, event.toRAW(), {id}));
+    const fakeUpdatedEvent = Event.parsePoint(Object.assign({}, event.toRAW(), {id}));
     this._isSynchronized = false;
     this._store.setItem(id, Object.assign({}, fakeUpdatedEvent.toRAW(), {offline: true}));
 
@@ -110,7 +110,7 @@ export default class Provider {
       );
     }
     const fakeNewEventId = String(Number(new Date()) + Math.random());
-    const fakeNewEvent = Event.parseEvent(Object.assign({}, event.toRAW(), {id: fakeNewEventId}));
+    const fakeNewEvent = Event.parsePoint(Object.assign({}, event.toRAW(), {id: fakeNewEventId}));
     this._isSynchronized = false;
     this._store.setItem(fakeNewEvent.id, Object.assign({}, fakeNewEvent.toRAW(), {offline: true}));
 

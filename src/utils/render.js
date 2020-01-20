@@ -1,4 +1,3 @@
-
 const TAG_NAME = `div`;
 
 const RenderPosition = {

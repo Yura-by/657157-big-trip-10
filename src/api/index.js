@@ -36,11 +36,11 @@ export default class Api {
       });
   }
 
-  sync(data) {
+  sync(events) {
     return this._load({
       url: `points/sync`,
       method: Method.POST,
-      body: JSON.stringify(data),
+      body: JSON.stringify(events),
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then((response) => response.json());
@@ -49,7 +49,7 @@ export default class Api {
   getEvents() {
     return this._load({url: `points`})
       .then((response) => response.json())
-      .then(Event.parseEvents);
+      .then(Event.parsePoints);
   }
 
   getDestinations() {
@@ -62,26 +62,26 @@ export default class Api {
       .then((response) => response.json());
   }
 
-  updateEvent(id, data) {
+  updateEvent(id, event) {
     return this._load({
       url: `points/${id}`,
       method: Method.PUT,
-      body: JSON.stringify(data.toRAW()),
+      body: JSON.stringify(event.toRAW()),
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then((response) => response.json())
-      .then(Event.parseEvent);
+      .then(Event.parsePoint);
   }
 
-  createEvent(data) {
+  createEvent(event) {
     return this._load({
       url: `points`,
       method: Method.POST,
-      body: JSON.stringify(data.toRAW()),
+      body: JSON.stringify(event.toRAW()),
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then((response) => response.json())
-      .then(Event.parseEvent);
+      .then(Event.parsePoint);
   }
 
   deleteEvent(id) {

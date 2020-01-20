@@ -296,12 +296,12 @@ export default class EventEdit extends AbstractSmartComponent {
     }, this._isNewEvent);
   }
 
-  setData(customText) {
+  setCustomText(customText) {
     this._externalData = Object.assign({}, DEFAULT_TEXT, customText);
     this.rerender();
   }
 
-  getSandingState() {
+  getSendingState() {
     return this._isSendingForm;
   }
 

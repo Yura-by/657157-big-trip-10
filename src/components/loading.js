@@ -1,4 +1,3 @@
-
 import AbstractComponent from './abstract-component.js';
 
 const createLoadingTemplate = () => {
