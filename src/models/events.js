@@ -93,6 +93,10 @@ export default class Events {
     this._callHandlers(this._dataChangeHandlers);
   }
 
+  getFilterName() {
+    return this._activeFilterType;
+  }
+
   setFilterChangeHandler(handler) {
     this._filterChangeHandlers.push(handler);
   }
@@ -107,9 +111,5 @@ export default class Events {
 
   _callHandlers(handlers) {
     handlers.forEach((handler) => handler());
-  }
-
-  getFilterName() {
-    return this._activeFilterType;
   }
 }

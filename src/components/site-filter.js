@@ -37,13 +37,6 @@ export default class SiteFilter extends AbstractComponent {
     return createSiteFilterTemplate(this._filters);
   }
 
-  setFilterChangeHandler(handler) {
-    this.getElement().addEventListener(`change`, (evt) => {
-      const filterName = getFilterNameById(evt.target.id);
-      handler(filterName);
-    });
-  }
-
   setFilterDisabled(name) {
     const inputElement = this.getElement().querySelector(`#${FILTER_ID_PREFIX}${name}`);
     inputElement.disabled = true;
@@ -62,6 +55,13 @@ export default class SiteFilter extends AbstractComponent {
       if (item.classList.contains(`trip-filter-blocked`)) {
         item.classList.remove(`trip-filter-blocked`);
       }
+    });
+  }
+
+  setFilterChangeHandler(handler) {
+    this.getElement().addEventListener(`change`, (evt) => {
+      const filterName = getFilterNameById(evt.target.id);
+      handler(filterName);
     });
   }
 }

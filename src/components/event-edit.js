@@ -296,6 +296,33 @@ export default class EventEdit extends AbstractSmartComponent {
     }, this._isNewEvent);
   }
 
+  recoveryListeners() {
+    this._subscribeOnEvents();
+    this.setSubmitHandler(this._onFormSubmit);
+    this.setRollupButtonClickHandler(this._onRollupButtonClick);
+    this.setFavoriteInputClickHandler(this._onFavoriteInputClick);
+    this.setCancelButtonClickHandler(this._onCancelButtonClick);
+  }
+
+  removeElement() {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    super.removeElement();
+  }
+
+  rerender(newEvent) {
+    if (newEvent) {
+      this._isFavorite = newEvent.isFavorite;
+    }
+    this._isSendingForm = false;
+    super.rerender();
+
+    this._applyFlatpickr();
+  }
+
   setCustomText(customText) {
     this._externalData = Object.assign({}, DEFAULT_TEXT, customText);
     this.rerender();
@@ -324,40 +351,6 @@ export default class EventEdit extends AbstractSmartComponent {
     };
   }
 
-  setCancelButtonClickHandler(handler) {
-    this.getElement().querySelector(`.event__reset-btn`)
-      .addEventListener(`click`, handler);
-
-    this._onCancelButtonClick = handler;
-  }
-
-  recoveryListeners() {
-    this._subscribeOnEvents();
-    this.setSubmitHandler(this._onFormSubmit);
-    this.setRollupButtonClickHandler(this._onRollupButtonClick);
-    this.setFavoriteInputClickHandler(this._onFavoriteInputClick);
-    this.setCancelButtonClickHandler(this._onCancelButtonClick);
-  }
-
-  rerender(newEvent) {
-    if (newEvent) {
-      this._isFavorite = newEvent.isFavorite;
-    }
-    this._isSendingForm = false;
-    super.rerender();
-
-    this._applyFlatpickr();
-  }
-
-  removeElement() {
-    if (this._flatpickr) {
-      this._flatpickr.destroy();
-      this._flatpickr = null;
-    }
-
-    super.removeElement();
-  }
-
   reset() {
     this._type = this._event.type;
     this._offers = getOffers(this._event.type, this._allOffers, this._event.offers);
@@ -376,6 +369,13 @@ export default class EventEdit extends AbstractSmartComponent {
       }
     };
     element.addEventListener(`submit`, this._onFormSubmit);
+  }
+
+  setCancelButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, handler);
+
+    this._onCancelButtonClick = handler;
   }
 
   setRollupButtonClickHandler(handler) {

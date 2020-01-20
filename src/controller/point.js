@@ -179,6 +179,25 @@ export default class PointController {
     }
   }
 
+  shake() {
+    this._eventEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / MILISECONDS}s`;
+    this._eventEditComponent.getElement().style.boxShadow = SHADOW_STYLE;
+    setTimeout(() => {
+      this._eventEditComponent.getElement().style.animation = ``;
+      if (this._mode === Mode.ADDING) {
+        this._eventEditComponent.setCustomText({
+          saveButtonText: CustomText.SAVE,
+          deleteButtonText: CustomText.CANCEL
+        });
+      } else {
+        this._eventEditComponent.setCustomText({
+          saveButtonText: CustomText.SAVE,
+          deleteButtonText: CustomText.DELETE
+        });
+      }
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
   _replaceEditToEvent() {
     this._eventEditComponent.reset();
 
@@ -205,25 +224,6 @@ export default class PointController {
       this._replaceEditToEvent();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
-  }
-
-  shake() {
-    this._eventEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / MILISECONDS}s`;
-    this._eventEditComponent.getElement().style.boxShadow = SHADOW_STYLE;
-    setTimeout(() => {
-      this._eventEditComponent.getElement().style.animation = ``;
-      if (this._mode === Mode.ADDING) {
-        this._eventEditComponent.setCustomText({
-          saveButtonText: CustomText.SAVE,
-          deleteButtonText: CustomText.CANCEL
-        });
-      } else {
-        this._eventEditComponent.setCustomText({
-          saveButtonText: CustomText.SAVE,
-          deleteButtonText: CustomText.DELETE
-        });
-      }
-    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }
 

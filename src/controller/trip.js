@@ -70,12 +70,6 @@ export default class TripController {
     this._eventsModel.setDataUpdateHandler(this._tripSynchronization);
   }
 
-  _tripSynchronization() {
-    this._tripRerender();
-    this._creatingEvent = null;
-    this._newEventButton.disabled = false;
-  }
-
   hide() {
     this._container.classList.add(HIDDEN_CLASS);
   }
@@ -132,6 +126,95 @@ export default class TripController {
       pointControllers = pointControllers.concat(renderEvents(day, eventsInDays[indexDay], this._onDataChange, this._onViewChange, this._onFavoriteChange, this._eventsModel));
     });
     return pointControllers;
+  }
+
+  _onSortTypeChange(sortType) {
+    let sortedEvents = this._eventsModel.getEvents().slice();
+
+    switch (sortType) {
+      case SortType.TIME:
+        if (sortedEvents.length > EMPTY_NUMBER) {
+          sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => {
+            const eventLeftDifferenceTime = eventLeft.endDate.getTime() - eventLeft.startDate.getTime();
+            const eventRightDifferenceTime = eventRight.endDate.getTime() - eventRight.startDate.getTime();
+            return eventLeftDifferenceTime - eventRightDifferenceTime;
+          }));
+        }
+        this._removeEvents();
+        this._pointControllers = this._renderEventsInDays(sortedEvents);
+        this._clearDaysTitle();
+        break;
+      case SortType.PRICE:
+        if (sortedEvents.length > EMPTY_NUMBER) {
+          sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => eventLeft.price - eventRight.price));
+        }
+        this._removeEvents();
+        this._pointControllers = this._renderEventsInDays(sortedEvents);
+        this._clearDaysTitle();
+        break;
+      case SortType.DEFAULT:
+        this._removeEvents();
+        this._pointControllers = this._renderEventsInDays(this._daysWithEvents.slice());
+        break;
+    }
+
+    const filterValue = this._eventsModel.getFilterName();
+    if (filterValue !== FilterType.EVERYTHING) {
+      this._clearDaysTitle();
+    }
+  }
+
+  _removeEvents() {
+    if (this._pointControllers) {
+      this._pointControllers.forEach((pointController) => pointController.destroy());
+      this._pointControllers = [];
+      this._creatingEvent = null;
+      this._newEventButton.disabled = false;
+      if (this._daysComponent) {
+        remove(this._daysComponent);
+      }
+    }
+  }
+
+  _clearDaysTitle() {
+    const daysCollectionElements = this._daysComponent.getElement().querySelectorAll(`.day__info`);
+    if (daysCollectionElements) {
+      daysCollectionElements.forEach((day) => {
+        day.innerHTML = ``;
+      });
+    }
+  }
+
+  _tripRerender() {
+    const sortTypeElements = this._container.querySelectorAll(`.trip-sort__input`);
+    if (sortTypeElements.length === EMPTY_NUMBER) {
+      const events = this._eventsModel.getEvents();
+      this._daysWithEvents = sortEvents(events);
+      if (events.length > EMPTY_NUMBER) {
+        render(this._container, this._sortComponent, RenderPosition.BEFOREEND);
+        this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
+      }
+      this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
+      return;
+    }
+    const activeSortType = Array.from(sortTypeElements).find((sortElement) => sortElement.checked).dataset.sortType;
+    if (activeSortType !== SortType.DEFAULT) {
+      this._onSortTypeChange(activeSortType);
+    } else {
+      this._removeEvents();
+      this._daysWithEvents = sortEvents(this._eventsModel.getEvents());
+      this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
+      const filterValue = this._eventsModel.getFilterName();
+      if (filterValue !== FilterType.EVERYTHING) {
+        this._clearDaysTitle();
+      }
+    }
+  }
+
+  _tripSynchronization() {
+    this._tripRerender();
+    this._creatingEvent = null;
+    this._newEventButton.disabled = false;
   }
 
   _onDataChange(pointController, oldData, newData) {
@@ -231,88 +314,5 @@ export default class TripController {
       this._newEventButton.disabled = false;
     }
     this._pointControllers.forEach((point) => point.setDefaultView());
-  }
-
-  _onSortTypeChange(sortType) {
-    let sortedEvents = this._eventsModel.getEvents().slice();
-
-    switch (sortType) {
-      case SortType.TIME:
-        if (sortedEvents.length > EMPTY_NUMBER) {
-          sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => {
-            const eventLeftDifferenceTime = eventLeft.endDate.getTime() - eventLeft.startDate.getTime();
-            const eventRightDifferenceTime = eventRight.endDate.getTime() - eventRight.startDate.getTime();
-            return eventLeftDifferenceTime - eventRightDifferenceTime;
-          }));
-        }
-        this._removeEvents();
-        this._pointControllers = this._renderEventsInDays(sortedEvents);
-        this._clearDaysTitle();
-        break;
-      case SortType.PRICE:
-        if (sortedEvents.length > EMPTY_NUMBER) {
-          sortedEvents = Array.of(sortedEvents.sort((eventRight, eventLeft) => eventLeft.price - eventRight.price));
-        }
-        this._removeEvents();
-        this._pointControllers = this._renderEventsInDays(sortedEvents);
-        this._clearDaysTitle();
-        break;
-      case SortType.DEFAULT:
-        this._removeEvents();
-        this._pointControllers = this._renderEventsInDays(this._daysWithEvents.slice());
-        break;
-    }
-
-    const filterValue = this._eventsModel.getFilterName();
-    if (filterValue !== FilterType.EVERYTHING) {
-      this._clearDaysTitle();
-    }
-  }
-
-  _removeEvents() {
-    if (this._pointControllers) {
-      this._pointControllers.forEach((pointController) => pointController.destroy());
-      this._pointControllers = [];
-      this._creatingEvent = null;
-      this._newEventButton.disabled = false;
-      if (this._daysComponent) {
-        remove(this._daysComponent);
-      }
-    }
-  }
-
-  _clearDaysTitle() {
-    const daysCollectionElements = this._daysComponent.getElement().querySelectorAll(`.day__info`);
-    if (daysCollectionElements) {
-      daysCollectionElements.forEach((day) => {
-        day.innerHTML = ``;
-      });
-    }
-  }
-
-  _tripRerender() {
-    const sortTypeElements = this._container.querySelectorAll(`.trip-sort__input`);
-    if (sortTypeElements.length === EMPTY_NUMBER) {
-      const events = this._eventsModel.getEvents();
-      this._daysWithEvents = sortEvents(events);
-      if (events.length > EMPTY_NUMBER) {
-        render(this._container, this._sortComponent, RenderPosition.BEFOREEND);
-        this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
-      }
-      this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
-      return;
-    }
-    const activeSortType = Array.from(sortTypeElements).find((sortElement) => sortElement.checked).dataset.sortType;
-    if (activeSortType !== SortType.DEFAULT) {
-      this._onSortTypeChange(activeSortType);
-    } else {
-      this._removeEvents();
-      this._daysWithEvents = sortEvents(this._eventsModel.getEvents());
-      this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
-      const filterValue = this._eventsModel.getFilterName();
-      if (filterValue !== FilterType.EVERYTHING) {
-        this._clearDaysTitle();
-      }
-    }
   }
 }

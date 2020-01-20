@@ -366,6 +366,14 @@ export default class Statistics extends AbstractSmartComponent {
     return createStatisticsTemplate();
   }
 
+  recoveryListeners() {}
+
+  show() {
+    super.show();
+    this.rerender();
+    this._renderCharts();
+  }
+
   _renderCharts() {
     const element = this.getElement();
 
@@ -378,14 +386,6 @@ export default class Statistics extends AbstractSmartComponent {
     this._moneyChart = renderMoneyChart(moneyCtx, sortEventsInOrder(this._events.getEventsAll()), this._element);
     this._transportChart = renderTransportChart(transportCtx, sortEventsInOrder(this._events.getEventsAll()), this._element);
     this._timeChart = renderTimeChart(timeCtx, sortEventsInOrder(this._events.getEventsAll()), this._element);
-  }
-
-  recoveryListeners() {}
-
-  show() {
-    super.show();
-    this.rerender();
-    this._renderCharts();
   }
 
   _resetCharts() {

@@ -26,16 +26,6 @@ export default class Api {
     this._authorization = authorization;
   }
 
-  _load({url, method = Method.GET, body = null, headers = new Headers()}) {
-    headers.append(`Authorization`, this._authorization);
-
-    return fetch(`${this._endPoint}/${url}`, {method, body, headers})
-      .then(checkStatus)
-      .catch((err) => {
-        throw err;
-      });
-  }
-
   sync(events) {
     return this._load({
       url: `points/sync`,
@@ -86,5 +76,15 @@ export default class Api {
 
   deleteEvent(id) {
     return this._load({url: `points/${id}`, method: Method.DELETE});
+  }
+
+  _load({url, method = Method.GET, body = null, headers = new Headers()}) {
+    headers.append(`Authorization`, this._authorization);
+
+    return fetch(`${this._endPoint}/${url}`, {method, body, headers})
+      .then(checkStatus)
+      .catch((err) => {
+        throw err;
+      });
   }
 }
