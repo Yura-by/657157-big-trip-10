@@ -33,14 +33,14 @@ const switchTabsTitleElement = siteContolsElement.querySelector(`h2:last-child`)
 const siteMainElement = document.querySelector(`.page-main`);
 const bodyContainerElement = siteMainElement.querySelector(`.page-body__container`);
 const tripEventsElement = siteMainElement.querySelector(`.trip-events`);
-const newEventButton = siteHeaderElement.querySelector(`.trip-main__event-add-btn`);
+const newEventButtonElement = siteHeaderElement.querySelector(`.trip-main__event-add-btn`);
 
 const onPageClick = (evt) => {
   evt.preventDefault();
   evt.stopPropagation();
 };
 
-const onAddEventClick = () => {
+const onNewEventButtonClick = () => {
   statisticsComponent.hide();
   tripController.show();
   tripController.createEvent();
@@ -57,12 +57,12 @@ const apiWithProvider = new Provaider(api, store);
 const eventsModel = new EventsModel();
 const siteMenuComponent = new SiteMenuComponent();
 const filterController = new FilterController(siteContolsElement, eventsModel);
-const tripController = new TripController(tripEventsElement, eventsModel, apiWithProvider, newEventButton);
+const tripController = new TripController(tripEventsElement, eventsModel, apiWithProvider, newEventButtonElement);
 const statisticsComponent = new StatisticsComponent(eventsModel);
 const loadingComponent = new LoadingComponent();
 
-newEventButton.disabled = true;
-newEventButton.addEventListener(`click`, onAddEventClick);
+newEventButtonElement.disabled = true;
+newEventButtonElement.addEventListener(`click`, onNewEventButtonClick);
 document.addEventListener(`click`, onPageClick, true);
 
 render(siteContolsElement, siteMenuComponent, RenderPosition.INSERT_BEFORE, switchTabsTitleElement);
@@ -71,7 +71,7 @@ render(tripEventsElement, loadingComponent, RenderPosition.BEFOREEND);
 render(bodyContainerElement, statisticsComponent, RenderPosition.BEFOREEND);
 statisticsComponent.hide();
 
-siteMenuComponent.setOnChange((menuItem) => {
+siteMenuComponent.setChangeHandler((menuItem) => {
   siteMenuComponent.setActiveItem(menuItem);
   switch (menuItem) {
     case MenuItem.TABLE:

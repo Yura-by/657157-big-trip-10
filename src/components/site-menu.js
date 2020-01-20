@@ -23,8 +23,8 @@ export default class SiteMenu extends AbstractComponent {
   }
 
   setActiveItem(menuItem) {
-    const itemsMenu = this.getElement().querySelectorAll(`.trip-tabs__btn`);
-    itemsMenu.forEach((point) => {
+    const itemsMenuElements = this.getElement().querySelectorAll(`.trip-tabs__btn`);
+    itemsMenuElements.forEach((point) => {
       if (point.classList.contains(ACTIVE_CLASS)) {
         point.classList.remove(ACTIVE_CLASS);
       }
@@ -34,7 +34,7 @@ export default class SiteMenu extends AbstractComponent {
     });
   }
 
-  setOnChange(handler) {
+  setChangeHandler(handler) {
     this.getElement().addEventListener(`click`, (evt) => {
       if (evt.target.tagName !== TAG_NAME) {
         return;

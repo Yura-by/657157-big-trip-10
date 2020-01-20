@@ -271,10 +271,10 @@ export default class EventEdit extends AbstractSmartComponent {
     this._isFavorite = event.isFavorite;
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
-    this._submitHandler = null;
-    this._RollupButtonClickHandler = null;
-    this._favoriteInputClickHandler = null;
-    this._cancelButtonClickHandler = null;
+    this._onFormSubmit = null;
+    this._onRollupButtonClick = null;
+    this._onFavoriteInputClick = null;
+    this._onCancelButtonClick = null;
     this._externalData = DEFAULT_TEXT;
     this._isSendingForm = false;
 
@@ -328,15 +328,15 @@ export default class EventEdit extends AbstractSmartComponent {
     this.getElement().querySelector(`.event__reset-btn`)
       .addEventListener(`click`, handler);
 
-    this._cancelButtonClickHandler = handler;
+    this._onCancelButtonClick = handler;
   }
 
   recoveryListeners() {
     this._subscribeOnEvents();
-    this.setSubmitHandler(this._submitHandler);
-    this.setRollupButtonClickHandler(this._RollupButtonClickHandler);
-    this.setFavoriteInputClickHandler(this._favoriteInputClickHandler);
-    this.setCancelButtonClickHandler(this._cancelButtonClickHandler);
+    this.setSubmitHandler(this._onFormSubmit);
+    this.setRollupButtonClickHandler(this._onRollupButtonClick);
+    this.setFavoriteInputClickHandler(this._onFavoriteInputClick);
+    this.setCancelButtonClickHandler(this._onCancelButtonClick);
   }
 
   rerender(newEvent) {
@@ -370,18 +370,18 @@ export default class EventEdit extends AbstractSmartComponent {
 
   setSubmitHandler(handler) {
     const element = this.getElement();
-    this._submitHandler = (evt) => {
+    this._onFormSubmit = (evt) => {
       if (!element.querySelector(`.event__save-btn`).value) {
         handler(evt);
       }
     };
-    element.addEventListener(`submit`, this._submitHandler);
+    element.addEventListener(`submit`, this._onFormSubmit);
   }
 
   setRollupButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__rollup-btn`)
     .addEventListener(`click`, handler);
-    this._RollupButtonClickHandler = handler;
+    this._onRollupButtonClick = handler;
   }
 
   setFavoriteInputClickHandler(handler) {
@@ -390,36 +390,36 @@ export default class EventEdit extends AbstractSmartComponent {
     };
     this.getElement().querySelector(`.event__favorite-checkbox`)
       .addEventListener(`click`, debounce(onFavoriteClick, DEBOUNCE_TIMEOUT));
-    this._favoriteInputClickHandler = handler;
+    this._onFavoriteInputClick = handler;
   }
 
   _subscribeOnEvents() {
     const element = this.getElement();
-    const saveButton = element.querySelector(`.event__save-btn`);
+    const saveButtonElement = element.querySelector(`.event__save-btn`);
     const startDateElement = element.querySelector(`input[name="event-start-time"]`);
     const endDateElement = element.querySelector(`input[name="event-end-time"]`);
-    const eventInput = element.querySelector(`.event__input--destination`);
-    const offersCheckboxes = element.querySelectorAll(`.event__offer-checkbox`);
-    const priceInput = element.querySelector(`.event__input--price`);
+    const eventInputElement = element.querySelector(`.event__input--destination`);
+    const offersCheckboxesElements = element.querySelectorAll(`.event__offer-checkbox`);
+    const priceInputElement = element.querySelector(`.event__input--price`);
 
-    offersCheckboxes.forEach((offerItem) => {
+    offersCheckboxesElements.forEach((offerItem) => {
       offerItem.addEventListener(`change`, (evt) => {
         const targetOffer = this._offers.find((offer) => offer.title === evt.target.name);
         targetOffer.isChecked = !targetOffer.isChecked;
       });
     });
 
-    priceInput.addEventListener(`change`, (evt) => {
+    priceInputElement.addEventListener(`change`, (evt) => {
       this._price = evt.target.value;
       setButtonDisabled();
     });
 
     const setButtonDisabled = () => {
-      const isEventDestinationValid = checkDestinationValid(eventInput.value, this._allDestinations);
+      const isEventDestinationValid = checkDestinationValid(eventInputElement.value, this._allDestinations);
       const isDateValid = getDateStructure(startDateElement.value) < getDateStructure(endDateElement.value);
       const priceNumber = parseInt(this._price, NUMBER_SYSTEM);
       const isPriceValid = priceNumber || priceNumber === EMPTY_NUMBER ? true : false;
-      saveButton.disabled = !isEventDestinationValid || !isDateValid || !isPriceValid;
+      saveButtonElement.disabled = !isEventDestinationValid || !isDateValid || !isPriceValid;
     };
 
     setButtonDisabled();
@@ -434,8 +434,8 @@ export default class EventEdit extends AbstractSmartComponent {
       this._endDate = getDateStructure(endDateElement.value);
     });
 
-    const typesList = element.querySelectorAll(`.event__type-input`);
-    typesList.forEach((type) => {
+    const typesListElements = element.querySelectorAll(`.event__type-input`);
+    typesListElements.forEach((type) => {
       type.addEventListener(`click`, (evt) => {
         this._type = evt.target.value;
         if (this._event.type === evt.target.value) {
@@ -450,11 +450,11 @@ export default class EventEdit extends AbstractSmartComponent {
       });
     });
 
-    eventInput.addEventListener(`change`, () => {
+    eventInputElement.addEventListener(`change`, () => {
       setButtonDisabled();
     });
 
-    eventInput.addEventListener(`change`, (evt) => {
+    eventInputElement.addEventListener(`change`, (evt) => {
       const target = this._allDestinations.find((destinationItem) => destinationItem[`name`] === evt.target.value);
       if (target) {
         this._destination = target;

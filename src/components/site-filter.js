@@ -53,8 +53,8 @@ export default class SiteFilter extends AbstractComponent {
   }
 
   setFiltersUndisabled() {
-    const filtersElement = this.getElement().querySelectorAll(`.trip-filters__filter-input`);
-    filtersElement.forEach((item) => {
+    const filtersElements = this.getElement().querySelectorAll(`.trip-filters__filter-input`);
+    filtersElements.forEach((item) => {
       item.disabled = false;
     });
     const labelsElements = this.getElement().querySelectorAll(`.trip-filters__filter-label`);

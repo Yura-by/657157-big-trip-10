@@ -214,12 +214,12 @@ export default class TripController {
       return total + price + offersPrice;
     }, EMPTY_NUMBER);
     document.querySelector(`.trip-info__cost-value`).textContent = totalPrice;
-    const infoContainer = document.querySelector(`.trip-main__trip-info`);
+    const infoContainerElement = document.querySelector(`.trip-main__trip-info`);
     if (this._tripInfoComponent) {
       remove(this._tripInfoComponent);
     }
     this._tripInfoComponent = new TripInfoComponent(getTripInfoContent(pointsSorted));
-    render(infoContainer, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
+    render(infoContainerElement, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
   }
 
   _onViewChange() {
@@ -282,17 +282,17 @@ export default class TripController {
   }
 
   _clearDaysTitle() {
-    const daysCollection = this._daysComponent.getElement().querySelectorAll(`.day__info`);
-    if (daysCollection) {
-      daysCollection.forEach((day) => {
+    const daysCollectionElements = this._daysComponent.getElement().querySelectorAll(`.day__info`);
+    if (daysCollectionElements) {
+      daysCollectionElements.forEach((day) => {
         day.innerHTML = ``;
       });
     }
   }
 
   _tripRerender() {
-    const sortType = this._container.querySelectorAll(`.trip-sort__input`);
-    if (sortType.length === EMPTY_NUMBER) {
+    const sortTypeElements = this._container.querySelectorAll(`.trip-sort__input`);
+    if (sortTypeElements.length === EMPTY_NUMBER) {
       const events = this._eventsModel.getEvents();
       this._daysWithEvents = sortEvents(events);
       if (events.length > EMPTY_NUMBER) {
@@ -302,7 +302,7 @@ export default class TripController {
       this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
       return;
     }
-    const activeSortType = Array.from(sortType).find((sortElement) => sortElement.checked).dataset.sortType;
+    const activeSortType = Array.from(sortTypeElements).find((sortElement) => sortElement.checked).dataset.sortType;
     if (activeSortType !== SortType.DEFAULT) {
       this._onSortTypeChange(activeSortType);
     } else {
