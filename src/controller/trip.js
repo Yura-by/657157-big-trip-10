@@ -106,12 +106,11 @@ export default class TripController {
       remove(this._noEventsComponent);
     }
 
-    const adjacentElement = this._container.querySelector(`.trip-days`);
     this._creatingEvent = new PointController(this._container, this._onDataChange, this._onViewChange, null, this._eventsModel);
     this._pointControllers.unshift(this._creatingEvent);
 
-    if (adjacentElement) {
-      this._creatingEvent.render(EMPTY_EVENT, PointControllerMode.ADDING, adjacentElement);
+    if (document.contains(this._daysComponent.getElement())) {
+      this._creatingEvent.render(EMPTY_EVENT, PointControllerMode.ADDING, this._daysComponent.getElement());
     } else {
       this._creatingEvent.render(EMPTY_EVENT, PointControllerMode.ADDING);
     }
@@ -120,7 +119,7 @@ export default class TripController {
   _renderEventsInDays(eventsInDays) {
     this._daysComponent = new DaysComponent(eventsInDays);
     render(this._container, this._daysComponent, RenderPosition.BEFOREEND);
-    const eventsListElements = this._container.querySelectorAll(`.trip-events__list`);
+    const eventsListElements = this._daysComponent.getDaysElements();
     let pointControllers = [];
     eventsListElements.forEach((day, indexDay) => {
       pointControllers = pointControllers.concat(renderEvents(day, eventsInDays[indexDay], this._onDataChange, this._onViewChange, this._onFavoriteChange, this._eventsModel));
@@ -177,17 +176,11 @@ export default class TripController {
   }
 
   _clearDaysTitle() {
-    const daysCollectionElements = this._daysComponent.getElement().querySelectorAll(`.day__info`);
-    if (daysCollectionElements) {
-      daysCollectionElements.forEach((day) => {
-        day.innerHTML = ``;
-      });
-    }
+    this._daysComponent.clearDaysContent();
   }
 
   _tripRerender() {
-    const sortTypeElements = this._container.querySelectorAll(`.trip-sort__input`);
-    if (sortTypeElements.length === EMPTY_NUMBER) {
+    if (!document.contains(this._sortComponent.getElement())) {
       const events = this._eventsModel.getEvents();
       this._daysWithEvents = sortEvents(events);
       if (events.length > EMPTY_NUMBER) {
@@ -197,7 +190,7 @@ export default class TripController {
       this._pointControllers = this._renderEventsInDays(this._daysWithEvents);
       return;
     }
-    const activeSortType = Array.from(sortTypeElements).find((sortElement) => sortElement.checked).dataset.sortType;
+    const activeSortType = this._sortComponent.getCheckedSortType();
     if (activeSortType !== SortType.DEFAULT) {
       this._onSortTypeChange(activeSortType);
     } else {

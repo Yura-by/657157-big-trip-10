@@ -78,4 +78,17 @@ export default class Days extends AbstractComponent {
   getTemplate() {
     return createDaysTemplate(this._days);
   }
+
+  clearDaysContent() {
+    const daysCollectionElements = this.getElement().querySelectorAll(`.day__info`);
+    if (daysCollectionElements) {
+      daysCollectionElements.forEach((day) => {
+        day.innerHTML = ``;
+      });
+    }
+  }
+
+  getDaysElements() {
+    return this.getElement().querySelectorAll(`.trip-events__list`);
+  }
 }
