@@ -41,7 +41,7 @@ const sortEvents = (events) => {
 };
 
 export default class TripController {
-  constructor(container, eventsModel, api, newEventButton) {
+  constructor(container, eventsModel, api, newEventButton, infoContainer) {
     this._container = container;
     this._eventsModel = eventsModel;
     this._api = api;
@@ -54,6 +54,7 @@ export default class TripController {
     this._creatingEvent = null;
     this._tripInfoComponent = null;
     this._newEventButton = newEventButton;
+    this._infoContainer = infoContainer;
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
@@ -109,7 +110,7 @@ export default class TripController {
     this._creatingEvent = new PointController(this._container, this._onDataChange, this._onViewChange, null, this._eventsModel);
     this._pointControllers.unshift(this._creatingEvent);
 
-    if (document.contains(this._daysComponent.getElement())) {
+    if (this._daysComponent && document.contains(this._daysComponent.getElement())) {
       this._creatingEvent.render(EMPTY_EVENT, PointControllerMode.ADDING, this._daysComponent.getElement());
     } else {
       this._creatingEvent.render(EMPTY_EVENT, PointControllerMode.ADDING);
@@ -289,13 +290,11 @@ export default class TripController {
       }, EMPTY_NUMBER);
       return total + price + offersPrice;
     }, EMPTY_NUMBER);
-    document.querySelector(`.trip-info__cost-value`).textContent = totalPrice;
-    const infoContainerElement = document.querySelector(`.trip-main__trip-info`);
     if (this._tripInfoComponent) {
       remove(this._tripInfoComponent);
     }
-    this._tripInfoComponent = new TripInfoComponent(getTripInfoContent(pointsSorted));
-    render(infoContainerElement, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
+    this._tripInfoComponent = new TripInfoComponent(getTripInfoContent(pointsSorted), totalPrice);
+    render(this._infoContainer, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
   }
 
   _onViewChange() {

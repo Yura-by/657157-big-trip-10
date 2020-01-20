@@ -53,7 +53,7 @@ export default class Sort extends AbstractComponent {
 
   getCheckedSortType() {
     const sortTypeElements = this.getElement().querySelectorAll(`.trip-sort__input`);
-    return  Array.from(sortTypeElements).find((sortElement) => sortElement.checked).dataset.sortType;
+    return Array.from(sortTypeElements).find((sortElement) => sortElement.checked).dataset.sortType;
   }
 
   setSortTypeChangeHandler(handler) {
