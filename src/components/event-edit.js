@@ -335,8 +335,10 @@ export default class EventEdit extends AbstractSmartComponent {
   setDisabledState() {
     this._isSendingForm = true;
     const editElement = this.getElement();
+    editElement.querySelectorAll(`input`).forEach((controlItem) => {
+      controlItem.disabled = true;
+    });
     editElement.querySelector(`.event__save-btn`).disabled = true;
-    editElement.querySelector(`.event__favorite-checkbox`).disabled = true;
     editElement.querySelector(`.event__reset-btn`).disabled = true;
   }
 
@@ -391,6 +393,31 @@ export default class EventEdit extends AbstractSmartComponent {
     this.getElement().querySelector(`.event__favorite-checkbox`)
       .addEventListener(`click`, debounce(onFavoriteClick, DEBOUNCE_TIMEOUT));
     this._onFavoriteInputClick = handler;
+  }
+
+  _applyFlatpickr() {
+    if (this._flatpickrStart) {
+      this._flatpickrStart.destroy();
+      this._flatpickrStart = null;
+    }
+    if (this._flatpickrEnd) {
+      this._flatpickrEnd.destroy();
+      this._flatpickrEnd = null;
+    }
+    const dateStartElement = this.getElement().querySelector(`input[name="event-start-time"]`);
+    this._flatpickrStart = flatpickr(dateStartElement, {
+      allowInput: true,
+      defaultDate: this._startDate || new Date(),
+      enableTime: true,
+      dateFormat: `d/m/y H:i`
+    });
+    const dateEndElement = this.getElement().querySelector(`input[name="event-end-time"]`);
+    this._flatpickrEnd = flatpickr(dateEndElement, {
+      allowInput: true,
+      defaultDate: this._endDate || new Date(),
+      enableTime: true,
+      dateFormat: `d/m/y H:i`,
+    });
   }
 
   _subscribeOnEvents() {
@@ -466,31 +493,6 @@ export default class EventEdit extends AbstractSmartComponent {
         };
       }
       this.rerender();
-    });
-  }
-
-  _applyFlatpickr() {
-    if (this._flatpickrStart) {
-      this._flatpickrStart.destroy();
-      this._flatpickrStart = null;
-    }
-    if (this._flatpickrEnd) {
-      this._flatpickrEnd.destroy();
-      this._flatpickrEnd = null;
-    }
-    const dateStartElement = this.getElement().querySelector(`input[name="event-start-time"]`);
-    this._flatpickrStart = flatpickr(dateStartElement, {
-      allowInput: true,
-      defaultDate: this._startDate || new Date(),
-      enableTime: true,
-      dateFormat: `d/m/y H:i`
-    });
-    const dateEndElement = this.getElement().querySelector(`input[name="event-end-time"]`);
-    this._flatpickrEnd = flatpickr(dateEndElement, {
-      allowInput: true,
-      defaultDate: this._endDate || new Date(),
-      enableTime: true,
-      dateFormat: `d/m/y H:i`,
     });
   }
 }

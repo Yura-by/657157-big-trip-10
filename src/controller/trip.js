@@ -40,7 +40,7 @@ const sortEvents = (events) => {
   return daysWithEvents;
 };
 
-export default class TripController {
+export default class Trip {
   constructor(container, eventsModel, api, newEventButton, infoContainer) {
     this._container = container;
     this._eventsModel = eventsModel;

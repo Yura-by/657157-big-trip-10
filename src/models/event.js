@@ -1,13 +1,13 @@
 export default class Event {
-  constructor(data) {
-    this.id = data[`id`];
-    this.type = data[`type`];
-    this.startDate = new Date(data[`date_from`]);
-    this.endDate = new Date(data[`date_to`]);
-    this.price = data[`base_price`];
-    this.isFavorite = Boolean(data[`is_favorite`]);
-    this.offers = data[`offers`] ? data[`offers`] : [];
-    this.destination = data[`destination`];
+  constructor(point) {
+    this.id = point[`id`];
+    this.type = point[`type`];
+    this.startDate = new Date(point[`date_from`]);
+    this.endDate = new Date(point[`date_to`]);
+    this.price = point[`base_price`];
+    this.isFavorite = Boolean(point[`is_favorite`]);
+    this.offers = point[`offers`] ? point[`offers`] : [];
+    this.destination = point[`destination`];
   }
 
   toRAW() {
@@ -23,27 +23,27 @@ export default class Event {
     };
   }
 
-  static parsePoint(data) {
-    return new Event(data);
+  static parsePoint(point) {
+    return new Event(point);
   }
 
-  static parsePoints(data) {
-    return data.map(Event.parsePoint);
+  static parsePoints(point) {
+    return point.map(Event.parsePoint);
   }
 
-  static clone(data) {
-    return new Event(data.toRAW());
+  static clone(point) {
+    return new Event(point.toRAW());
   }
 
-  static toRawFromCustom(data) {
+  static toRawFromCustom(point) {
     return {
-      'type': data[`type`],
-      'base_price': data[`price`],
-      'date_from': data[`startDate`],
-      'date_to': data[`endDate`],
-      'is_favorite': data[`isFavorite`],
-      'offers': data[`offers`],
-      'destination': data[`destination`]
+      'type': point[`type`],
+      'base_price': point[`price`],
+      'date_from': point[`startDate`],
+      'date_to': point[`endDate`],
+      'is_favorite': point[`isFavorite`],
+      'offers': point[`offers`],
+      'destination': point[`destination`]
     };
   }
 }

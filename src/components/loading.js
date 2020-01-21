@@ -6,7 +6,7 @@ const createLoadingTemplate = () => {
   );
 };
 
-export default class LoadingComponent extends AbstractComponent {
+export default class Loading extends AbstractComponent {
   getTemplate() {
     return createLoadingTemplate();
   }

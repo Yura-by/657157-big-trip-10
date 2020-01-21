@@ -1,6 +1,11 @@
-const CACHE_PREFIX = `trip-cache`;
-const CACHE_VER = `v1`;
-const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VER}`;
+const Cache = {
+  PREFIX: `trip-cache`,
+  VER: `v1`
+}
+
+const CACHE_NAME = `${Cache.PREFIX}-${Cache.VER}`;
+const INDEX_FIRST_ELEMENT = 0;
+const STATUS_OK = 200;
 
 self.addEventListener(`install`, (evt) => {
   evt.waitUntil(
@@ -43,7 +48,7 @@ self.addEventListener(`activate`, (evt) => {
             (keys) => Promise.all(
                 keys.map(
                     (key) => {
-                      if (key.indexOf(CACHE_PREFIX) === 0 && key !== CACHE_NAME) {
+                      if (key.indexOf(Cache.PREFIX) === INDEX_FIRST_ELEMENT && key !== CACHE_NAME) {
                         return caches.delete(key);
                       }
                       return null;
@@ -66,7 +71,7 @@ self.addEventListener(`fetch`, (evt) => {
           }
           return fetch(request).then(
               (response) => {
-                if (!response || response.status !== 200 || response.type !== `basic`) {
+                if (!response || response.status !== STATUS_OK || response.type !== `basic`) {
                   return response;
                 }
                 const clonedResponse = response.clone();

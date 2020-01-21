@@ -60,7 +60,7 @@ const parseFormData = (rawData, allDestinations) => {
   return result;
 };
 
-export default class PointController {
+export default class Point {
   constructor(container, onDataChange, onViewChange, onFavoriteChange, eventsModel) {
     this._container = container;
     this._onDataChange = onDataChange;
@@ -109,10 +109,9 @@ export default class PointController {
           saveButtonText: CustomText.SAVING
         });
       }
-      this._eventEditComponent.setDisabledState();
       const rawData = this._eventEditComponent.getData();
       const data = parseFormData(rawData, this._eventsModel.getDestinations(), this._eventsModel.getOffers());
-
+      this._eventEditComponent.setDisabledState();
       this._onDataChange(this, event, data);
     });
 
