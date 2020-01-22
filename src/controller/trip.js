@@ -23,18 +23,18 @@ const renderEvents = (container, eventsInDay, onDataChange, onViewChange, onFavo
 const sortEvents = (events) => {
   const eventsSorted = sortEventsInOrder(events);
 
-  const daysEventAll = eventsSorted.map((event) => {
+  const allDaysEvents = eventsSorted.map((event) => {
     const {startDate} = event;
     return formatInDay(startDate);
   });
 
-  const daysEventUnique = new Set(daysEventAll);
+  const uniqueDaysOfEvents = new Set(allDaysEvents);
 
   const createEventsByDay = (day, points) => {
     return points.filter((point) => formatInDay(point.startDate) === day);
   };
 
-  const daysEvents = Array.from(daysEventUnique);
+  const daysEvents = Array.from(uniqueDaysOfEvents);
 
   const daysWithEvents = daysEvents.map((day) => createEventsByDay(day, eventsSorted));
   return daysWithEvents;

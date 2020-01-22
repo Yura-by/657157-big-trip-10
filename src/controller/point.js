@@ -1,14 +1,11 @@
 import EventComponent from '../components/event.js';
-import EventEditComponent from '../components/event-edit.js';
+import EventEditComponent, {SHAKE_ANIMATION_TIMEOUT} from '../components/event-edit.js';
 import {render, replace, RenderPosition, remove} from '../utils/render.js';
 import {Type} from '../const.js';
 import EventModel from '../models/event.js';
 import {getDateStructure} from '../utils/common.js';
 
-const SHAKE_ANIMATION_TIMEOUT = 600;
 const NUMBER_SYSTEM = 10;
-const MILISECONDS = 1000;
-const SHADOW_STYLE = `0 0 10px 5px red`;
 const EMPTY_EVENT = new EventModel(EventModel.toRawFromCustom({
   type: Type.FLIGHT,
   offers: [],
@@ -110,7 +107,7 @@ export default class Point {
         });
       }
       const rawData = this._eventEditComponent.getData();
-      const data = parseFormData(rawData, this._eventsModel.getDestinations(), this._eventsModel.getOffers());
+      const data = parseFormData(rawData, this._eventsModel.getDestinations());
       this._eventEditComponent.setDisabledState();
       this._onDataChange(this, event, data);
     });
@@ -179,10 +176,9 @@ export default class Point {
   }
 
   shake() {
-    this._eventEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / MILISECONDS}s`;
-    this._eventEditComponent.getElement().style.boxShadow = SHADOW_STYLE;
+    this._eventEditComponent.runAnimation();
     setTimeout(() => {
-      this._eventEditComponent.getElement().style.animation = ``;
+      this._eventEditComponent.removeAnimation();
       if (this._mode === Mode.ADDING) {
         this._eventEditComponent.setCustomText({
           saveButtonText: CustomText.SAVE,

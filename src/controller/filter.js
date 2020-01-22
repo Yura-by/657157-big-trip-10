@@ -31,6 +31,18 @@ export default class Filter {
     render(container, this._filterComponent, RenderPosition.BEFOREEND);
   }
 
+  show() {
+    if (this._filterComponent) {
+      this._filterComponent.show();
+    }
+  }
+
+  hide() {
+    if (this._filterComponent) {
+      this._filterComponent.hide();
+    }
+  }
+
   _onFilterChange(filterType) {
     this._eventsModel.setFilter(filterType);
     this._activeFilterType = filterType;

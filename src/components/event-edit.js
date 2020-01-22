@@ -10,6 +10,11 @@ const DEBOUNCE_TIMEOUT = 500;
 const EMPTY_NUMBER = 0;
 const NUMBER_SYSTEM = 10;
 const TYPE_CHECK = `check`;
+const SHAKE_ANIMATION_TIMEOUT = 600;
+const MILLISECONDS = 1000;
+const SHADOW_STYLE = `0 0 10px 5px red`;
+const ANIMATION_STYLE = `shake ${SHAKE_ANIMATION_TIMEOUT / MILLISECONDS}s`;
+
 const DEFAULT_TEXT = {
   deleteButtonText: `Delete`,
   saveButtonText: `Save`,
@@ -169,7 +174,7 @@ const createEventEditTemplate = (options = {}, isNewEvent) => {
   const destinationOptions = allDestinations.length > EMPTY_NUMBER ? createDestinationOptions(allDestinations, destination) : ``;
   const valueStartDate = formatInDayTime(startDate);
   const valueEndDate = formatInDayTime(endDate);
-  const eventDetails = createEventDetails(offers, destination, type);
+  const eventDetails = createEventDetails(offers, destination);
 
   const newEventStyle = isNewEvent === null ? `style="display: none"` : ``;
 
@@ -395,6 +400,16 @@ export default class EventEdit extends AbstractSmartComponent {
     this._onFavoriteInputClick = handler;
   }
 
+  runAnimation() {
+    const editElement = this.getElement();
+    editElement.style.animation = ANIMATION_STYLE;
+    editElement.style.boxShadow = SHADOW_STYLE;
+  }
+
+  removeAnimation() {
+    this.getElement().style.animation = ``;
+  }
+
   _applyFlatpickr() {
     if (this._flatpickrStart) {
       this._flatpickrStart.destroy();
@@ -497,4 +512,4 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 }
 
-export {getOffersByType};
+export {getOffersByType, SHAKE_ANIMATION_TIMEOUT};

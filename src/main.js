@@ -44,6 +44,7 @@ const onPageClick = (evt) => {
 const onNewEventButtonClick = () => {
   statisticsComponent.hide();
   tripController.show();
+  filterController.show();
   tripController.createEvent();
   siteMenuComponent.setActiveItem(MenuItem.TABLE);
 };
@@ -78,10 +79,12 @@ siteMenuComponent.setChangeHandler((menuItem) => {
     case MenuItem.TABLE:
       statisticsComponent.hide();
       tripController.show();
+      filterController.show();
       break;
     case MenuItem.STATISTICS:
       tripController.hide();
       statisticsComponent.show();
+      filterController.hide();
       break;
   }
 });
